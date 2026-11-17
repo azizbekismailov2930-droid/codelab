@@ -908,6 +908,358 @@
                 padding: 20px;
             }
         }
+        /* =========================================
+   NEW REGISTRATION DESIGN (added after old CSS)
+========================================= */
+
+/* A custom property that can be animated: it rotates the glowing border */
+@property --angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+
+/* ----- The card: glass + 3D tilt (--rx / --ry are set by JavaScript) ----- */
+.registration-form-box {
+    position: relative;
+    padding: 0;
+    border: 0;
+    border-radius: 26px;
+    background: rgba(12, 14, 38, .62);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform .18s ease-out;
+    will-change: transform;
+    animation: cardGlow 5s ease-in-out infinite;
+}
+@keyframes cardGlow {
+    0%, 100% { box-shadow: 0 30px 80px rgba(0,0,0,.45), 0 0 30px rgba(0,234,255,.12); }
+    50%      { box-shadow: 0 30px 80px rgba(0,0,0,.45), 0 0 55px rgba(139,92,246,.30); }
+}
+
+/* ----- Rotating rainbow border: a masked conic gradient that keeps turning ----- */
+.registration-form-box::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    border-radius: inherit;
+    background: conic-gradient(from var(--angle),
+        #00eaff 0%, #8b5cf6 12%, #ff4fd8 24%,
+        transparent 40%, transparent 70%, #00eaff 100%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    animation: spinAngle 6s linear infinite;
+    pointer-events: none;
+    z-index: 2;
+}
+@keyframes spinAngle { to { --angle: 360deg; } }
+
+/* Inner wrapper: it holds the padding and "turns" when you switch Register / Log in */
+.registration-form-box .card-inner {
+    position: relative;
+    z-index: 1;
+    padding: 36px;
+    border-radius: inherit;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+.registration-form-box.turning .card-inner { animation: turnIn .75s cubic-bezier(.2,.8,.2,1); }
+@keyframes turnIn {
+    from { transform: perspective(1000px) rotateY(180deg); }
+    to   { transform: perspective(1000px) rotateY(0deg); }
+}
+
+/* ----- Form layout ----- */
+.registration-form-box #registrationForm { gap: 14px; margin-top: 24px; }
+
+/* These two wrappers are hidden by your JavaScript, so they must keep display:none */
+.registration-form-box #profileFields,
+.registration-form-box #confirmPasswordGroup { display: grid; gap: 14px; }
+.registration-form-box #profileFields[hidden],
+.registration-form-box #confirmPasswordGroup[hidden] { display: none !important; }
+
+/* ----- Floating labels: the label sits inside the field and floats up ----- */
+.registration-form-box .field { position: relative; }
+
+.registration-form-box #registrationForm .field input,
+.registration-form-box #registrationForm .field select {
+    width: 100%;
+    height: 58px;
+    padding: 22px 46px 8px 16px;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 14px;
+    background: rgba(23,23,47,.75);
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+    transition: border-color .25s, box-shadow .25s, background .25s;
+}
+.registration-form-box #registrationForm .field input:focus,
+.registration-form-box #registrationForm .field select:focus {
+    border-color: #00eaff;
+    background: rgba(23,23,47,.95);
+    box-shadow: 0 0 0 4px rgba(0,234,255,.12), 0 0 22px rgba(0,234,255,.18);
+}
+
+.registration-form-box #registrationForm .field label {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    margin: 0;
+    transform: translateY(-50%);
+    transform-origin: left top;
+    color: #98a5c6;
+    font-size: 15px;
+    pointer-events: none;
+    transition: top .2s ease, transform .2s ease, color .2s ease;
+}
+/* Floated state: field is focused, has text, or is a select */
+.registration-form-box #registrationForm .field input:focus + label,
+.registration-form-box #registrationForm .field input:not(:placeholder-shown) + label,
+.registration-form-box #registrationForm .field.field-select label {
+    top: 9px;
+    transform: translateY(0) scale(.78);
+    color: #00eaff;
+}
+
+/* Select: custom arrow */
+.registration-form-box #registrationForm .field select {
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%2300eaff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+}
+.registration-form-box #registrationForm .field select option { background: #17172f; color: #fff; }
+
+/* Show / hide password eye */
+.registration-form-box .eye {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #8fa0c8;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color .2s, background .2s;
+}
+.registration-form-box .eye:hover { color: #00eaff; background: rgba(0,234,255,.08); }
+
+/* ----- Button: flowing gradient, shine on hover, spinner while loading ----- */
+.registration-form-box .register-btn {
+    position: relative;
+    overflow: hidden;
+    margin-top: 10px;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 14px;
+    letter-spacing: .04em;
+    color: #07101d;
+    background: linear-gradient(110deg, #00c6ff, #8b5cf6, #ff4fd8, #00c6ff);
+    background-size: 250% 100%;
+    box-shadow: 0 12px 30px rgba(0,198,255,.28);
+    animation: btnFlow 6s linear infinite;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+@keyframes btnFlow { to { background-position: 250% 0; } }
+.registration-form-box .register-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgba(139,92,246,.4);
+}
+.registration-form-box .register-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent);
+    transform: skewX(-20deg);
+    transition: left .7s ease;
+}
+.registration-form-box .register-btn:hover:not(:disabled)::before { left: 140%; }
+/* The button is disabled while Firebase works, so a spinner appears */
+.registration-form-box .register-btn:disabled::after {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-left: 10px;
+    vertical-align: -2px;
+    border: 2px solid rgba(7,16,29,.3);
+    border-top-color: #07101d;
+    border-radius: 50%;
+    animation: spinR .7s linear infinite;
+}
+@keyframes spinR { to { transform: rotate(360deg); } }
+
+.registration-form-box #registrationMessage { font-size: 14px; }
+
+/* ----- Left side: the number badges turn when you hover them ----- */
+.registration-feature > span {
+    transition: transform .8s ease, background .3s ease, box-shadow .3s ease;
+}
+.registration-feature:hover > span {
+    transform: rotateY(360deg);
+    background: rgba(0,234,255,.12);
+    box-shadow: 0 0 20px rgba(0,234,255,.3);
+}
+
+@media (max-width: 600px) {
+    .registration-form-box .card-inner { padding: 24px; }
+}
+
+/* No movement for users who turned animations off */
+@media (prefers-reduced-motion: reduce) {
+    .registration-form-box,
+    .registration-form-box::before,
+    .registration-form-box .register-btn,
+    .registration-form-box.turning .card-inner { animation: none !important; }
+    .registration-form-box { transform: none !important; }
+    .registration-feature:hover > span { transform: none; }
+}
+/* ===== REAL FLIP: two "sides" of the card get different colors ===== */
+
+/* Login side: green/cyan rotating border and glow (Register side keeps the blue/purple one) */
+.registration-form-box.login-side::before {
+    background: conic-gradient(from var(--angle),
+        #3df5b0 0%, #00c6ff 14%, #22d3ee 26%,
+        transparent 42%, transparent 72%, #3df5b0 100%);
+}
+.registration-form-box.login-side { animation-name: cardGlowLogin; }
+@keyframes cardGlowLogin {
+    0%, 100% { box-shadow: 0 30px 80px rgba(0,0,0,.45), 0 0 30px rgba(61,245,176,.14); }
+    50%      { box-shadow: 0 30px 80px rgba(0,0,0,.45), 0 0 55px rgba(0,198,255,.30); }
+}
+
+/* While the card is flipping: strong steady glow */
+.registration-form-box.flipping {
+    animation: none;
+    box-shadow: 0 30px 90px rgba(0,0,0,.5), 0 0 70px rgba(0,234,255,.35);
+}
+/* =========================================
+   FLIP v4: full color theme for each side + flip effects
+========================================= */
+
+/* Registered colors: the browser can fade smoothly between two colors */
+@property --a1 { syntax: "<color>"; inherits: true; initial-value: #00c6ff; }
+@property --a2 { syntax: "<color>"; inherits: true; initial-value: #8b5cf6; }
+@property --a3 { syntax: "<color>"; inherits: true; initial-value: #ff4fd8; }
+
+/* Register side = blue / purple / pink. Log in side = green / cyan / lime */
+.registration-form-box {
+    --a1: #00c6ff; --a2: #8b5cf6; --a3: #ff4fd8;
+    transition: transform .18s ease-out, --a1 .8s ease, --a2 .8s ease, --a3 .8s ease;
+}
+.registration-form-box.login-side { --a1: #3df5b0; --a2: #22d3ee; --a3: #a3e635; }
+
+/* Rotating border and glow now use the side colors */
+.registration-form-box::before,
+.registration-form-box.login-side::before {
+    background: conic-gradient(from var(--angle),
+        var(--a1) 0%, var(--a2) 14%, var(--a3) 26%,
+        transparent 42%, transparent 72%, var(--a1) 100%);
+}
+.registration-form-box,
+.registration-form-box.login-side { animation-name: cardGlow3; }
+@keyframes cardGlow3 {
+    0%, 100% { box-shadow: 0 30px 80px rgba(0,0,0,.45), 0 0 34px color-mix(in srgb, var(--a1) 28%, transparent); }
+    50%      { box-shadow: 0 30px 80px rgba(0,0,0,.45), 0 0 58px color-mix(in srgb, var(--a2) 36%, transparent); }
+}
+
+/* Title, small title, fields, eye, switch link and button follow the side colors */
+.registration-form-box .form-small-title { color: var(--a1); }
+.registration-form-box #formSmallTitle { display: inline-block; }
+.registration-form-box #formHeading {
+    background: linear-gradient(90deg, #ffffff 0%, var(--a1) 60%, var(--a2) 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    color: transparent;
+}
+.registration-form-box #registrationForm .field input:focus,
+.registration-form-box #registrationForm .field select:focus {
+    border-color: var(--a1);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--a1) 18%, transparent),
+                0 0 22px color-mix(in srgb, var(--a1) 22%, transparent);
+}
+.registration-form-box #registrationForm .field input:focus + label,
+.registration-form-box #registrationForm .field input:not(:placeholder-shown) + label,
+.registration-form-box #registrationForm .field.field-select label { color: var(--a1); }
+.registration-form-box .eye:hover { color: var(--a1); background: color-mix(in srgb, var(--a1) 10%, transparent); }
+.registration-form-box .auth-switch button { color: var(--a1); }
+.registration-form-box .register-btn {
+    background: linear-gradient(110deg, var(--a1), var(--a2), var(--a3), var(--a1));
+    background-size: 250% 100%;
+    box-shadow: 0 12px 30px color-mix(in srgb, var(--a1) 30%, transparent);
+}
+.registration-form-box .register-btn:hover:not(:disabled) {
+    box-shadow: 0 18px 40px color-mix(in srgb, var(--a2) 42%, transparent);
+}
+
+/* EFFECT 1: a bright shine sweeps across the card while it flips */
+.registration-form-box::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0;
+    background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.42) 50%, transparent 65%);
+    background-size: 260% 100%;
+    background-position: 160% 0;
+}
+.registration-form-box.flipping::after { animation: sheen 1s ease-out; }
+@keyframes sheen {
+    0%   { opacity: 1; background-position: 160% 0; }
+    100% { opacity: 0; background-position: -60% 0; }
+}
+
+/* EFFECT 2: glowing rings fly out of the card (the script creates them) */
+.flip-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 2px solid var(--a1);
+    box-shadow: 0 0 30px var(--a1);
+    pointer-events: none;
+    z-index: 4;
+    animation: ringOut .85s ease-out forwards;
+}
+@keyframes ringOut {
+    from { transform: scale(1);    opacity: .9; }
+    to   { transform: scale(1.25); opacity: 0; }
+}
+
+/* EFFECT 3: the new texts pop in one after another */
+.registration-form-box.settle #formSmallTitle,
+.registration-form-box.settle #formHeading,
+.registration-form-box.settle #formDescription { animation: popIn .6s cubic-bezier(.2,.9,.3,1.2) both; }
+.registration-form-box.settle #formHeading { animation-delay: .08s; }
+.registration-form-box.settle #formDescription { animation-delay: .16s; }
+@keyframes popIn {
+    from { opacity: 0; transform: translateY(14px) scale(.96); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* While flipping: strong glow in the side color (must stay LAST so it wins) */
+.registration-form-box.flipping,
+.registration-form-box.login-side.flipping {
+    animation: none;
+    box-shadow: 0 30px 90px rgba(0,0,0,.5), 0 0 80px color-mix(in srgb, var(--a1) 55%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .registration-form-box::after, .flip-ring { display: none; }
+    .registration-form-box.settle #formSmallTitle,
+    .registration-form-box.settle #formHeading,
+    .registration-form-box.settle #formDescription { animation: none; }
+}
     </style>
 
     <!-- FIREBASE SDK -->
@@ -983,89 +1335,83 @@
                 </div>
             </div>
 
-            <div class="registration-form-box">
-                <span class="form-small-title" id="formSmallTitle">CREATE YOUR PROFILE</span>
+           <div class="registration-form-box">
+  <div class="card-inner">
 
-                <h2 id="formHeading">Registration</h2>
+    <span class="form-small-title" id="formSmallTitle">CREATE YOUR PROFILE</span>
+    <h2 id="formHeading">Registration</h2>
+    <p id="formDescription">Complete the form to continue to the main website.</p>
 
-                <p id="formDescription">
-                    Complete the form to continue to the main website.
-                </p>
+    <form id="registrationForm">
 
-                <form id="registrationForm">
-
-                    <div id="profileFields">
-                        <label for="fullName">Full Name</label>
-                        <input
-                            type="text"
-                            id="fullName"
-                            placeholder="Enter your full name"
-                            autocomplete="name"
-                            required
-                        >
-
-                        <label for="gender">Gender</label>
-                        <select id="gender" required>
-                            <option value="">Select your gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Prefer not to say">Prefer not to say</option>
-                        </select>
-
-                        <label for="course">Choose Your Course</label>
-                        <select id="course" required>
-                            <option value="">Select a course</option>
-                            <option value="HTML">HTML</option>
-                            <option value="CSS">CSS</option>
-                            <option value="JavaScript">JavaScript</option>
-                            <option value="C++">C++</option>
-                            <option value="Full-Stack Development">Full-Stack Development</option>
-                        </select>
-                    </div>
-
-                    <label for="email">Email Address</label>
-                    <input
-                        type="email"
-                        id="email"
-                        placeholder="example@gmail.com"
-                        autocomplete="email"
-                        required
-                    >
-
-                    <label for="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        placeholder="At least 6 characters"
-                        minlength="6"
-                        autocomplete="new-password"
-                        required
-                    >
-
-                    <div id="confirmPasswordGroup">
-                        <label for="confirmPassword">Confirm Password</label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            placeholder="Enter your password again"
-                            minlength="6"
-                            autocomplete="new-password"
-                            required
-                        >
-                    </div>
-
-                    <button type="submit" class="register-btn" id="authSubmitButton">
-                        REGISTER & ENTER WEBSITE →
-                    </button>
-
-                    <p id="registrationMessage" role="status" aria-live="polite"></p>
-
-                    <p class="auth-switch">
-                        <span id="authSwitchText">Already have an account?</span>
-                        <button type="button" id="authSwitchButton">Log in</button>
-                    </p>
-                </form>
+        <!-- Hidden by your JavaScript in Log in mode -->
+        <div id="profileFields">
+            <div class="field">
+                <input type="text" id="fullName" placeholder=" " autocomplete="name" required>
+                <label for="fullName">Full Name</label>
             </div>
+
+            <div class="field field-select">
+                <select id="gender" required>
+                    <option value="">Select your gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+                <label for="gender">Gender</label>
+            </div>
+
+            <div class="field field-select">
+                <select id="course" required>
+                    <option value="">Select a course</option>
+                    <option value="HTML">HTML</option>
+                    <option value="CSS">CSS</option>
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="C++">C++</option>
+                    <option value="Full-Stack Development">Full-Stack Development</option>
+                </select>
+                <label for="course">Choose Your Course</label>
+            </div>
+        </div>
+
+        <div class="field">
+            <input type="email" id="email" placeholder=" " autocomplete="email" required>
+            <label for="email">Email Address</label>
+        </div>
+
+        <div class="field">
+            <input type="password" id="password" placeholder=" " minlength="6" autocomplete="new-password" required>
+            <label for="password">Password (at least 6 characters)</label>
+            <button type="button" class="eye" data-target="password" aria-label="Show password">
+                <i class="fa-regular fa-eye"></i>
+            </button>
+        </div>
+
+        <!-- Hidden by your JavaScript in Log in mode -->
+        <div id="confirmPasswordGroup">
+            <div class="field">
+                <input type="password" id="confirmPassword" placeholder=" " minlength="6" autocomplete="new-password" required>
+                <label for="confirmPassword">Confirm Password</label>
+                <button type="button" class="eye" data-target="confirmPassword" aria-label="Show password">
+                    <i class="fa-regular fa-eye"></i>
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="register-btn" id="authSubmitButton">
+            REGISTER & ENTER WEBSITE →
+        </button>
+
+        <p id="registrationMessage" role="status" aria-live="polite"></p>
+
+        <p class="auth-switch">
+            <span id="authSwitchText">Already have an account?</span>
+            <button type="button" id="authSwitchButton">Log in</button>
+        </p>
+    </form>
+
+  </div>
+</div>
         </div>
     </section>
 
@@ -2329,6 +2675,169 @@ document.querySelectorAll(".interactive-card").forEach(card => {
     });
 
 });
+</script>
+<script>
+/* NEW REGISTRATION EFFECTS v5: password eye, side theme, 3D tilt, FLIP with 2 styles + effects.
+   It does not change your Firebase code. */
+(function () {
+    // CHANGE THIS ONE WORD TO SWITCH THE FLIP STYLE:  "swing"  (new)  or  "coin"  (your v4 flip)
+    const FLIP_STYLE = "swing";
+
+    const box = document.querySelector(".registration-form-box");
+    const switchBtn = document.getElementById("authSwitchButton");
+    const profileFields = document.getElementById("profileFields");
+    const infoSide = document.querySelector(".registration-info");   // left text side (moves a little in swing style)
+    if (!box || !switchBtn || !profileFields) return;
+
+    // 1. Show / hide password buttons
+    document.querySelectorAll(".eye").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const input = document.getElementById(btn.dataset.target);
+            const show = input.type === "password";
+            input.type = show ? "text" : "password";
+            btn.querySelector("i").className = show ? "fa-regular fa-eye-slash" : "fa-regular fa-eye";
+            btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+        });
+    });
+
+    // 2. Side theme: your setAuthMode() hides #profileFields in Log in mode.
+    //    "login-side" on the card = green theme. The observer also catches Log out.
+    function syncSide() { box.classList.toggle("login-side", profileFields.hidden); }
+    new MutationObserver(syncSide).observe(profileFields, { attributes: true, attributeFilter: ["hidden"] });
+    syncSide();
+
+    const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // 3. 3D tilt toward the mouse (max 10 degrees)
+    box.addEventListener("pointermove", function (e) {
+        if (reduced()) return;
+        const r = box.getBoundingClientRect();
+        box.style.setProperty("--ry", (((e.clientX - r.left) / r.width - 0.5) * 10) + "deg");
+        box.style.setProperty("--rx", ((-((e.clientY - r.top) / r.height - 0.5)) * 10) + "deg");
+    });
+    box.addEventListener("pointerleave", function () {
+        box.style.setProperty("--rx", "0deg");
+        box.style.setProperty("--ry", "0deg");
+    });
+
+    // Effect helpers
+    function addRing(delay) {                       // a glowing ring that flies out of the card
+        const ring = document.createElement("span");
+        ring.className = "flip-ring";
+        ring.style.animationDelay = delay + "ms";
+        box.appendChild(ring);
+        setTimeout(function () { ring.remove(); }, 1100 + delay);
+    }
+    function settle() {                             // new texts pop in
+        box.classList.remove("settle");
+        void box.offsetWidth;                       // restart the animation
+        box.classList.add("settle");
+        setTimeout(function () { box.classList.remove("settle"); }, 900);
+    }
+
+    /* 4. THE TWO FLIP STYLES
+       Each style has an "out" half (the front side leaves and ends edge-on)
+       and an "in" half (the other side arrives).
+       dir = +1 for Register -> Log in, -1 for Log in -> Register */
+    const P = "perspective(1100px) ";
+    const STYLES = {
+
+        // STYLE A "coin": your v4 flip, unchanged
+        coin: {
+            out: function (dir) { return [
+                { transform: P + "rotateY(0deg) scale(1)" },
+                { transform: P + "rotateY(" + (90 * dir) + "deg) scale(.92)" }
+            ]; },
+            outOpt: { duration: 380, easing: "cubic-bezier(.55,0,.9,.6)", fill: "forwards" },
+            in: function (dir) { return [
+                // scaleX(-1) cancels the mirror image, so the text is not backwards
+                { transform: P + "rotateY(" + (90 * dir) + "deg) scale(.92) scaleX(-1)" },
+                { transform: P + "rotateY(" + (180 * dir) + "deg) scale(1) scaleX(-1)" }
+            ]; },
+            inOpt: { duration: 460, easing: "cubic-bezier(.1,.7,.2,1.15)" }
+        },
+
+        // STYLE B "swing" (NEW): the card lifts, slides sideways and tilts while it turns,
+        // then arrives with a spring wobble (a little too far, a little back, then rest)
+        swing: {
+            out: function (dir) { return [
+                { transform: P + "translate3d(0px,0px,0px) rotateZ(0deg) rotateY(0deg) scale(1)" },
+                { transform: P + "translate3d(" + (-46 * dir) + "px,-28px,0px) rotateZ(" + (-5 * dir) + "deg) rotateY(" + (90 * dir) + "deg) scale(.9)" }
+            ]; },
+            outOpt: { duration: 420, easing: "cubic-bezier(.5,0,.9,.5)", fill: "forwards" },
+            in: function (dir) { return [
+                // starts exactly where "out" ended, so there is no jump
+                { offset: 0,   easing: "cubic-bezier(.2,.8,.3,1)",
+                  transform: P + "translate3d(" + (-46 * dir) + "px,-28px,0px) rotateZ(" + (-5 * dir) + "deg) rotateY(" + (90 * dir) + "deg) scale(.9) scaleX(-1)" },
+                // overshoot: a little too far and a little too big
+                { offset: .62, easing: "ease-in-out",
+                  transform: P + "translate3d(" + (12 * dir) + "px,6px,0px) rotateZ(" + (3 * dir) + "deg) rotateY(" + (192 * dir) + "deg) scale(1.03) scaleX(-1)" },
+                // small bounce back
+                { offset: .82, easing: "ease-in-out",
+                  transform: P + "translate3d(" + (-6 * dir) + "px,-2px,0px) rotateZ(" + (-1.2 * dir) + "deg) rotateY(" + (176 * dir) + "deg) scale(.995) scaleX(-1)" },
+                // rest (looks exactly like the normal card)
+                { offset: 1,
+                  transform: P + "translate3d(0px,0px,0px) rotateZ(0deg) rotateY(" + (180 * dir) + "deg) scale(1) scaleX(-1)" }
+            ]; },
+            inOpt: { duration: 780 }
+        }
+    };
+
+    // 5. THE SWITCH ITSELF: runs your original code once, then the effects
+    let busy = false;          // blocks double clicks while flipping
+    let passThrough = false;   // lets ONE click reach your original code
+    function swapSide() {
+        passThrough = true;
+        switchBtn.click();           // your setAuthMode(...) runs once, as before
+        passThrough = false;
+        syncSide();                  // colors fade to the other side
+        settle();                    // new texts pop in
+        addRing(0);                  // two glowing rings
+        addRing(170);
+    }
+
+    // Capture phase: this runs BEFORE your own click handler on the button
+    box.addEventListener("click", function (e) {
+        if (!e.target.closest("#authSwitchButton") || passThrough) return;
+        e.stopPropagation();
+        e.preventDefault();
+        if (busy) return;
+
+        // Animations off (or very old browser): switch at once, only the colors fade
+        if (reduced() || !box.animate) { swapSide(); return; }
+
+        busy = true;
+        box.classList.add("flipping");
+
+        // Register -> Log in turns one way (+1), Log in -> Register the other way (-1)
+        const dir = profileFields.hidden ? -1 : 1;
+        const S = STYLES[FLIP_STYLE] || STYLES.swing;
+
+        // Swing only: the left text side moves a few pixels and comes back
+        if (infoSide && infoSide.animate && FLIP_STYLE === "swing") {
+            infoSide.animate([
+                { transform: "translateX(0px)" },
+                { transform: "translateX(" + (16 * dir) + "px)", offset: .4 },
+                { transform: "translateX(0px)" }
+            ], { duration: 1000, easing: "ease-in-out" });
+        }
+
+        // First half: the card turns away (edge-on, invisible)
+        const turnOut = box.animate(S.out(dir), S.outOpt);
+
+        turnOut.finished.then(function () {
+            swapSide();                                   // the card is edge-on: switch the form NOW
+            const turnIn = box.animate(S.in(dir), S.inOpt);   // second half: the other side arrives
+            turnOut.cancel();
+            return turnIn.finished;
+        }).catch(function () {
+            /* animation interrupted: nothing to do */
+        }).finally(function () {
+            busy = false;
+            box.classList.remove("flipping");
+        });
+    }, true);
+})();
 </script>
 </body>
 </html>
