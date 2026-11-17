@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTMLLab – Learn HTML</title>
+<link rel="stylesheet" href="for.css">
+</head>
+<body>
+
+<!-- BACKGROUND CANVAS (galaxy or matrix, chosen in SECTION B) -->
+<canvas id="bg"></canvas>
+
+<!-- LANGUAGE SELECTOR (Google Translate) -->
+<div class="lang-box">
+  <select id="languageSelector" aria-label="Choose website language">
+    <option value="en">🇬🇧 English</option>
+    <option value="uz">🇺🇿 O'zbek</option>
+    <option value="ru">🇷🇺 Русский</option>
+    <option value="tr">🇹🇷 Türkçe</option>
+  </select>
+</div>
+<div id="google_translate_element" style="display:none"></div>
+
+<!-- TOP BAR: landing + subjects pages -->
+<div class="topbar" id="topLanding"><div class="wrap">
+  <a class="logo" href="?">HTML<span>LAB</span></a>
+  <span class="note">Learn HTML by doing · runs in your browser</span>
+</div></div>
+
+<!-- TOP BAR: lesson page (sticky) -->
+<div class="topbar" id="topLesson"><div class="wrap">
+  <a class="logo" href="?lessons=1">HTML<span>LAB</span></a>
+  <!-- NEW: return to the first page (index.html) -->
+  <a class="top-return" href="index.html">← First Page</a>
+  <div class="mini-prog"><span id="lessonProgText" class="note"></span><div class="bar"><i id="lessonProgBar"></i></div></div>
+</div></div>
+
+<!-- ========== PAGE 1: LANDING ========== -->
+<div class="page" id="landing"><div class="wrap">
+  <section class="hero">
+    <div>
+      <span class="eyebrow">Your coding journey starts here</span>
+      <h1>Think it. Code it. HTML it.</h1>
+      <p>Learn to build real web pages: tags, text, lists, links, tables, forms and more. Write code, see the result instantly and get it checked automatically.</p>
+      <a class="btn" href="?lessons=1">Explore lessons →</a>
+      <span class="caption">10 guided lessons · Interactive code editor</span>
+    </div>
+    <div class="visual" translate="no">
+      <span class="float f1">&lt;h1&gt;</span><span class="float f2">class="hello"</span>
+      <div class="codewin">
+        <div class="dots"><span></span><span></span><span></span></div>
+<pre><span class="tg">&lt;h1&gt;</span>Hello, web!<span class="tg">&lt;/h1&gt;</span>
+<span class="tg">&lt;a</span> <span class="at">href</span>=<span class="st">"page.html"</span><span class="tg">&gt;</span>Go<span class="tg">&lt;/a&gt;</span>
+<span class="tg">&lt;ul&gt;</span>
+  <span class="tg">&lt;li&gt;</span>HTML<span class="tg">&lt;/li&gt;</span>
+<span class="tg">&lt;/ul&gt;</span></pre>
+      </div>
+      <div class="orbit"></div>
+    </div>
+  </section>
+  <div class="bottom-row">
+    <span>Free course. Your progress stays in your browser.</span>
+    <a href="index.html">← Return to First Page</a>
+  </div>
+</div></div>
+
+<!-- ========== PAGE 2: SUBJECTS ========== -->
+<div class="page" id="subjects"><div class="wrap">
+  <div class="subjects-head">
+    <h1>Choose your first lesson.</h1>
+    <p>Lessons open one by one. Finish a task to unlock the next lesson. After 5 lessons you take a level test.</p>
+  </div>
+  <div class="progress-box">
+    <b id="progText"></b><div class="bar"><i id="progBar"></i></div>
+  </div>
+  <div class="grid2" id="cards"></div>
+
+  <div class="tests">
+    <h2>Tests</h2>
+    <div class="grid2" id="testCards"></div>
+    <div id="testBox" class="progress-box" hidden></div>
+  </div>
+
+  <!-- NEW: return to the first page (index.html) -->
+  <p class="return-wrap"><a class="btn ghost" href="index.html">← Return to First Page</a></p>
+
+  <p class="foot-note">Your progress is saved in this browser on this device.<br>
+    <button class="reset" id="resetBtn" type="button">Reset progress</button></p>
+</div></div>
+
+<!-- ========== PAGE 3: LESSON ========== -->
+<div class="page" id="lesson"><div class="wrap">
+  <div class="lesson-grid">
+    <aside class="side"><h4>Your learning path</h4><div id="path"></div></aside>
+    <article class="lesson-main" id="lessonMain"></article>
+    <aside class="editor-panel" id="editorPanel">
+      <b>HTML editor</b>
+      <textarea id="editor" spellcheck="false" translate="no" aria-label="HTML code editor"></textarea>
+      <div class="toolbar">
+        <button id="runBtn" type="button">▶️ Run</button>
+        <button id="clearBtn" type="button">Clear output</button>
+        <button id="resetCode" type="button">↺ Reset code</button>
+        <button id="checkBtn" type="button" hidden>✔️ Check answer</button>
+      </div>
+      <span id="status">Live preview ready ✔️</span>
+      <iframe id="preview" title="Result" sandbox></iframe>
+      <div id="msg" aria-live="polite"></div>
+    </aside>
+  </div>
+  <!-- NEW: return to the first page (index.html) -->
+  <p class="return-wrap"><a class="btn ghost" href="index.html">← Return to First Page</a></p>
+</div></div>
+
+<script>
+/* ===================================================
+   SECTION A: HELPERS + URL MODE
+   =================================================== */
+const $ = s => document.querySelector(s);
+// Escape text so code like <p> is shown as text, not run as HTML
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+const params = new URLSearchParams(location.search);
+const lp = params.get('lesson');
+let mode = 'landing';
+if (lp !== null && /^[0-9]$/.test(lp)) mode = 'lesson';       // ?lesson=N (0..9)
+else if (params.get('lessons')) mode = 'subjects';             // ?lessons=1
+document.body.classList.add(mode + '-mode');                   // CSS shows the right page
+
+/* ===================================================
+   SECTION B: BACKGROUND (canvas)
+   Change this ONE word to switch: 'galaxy' or 'matrix'
+   =================================================== */
+const BACKGROUND = 'galaxy';
+
+/* ---- B1. OLD matrix rain (kept, not deleted) ---- */
+function matrix(){
+  const c = $('#bg'), x = c.getContext('2d');
+  c.style.opacity = '.28';                                     // matrix is a low-opacity background
+  const chars = 'アイウエオカキクケコサシスセソ0123456789{}<>/=+*#'.split('');
+  const size = 16; let drops = [];
+  function resize(){ c.width = innerWidth; c.height = innerHeight;
+    drops = Array.from({length: Math.floor(c.width/size)}, () => Math.random()*c.height/size); }
+  resize(); addEventListener('resize', resize);
+  function draw(){
+    x.fillStyle = 'rgba(11,15,23,0.1)'; x.fillRect(0,0,c.width,c.height); // trail effect
+    x.fillStyle = '#00ff9c'; x.shadowColor = '#00ff9c'; x.shadowBlur = 8; x.font = size+'px monospace';
+    drops.forEach((y,i) => {
+      x.fillText(chars[Math.floor(Math.random()*chars.length)], i*size, y*size);
+      if (y*size > c.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    });
+  }
+  // Respect reduced motion: draw frames only once, no animation
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { for (let k=0;k<30;k++) draw(); }
+  else setInterval(draw, 60);
+}
+
+/* ---- B2. NEW spectacular galaxy ----
+   Layers (back to front): dark gradient sky -> moving colored nebula clouds
+   -> twinkling parallax stars -> rotating spiral galaxy -> shooting stars.
+   The mouse moves the layers a little (parallax). */
+function galaxy(){
+  const c = $('#bg'), x = c.getContext('2d');
+  c.style.opacity = '1';                                       // galaxy is fully visible
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const COLORS = ['255,255,255','170,205,255','195,170,255','0,255,156'];
+  let W, H, stars = [], spiral = [], shooters = [];
+  let t = 0, mx = 0, my = 0, tx = 0, ty = 0;                   // t = time, mx/my = smooth mouse, tx/ty = target
+
+  // Build stars and spiral particles for the current screen size
+  function build(){
+    W = c.width = innerWidth; H = c.height = innerHeight;
+    const n = Math.min(450, Math.floor(W * H / 4500));         // fewer stars on small screens
+    stars = Array.from({length: n}, () => ({
+      x: Math.random()*W, y: Math.random()*H,
+      z: Math.random()*0.9 + 0.1,                              // depth: small z = far away
+      r: Math.random()*1.3 + 0.3,
+      tw: Math.random()*6.28,                                  // twinkle phase
+      col: COLORS[Math.floor(Math.random()*COLORS.length)]
+    }));
+    const arms = 3;
+    spiral = Array.from({length: W < 700 ? 700 : 1500}, () => {
+      const r = Math.pow(Math.random(), 0.6);                  // 0 = center, 1 = edge
+      const arm = Math.floor(Math.random()*arms);
+      const ang = arm/arms*6.283 + r*5 + (Math.random()-0.5)*0.55;   // spiral shape + scatter
+      const col = r < 0.25 ? '255,235,190' : r < 0.6 ? '150,190,255' : '190,150,255';
+      return {r, ang, s: Math.random()*1.5 + 0.4, col};
+    });
+  }
+  build(); addEventListener('resize', build);
+  addEventListener('mousemove', e => { tx = e.clientX/W - 0.5; ty = e.clientY/H - 0.5; });
+
+  // Soft colored clouds that slowly drift
+  function nebula(){
+    [[0.18,0.30,'77,163,255',0.20],[0.82,0.22,'167,139,250',0.20],[0.50,0.85,'0,255,156',0.12]]
+    .forEach(([bx,by,col,a], i) => {
+      const px = W*bx + Math.sin(t*0.0004 + i*2)*70 - mx*40;
+      const py = H*by + Math.cos(t*0.0003 + i*3)*50 - my*40;
+      const rad = Math.max(W,H)*0.42;
+      const g = x.createRadialGradient(px,py,0,px,py,rad);
+      g.addColorStop(0,'rgba('+col+','+a+')'); g.addColorStop(1,'rgba('+col+',0)');
+      x.fillStyle = g; x.fillRect(0,0,W,H);
+    });
+  }
+
+  // Twinkling stars with parallax (near stars move more with the mouse)
+  function drawStars(){
+    stars.forEach(s => {
+      s.y -= s.z*0.12; if (s.y < -2) { s.y = H+2; s.x = Math.random()*W; }   // slow upward drift
+      const a = 0.45 + 0.55*Math.sin(t*0.003 + s.tw);                      // twinkle
+      x.fillStyle = 'rgba('+s.col+','+a.toFixed(2)+')';
+      x.fillRect(s.x - mx*60*s.z, s.y - my*60*s.z, s.r, s.r);
+    });
+  }
+
+  // Rotating spiral galaxy on the right side (inner part rotates faster)
+  function drawSpiral(){
+    const cx = W*0.72 - mx*30, cy = H*0.36 - my*20, R = Math.min(W,H)*0.46;
+    const core = x.createRadialGradient(cx,cy,0,cx,cy,R*0.35);
+    core.addColorStop(0,'rgba(255,240,210,0.55)'); core.addColorStop(1,'rgba(255,240,210,0)');
+    x.fillStyle = core; x.fillRect(cx-R, cy-R, R*2, R*2);
+    spiral.forEach(p => {
+      const a = p.ang + t*0.00018*(1.4 - p.r);
+      const px = cx + Math.cos(a)*p.r*R;
+      const py = cy + Math.sin(a)*p.r*R*0.45;                              // 0.45 = tilted view
+      x.fillStyle = 'rgba('+p.col+','+(0.75 - p.r*0.4).toFixed(2)+')';
+      x.fillRect(px, py, p.s, p.s);
+    });
+  }
+
+  // Shooting stars: appear randomly, fly diagonally, fade out
+  function drawShooters(){
+    if (!reduce && Math.random() < 0.012 && shooters.length < 3)
+      shooters.push({x: Math.random()*W, y: Math.random()*H*0.5, vx: 9 + Math.random()*5, vy: 4 + Math.random()*3, life: 1});
+    shooters = shooters.filter(s => s.life > 0);
+    shooters.forEach(s => {
+      const g = x.createLinearGradient(s.x, s.y, s.x - s.vx*8, s.y - s.vy*8);
+      g.addColorStop(0, 'rgba(255,255,255,'+s.life+')'); g.addColorStop(1, 'rgba(0,255,156,0)');
+      x.strokeStyle = g; x.lineWidth = 2; x.beginPath();
+      x.moveTo(s.x, s.y); x.lineTo(s.x - s.vx*8, s.y - s.vy*8); x.stroke();
+      s.x += s.vx; s.y += s.vy; s.life -= 0.018;
+    });
+  }
+
+  // One frame = all layers in order
+  function frame(){
+    mx += (tx - mx)*0.05; my += (ty - my)*0.05;                // smooth mouse
+    const sky = x.createLinearGradient(0,0,0,H);               // dark sky gradient
+    sky.addColorStop(0,'#05070f'); sky.addColorStop(1,'#0b1226');
+    x.fillStyle = sky; x.fillRect(0,0,W,H);
+    nebula(); drawStars(); drawSpiral(); drawShooters();
+    t += 16;
+    if (!reduce) requestAnimationFrame(frame);                 // reduced motion: draw only once
+  }
+  frame();
+}
+
+// Start the chosen background
+if (BACKGROUND === 'matrix') matrix(); else galaxy();
+
+/* ===================================================
+   SECTION C: LESSON DATA (10 lessons)
+   t=title d=description intro pts=key points code=example
+   out=expected result tip task start=starter code
+   tests=[message, function(doc, code) -> true/false]
+   =================================================== */
+const LESSONS = [
+{ t:'Basics: tags and comments', d:'Elements, opening/closing tags and comments.',
+  intro:'HTML describes the meaning of content. An element is made of an opening tag, content and a closing tag.',
+  pts:['A tag looks like <p>.','Most elements have a closing tag: </p>.','<h1>…<h6> are headings, <p> is a paragraph.','Comments <!-- … --> are ignored by the browser.'],
+  code:`<!-- This is a comment -->\n<h1>My first page</h1>\n<p>Hello, world!</p>`,
+  out:'A big heading "My first page" and the paragraph "Hello, world!". The comment is not shown.',
+  tip:'Always close your tags. Forgetting </p> can break the layout.',
+  task:'Write an <h1> with your name, a <p> about your age, and one comment.',
+  start:`<!-- write your comment here -->\n`,
+  tests:[['Add an <h1> with some text.',d=>(d.querySelector('h1')||{}).textContent?.trim()],
+         ['Add a <p> with some text.',d=>(d.querySelector('p')||{}).textContent?.trim()],
+         ['Add a comment like <!-- text -->.',(d,c)=>/<!--[\s\S]*?-->/.test(c)]] },
+
+{ t:'Page structure', d:'DOCTYPE, html, head, title and body.',
+  intro:'Every page has the same skeleton. The head holds settings, the body holds what people see.',
+  pts:['<!DOCTYPE html> goes first.','<html lang="en"> wraps everything.','<head> contains <title> and <meta>.','<body> contains the visible content.'],
+  code:`<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <title>My page</title>\n</head>\n<body>\n  <h1>Hello</h1>\n</body>\n</html>`,
+  out:'The tab title is "My page" and the page shows "Hello".',
+  tip:'Do not forget lang and charset. They help browsers and search engines.',
+  task:'Build a full page with DOCTYPE, html lang, head, a title and an <h1> in the body.',
+  start:`<!DOCTYPE html>\n`,
+  tests:[['Start with <!DOCTYPE html>.',(d,c)=>/<!doctype html>/i.test(c)],
+         ['Add lang to <html>.',d=>d.documentElement.getAttribute('lang')],
+         ['Write a <head> section.',(d,c)=>/<head[\s>]/i.test(c)],
+         ['Write a non-empty <title>.',d=>d.title.trim()],
+         ['Put an <h1> inside <body>.',d=>d.querySelector('body h1')]] },
+
+{ t:'Text formatting', d:'strong, em, mark and line breaks.',
+  intro:'Inline tags change the meaning of a part of the text without starting a new block.',
+  pts:['<strong> = important (bold).','<em> = emphasis (italic).','<mark> = highlighted text.','<br> = line break, it has no closing tag.'],
+  code:`<p>This is <strong>important</strong>, <em>soft</em> and <mark>marked</mark>.<br>New line.</p>`,
+  out:'One paragraph with bold, italic and highlighted words, then a new line.',
+  tip:'Use <strong>/<em> for meaning and CSS for pure looks.',
+  task:'Write one <p> that contains <strong>, <em>, <mark> and a <br>.',
+  start:`<p></p>`,
+  tests:[['Add <strong> inside a <p>.',d=>d.querySelector('p strong')],
+         ['Add <em> inside a <p>.',d=>d.querySelector('p em')],
+         ['Add <mark> inside a <p>.',d=>d.querySelector('p mark')],
+         ['Add a <br> inside a <p>.',d=>d.querySelector('p br')]] },
+
+{ t:'Lists', d:'Bulleted and numbered lists.',
+  intro:'Lists group related items. Each item is an <li> inside <ul> or <ol>.',
+  pts:['<ul> = bulleted list.','<ol> = numbered list.','<li> = one list item.','Lists can be nested inside an <li>.'],
+  code:`<ul>\n  <li>HTML</li>\n  <li>CSS</li>\n</ul>\n<ol>\n  <li>Write code</li>\n  <li>Open browser</li>\n</ol>`,
+  out:'A bulleted list (HTML, CSS) and a numbered list (1. Write code, 2. Open browser).',
+  tip:'Only <li> may be a direct child of <ul> and <ol>.',
+  task:'Make a <ul> with 3 items and an <ol> with 2 items.',
+  start:``,
+  tests:[['Make a <ul> with at least 3 <li>.',d=>d.querySelectorAll('ul > li').length>=3],
+         ['Make an <ol> with at least 2 <li>.',d=>d.querySelectorAll('ol > li').length>=2]] },
+
+{ t:'Links and images', d:'The a tag, href, img, src and alt.',
+  intro:'Links connect pages and images make them visual. Both depend on attributes.',
+  pts:['<a href="url">text</a> makes a link.','<img src="file" alt="text"> shows an image.','alt describes the image for screen readers.','target="_blank" opens a new tab.'],
+  code:`<a href="https://developer.mozilla.org" target="_blank">MDN</a>\n<img src="photo.jpg" alt="My photo" width="200">`,
+  out:'A clickable link "MDN" and an image (or the alt text if the file is missing).',
+  tip:'An image without alt is an accessibility mistake.',
+  task:'Add a link that starts with https:// and an image with src and a non-empty alt.',
+  start:``,
+  tests:[['Add <a href="https://…">text</a>.',d=>{const a=d.querySelector('a[href^="http"]');return a&&a.textContent.trim()}],
+         ['Add an <img> with src.',d=>d.querySelector('img[src]')],
+         ['Write a non-empty alt on the image.',d=>{const i=d.querySelector('img');return i&&i.getAttribute('alt')?.trim()}]] },
+
+{ t:'Tables', d:'table, tr, th and td.',
+  intro:'Tables show data in rows and columns. Use them for data, not for page layout.',
+  pts:['<table> is the container.','<tr> is a row.','<th> is a header cell.','<td> is a normal data cell.'],
+  code:`<table>\n  <tr><th>Tag</th><th>Meaning</th></tr>\n  <tr><td>&lt;p&gt;</td><td>Paragraph</td></tr>\n</table>`,
+  out:'A table: a header row (Tag, Meaning) and one data row.',
+  tip:'To show < in text, write &lt; and for > write &gt;.',
+  task:'Make a table with 2 rows: a header row with 2 <th> and a data row with 2 <td>.',
+  start:`<table>\n\n</table>`,
+  tests:[['Add a <table>.',d=>d.querySelector('table')],
+         ['Use at least 2 <tr>.',d=>d.querySelectorAll('tr').length>=2],
+         ['Use at least 2 <th>.',d=>d.querySelectorAll('th').length>=2],
+         ['Use at least 2 <td>.',d=>d.querySelectorAll('td').length>=2]] },
+
+{ t:'Forms', d:'form, label, input, select and button.',
+  intro:'Forms collect user input. A label is connected to its input by for and id.',
+  pts:['<form> wraps the fields.','<label for="x"> matches <input id="x">.','type="text", "email", "password"… change the input.','<button> sends or triggers an action.'],
+  code:`<form>\n  <label for="name">Name:</label>\n  <input type="text" id="name">\n  <button type="button">Send</button>\n</form>`,
+  out:'A text field with the label "Name:" and a Send button.',
+  tip:'Clicking a connected label focuses its input.',
+  task:'Make a form with a label (for), an input with the same id, and a button.',
+  start:`<form>\n\n</form>`,
+  tests:[['Add a <form>.',d=>d.querySelector('form')],
+         ['Add a <label> with a for attribute.',d=>d.querySelector('label[for]')],
+         ['Add an <input> whose id equals the label\'s for.',d=>{const l=d.querySelector('label[for]');return l&&d.getElementById(l.getAttribute('for'))}],
+         ['Add a <button>.',d=>d.querySelector('button')]] },
+
+{ t:'Semantic layout', d:'header, nav, main and footer.',
+  intro:'Semantic tags describe the role of a page area, which helps people, search engines and screen readers.',
+  pts:['<header> = top area.','<nav> = main navigation links.','<main> = the unique main content.','<footer> = bottom area.'],
+  code:`<header><h1>Site</h1></header>\n<nav><a href="#">Home</a></nav>\n<main><p>Content</p></main>\n<footer>© 2026</footer>`,
+  out:'A heading, a link, a paragraph and a footer text, each in its own area.',
+  tip:'Use only one <main> per page.',
+  task:'Build a page with <header>, <nav> (with a link), <main> and <footer>.',
+  start:``,
+  tests:[['Add a <header>.',d=>d.querySelector('header')],
+         ['Add a <nav> that contains an <a>.',d=>d.querySelector('nav a')],
+         ['Add a <main>.',d=>d.querySelector('main')],
+         ['Add a <footer>.',d=>d.querySelector('footer')]] },
+
+{ t:'Attributes, div and span', d:'class, id, div and span.',
+  intro:'Attributes add information to tags. div and span are neutral containers that you style or script later.',
+  pts:['id is unique on the page.','class can be reused on many elements.','<div> is a block container.','<span> is an inline container.'],
+  code:`<div class="card" id="first">\n  <p>Hello <span class="name">Aziz</span></p>\n</div>`,
+  out:'A paragraph "Hello Aziz" inside a div container.',
+  tip:'Never use the same id twice.',
+  task:'Make a <div> with a class and an id, and put a <span> inside it.',
+  start:``,
+  tests:[['Add a <div> with a class.',d=>d.querySelector('div[class]')],
+         ['Give that <div> an id.',d=>d.querySelector('div[class][id]')],
+         ['Put a <span> inside the <div>.',d=>d.querySelector('div span')]] },
+
+{ t:'Adding CSS', d:'The style tag and basic rules.',
+  intro:'HTML is the structure and CSS is the look. A <style> tag in the head holds CSS rules.',
+  pts:['A rule: selector { property: value; }.','color changes text color.','background changes the background.','A real project uses a separate .css file.'],
+  code:`<style>\n  h1 { color: green; }\n</style>\n<h1>Green title</h1>`,
+  out:'A green heading "Green title".',
+  tip:'Link one shared CSS file with <link rel="stylesheet" href="style.css">.',
+  task:'Add a <style> that gives h1 a color, and an <h1> on the page.',
+  start:`<style>\n\n</style>`,
+  tests:[['Add a <style> tag.',d=>d.querySelector('style')],
+         ['Write a rule like h1 { color: red; }.',d=>/h1\s*\{[^}]*color\s*:/i.test(d.querySelector('style')?.textContent||'')],
+         ['Add an <h1> with text.',d=>d.querySelector('h1')?.textContent.trim()]] }
+];
+
+/* ===================================================
+   SECTION D: TESTS DATA [question, options, rightIndex, explanation]
+   =================================================== */
+const TESTS = {
+ l1:{title:'Level 1 test',level:1,qs:[
+  ['Which tag makes the biggest heading?',['<h6>','<h1>','<head>'],1,'<h1> is the top-level heading.'],
+  ['Which element has no closing tag?',['<br>','<p>','<strong>'],0,'<br> is a void element.'],
+  ['Where does visible content go?',['<head>','<title>','<body>'],2,'<body> holds what users see.'],
+  ['Which attribute describes an image?',['alt','src','href'],0,'alt is the text description.'],
+  ['Which tag makes a numbered list?',['<ul>','<ol>','<li>'],1,'<ol> = ordered list.']]},
+ l2:{title:'Level 2 test',level:2,qs:[
+  ['Which tag is a table row?',['<tr>','<td>','<th>'],0,'<tr> = table row.'],
+  ['A label\'s "for" must match the input\'s…',['name','id','class'],1,'for links to id.'],
+  ['Semantic tag for navigation links?',['<nav>','<div>','<menu>'],0,'<nav> marks navigation.'],
+  ['Which attribute can repeat on many elements?',['id','class','lang'],1,'class is reusable, id is unique.'],
+  ['Where does a <style> tag usually go?',['In <head>','After </html>','In <title>'],0,'CSS normally goes in the head.']]},
+ final:{title:'Final test',level:0,qs:[
+  ['What does HTML stand for?',['HyperText Markup Language','High Tech Modern Language','Hyperlink Text Machine Language'],0,'HyperText Markup Language.'],
+  ['Which is an HTML comment?',['// text','<!-- text -->','# text'],1,'Comments use <!-- -->.'],
+  ['Which tag creates a link?',['<a>','<link>','<href>'],0,'<a href="…"> makes links.'],
+  ['<th> is…',['a table header cell','a table row','a table caption'],0,'th = table header.'],
+  ['Which tag marks important text?',['<strong>','<big>','<bold>'],0,'<strong> means importance.'],
+  ['Inline container without meaning?',['<div>','<span>','<section>'],1,'<span> is inline.'],
+  ['Which tag sets the browser tab title?',['<title>','<h1>','<header>'],0,'<title> inside <head>.'],
+  ['Which is block-level by default?',['<span>','<div>','<strong>'],1,'<div> is block-level.'],
+  ['How do you show < as text?',['&lt;','<<','\\<'],0,'&lt; is the entity for <.'],
+  ['Which tag starts a form?',['<form>','<input>','<fieldset>'],0,'<form> wraps fields.']]}
+};
+
+/* ===================================================
+   SECTION E: PROGRESS (localStorage with try/catch)
+   =================================================== */
+function load(k){ try { const v = parseInt(localStorage.getItem(k),10); return isNaN(v)?0:v; } catch(e){ return 0; } }
+function save(k,v){ try { localStorage.setItem(k,String(v)); } catch(e){} }
+let done = load('htmllab_done');     // how many lessons are finished
+let levels = load('htmllab_levels'); // how many level tests are passed
+
+// Lesson i is open only if i <= done AND its level is unlocked (5 lessons per level)
+const isOpen = i => i <= done && i < (levels + 1) * 5;
+const state = i => i < done ? 'done' : (isOpen(i) ? 'open' : 'locked');
+const availableLesson = () => Math.min(done, (levels + 1) * 5 - 1, 9);
+
+/* ===================================================
+   SECTION F: SUBJECTS PAGE
+   =================================================== */
+function renderSubjects(){
+  $('#progText').textContent = done + ' / 10 lessons completed';
+  $('#progBar').style.width = done * 10 + '%';
+  $('#cards').innerHTML = LESSONS.map((L,i) => {
+    const s = state(i);
+    const label = s==='done' ? '✓ COMPLETED' : s==='open' ? 'START LESSON →' : '🔒 LOCKED';
+    const tag = s==='locked' ? 'div' : 'a';
+    return `<${tag} class="card ${s==='locked'?'locked':''}" ${s==='locked'?'':`href="?lesson=${i}"`}>
+      <small>LESSON ${String(i+1).padStart(2,'0')}</small><h3>${esc(L.t)}</h3><p>${esc(L.d)}</p>
+      <b class="st-${s}">${label}</b></${tag}>`;
+  }).join('');
+  // Test buttons: level 1 after 5 lessons, level 2 after 10 + level 1, final after everything
+  const can = {l1: done>=5, l2: done>=10 && levels>=1, final: done>=10 && levels>=2};
+  $('#testCards').innerHTML = Object.keys(TESTS).map(k => {
+    const T = TESTS[k], passed = T.level && levels >= T.level;
+    return `<button class="card" data-t="${k}" ${can[k]?'':'disabled'}><small>${can[k]?'AVAILABLE':'🔒 LOCKED'}</small>
+      <h3>${T.title}</h3><p>${T.qs.length} questions${T.level?' · need 4 to pass':''}</p>
+      <b class="st-${passed?'done':'open'}">${passed?'✓ PASSED':'START TEST →'}</b></button>`;
+  }).join('');
+  document.querySelectorAll('[data-t]').forEach(b => b.onclick = () => openTest(b.dataset.t));
+}
+
+// Run a multiple-choice test inside #testBox
+function openTest(key){
+  const T = TESTS[key], box = $('#testBox'); let answered = 0, ok = 0;
+  box.hidden = false; box.innerHTML = `<h3>${T.title}</h3><div id="qs"></div><p id="res"></p>`;
+  T.qs.forEach(([q,opts,right,why]) => {
+    const d = document.createElement('div'); d.className = 'q';
+    d.innerHTML = `<b>${esc(q)}</b>`;
+    opts.forEach((o,i) => {
+      const b = document.createElement('button'); b.className = 'opt'; b.type = 'button'; b.textContent = o;
+      b.translate = false;
+      b.onclick = () => {
+        const all = d.querySelectorAll('.opt'); all.forEach(x => x.disabled = true);
+        all[right].classList.add('right');
+        if (i === right) ok++; else b.classList.add('wrong');
+        d.insertAdjacentHTML('beforeend', `<div class="why">${esc(why)}</div>`);
+        if (++answered === T.qs.length) finishTest(key, ok);
+      };
+      d.appendChild(b);
+    });
+    $('#qs').appendChild(d);
+  });
+  box.scrollIntoView({behavior:'smooth'});
+}
+function finishTest(key, ok){
+  const T = TESTS[key], res = $('#res');
+  if (T.level) { // level test: need 4 of 5
+    if (ok >= 4) { levels = Math.max(levels, T.level); save('htmllab_levels', levels); res.textContent = `✅ Passed: ${ok}/5. Next level unlocked!`; }
+    else res.textContent = `❌ ${ok}/5. You need 4 to pass. Try again.`;
+  } else res.textContent = `Final score: ${Math.round(ok / T.qs.length * 100)}% (${ok}/${T.qs.length})`;
+  res.insertAdjacentHTML('afterend', '<button class="btn" type="button" id="again">Try again</button>');
+  $('#again').onclick = () => openTest(key);
+  renderSubjects();
+}
+$('#resetBtn').onclick = () => {
+  if (confirm('Reset all progress?')) { done = 0; levels = 0; save('htmllab_done',0); save('htmllab_levels',0); $('#testBox').hidden = true; renderSubjects(); }
+};
+
+/* ===================================================
+   SECTION G: LESSON PAGE
+   =================================================== */
+let cur = 0, taskActive = false;
+const editor = $('#editor'), preview = $('#preview'), msg = $('#msg');
+
+function renderPath(){ // left sidebar
+  $('#path').innerHTML = LESSONS.map((L,k) => {
+    const s = state(k);
+    return `<a class="path-item ${s} ${k===cur?'active':''}" ${s==='locked'?'':`href="?lesson=${k}"`}>
+      <b>${s==='done'?'✓':s==='locked'?'🔒':k+1}</b><span>${esc(L.t)}</span></a>`;
+  }).join('');
+}
+function renderTop(){ // sticky top progress
+  $('#lessonProgText').textContent = done + ' / 10 completed';
+  $('#lessonProgBar').style.width = done*10 + '%';
+}
+function renderLesson(){
+  cur = parseInt(lp,10); const L = LESSONS[cur];
+  renderPath(); renderTop();
+  if (state(cur) === 'locked') { // locked lesson
+    $('#editorPanel').hidden = true;
+    $('#lessonMain').innerHTML = `<div class="locked-box"><h2>🔒 Lesson locked</h2>
+      <p>Finish the earlier lessons (and the level test) first.</p>
+      <a class="btn" href="?lesson=${availableLesson()}">Go to available lesson</a></div>`;
+    return;
+  }
+  const prev = cur === 0 ? '?lessons=1' : `?lesson=${cur-1}`;
+  const next = cur === 9 ? '?lessons=1' : `?lesson=${cur+1}`;
+  $('#lessonMain').innerHTML = `
+    <div class="kicker">HTML course · Lesson ${cur+1} of 10</div>
+    <h1>${esc(L.t)}</h1>
+    <nav class="mini-menu" id="miniMenu"><a href="#l-intro">Intro</a><a href="#l-points">Key points</a><a href="#l-example">Example</a><a href="#l-task">Task</a></nav>
+    <section id="l-intro"><p>${esc(L.intro)}</p></section>
+    <section id="l-points"><h3>Key points</h3><ul>${L.pts.map(p=>`<li translate="no">${esc(p)}</li>`).join('')}</ul></section>
+    <section id="l-example"><h3>Example</h3>
+      <div class="codebox" translate="no"><pre><code>${esc(L.code)}</code></pre><button class="try" type="button" id="tryBtn">Try it</button></div>
+      <h3>Expected result</h3><div class="tip" style="border-color:var(--blue);background:rgba(77,163,255,.1)">${esc(L.out)}</div>
+      <div class="tip">💡 ${esc(L.tip)}</div></section>
+    <section id="l-task"><div class="task"><b>Task:</b> ${esc(L.task)}</div>
+      <button class="btn" type="button" id="startTask">Start task in editor ↓</button></section>
+    <div class="nav-btns"><a class="btn ghost" href="${prev}">← Back</a>
+      <a class="btn" id="nextBtn" href="${next}" ${cur < done ? '' : 'disabled aria-disabled="true"'}>Next lesson →</a></div>`;
+  addCopyButtons();
+  $('#tryBtn').onclick = () => { editor.value = L.code; hideTask(); runCode(); };
+  $('#startTask').onclick = () => { editor.value = L.start; taskActive = true; $('#checkBtn').hidden = false; msg.textContent = ''; runCode(); editor.scrollIntoView({behavior:'smooth',block:'center'}); editor.focus(); };
+  $('#nextBtn').addEventListener('click', e => { if (cur >= done) e.preventDefault(); });
+  editor.value = L.code; runCode();
+  watchMenu();
+}
+function hideTask(){ taskActive = false; $('#checkBtn').hidden = true; msg.textContent = ''; }
+
+/* Run: show the student's HTML in a sandboxed iframe */
+function runCode(){
+  const c = editor.value;
+  preview.srcdoc = /<html|<!doctype/i.test(c) ? c
+    : '<body style="font-family:Arial,sans-serif;padding:8px;color:#111">' + c + '</body>';
+  $('#status').textContent = 'Live preview ready ✔️';
+}
+
+/* Check answer: parse the code, run each test, stop on the first failure */
+function checkCode(){
+  const code = editor.value, doc = new DOMParser().parseFromString(code, 'text/html');
+  for (const [text, fn] of LESSONS[cur].tests) {
+    let ok = false; try { ok = !!fn(doc, code); } catch(e) {}
+    if (!ok) { msg.className = 'bad'; msg.textContent = '❌ ' + text; return; }
+  }
+  msg.className = 'ok'; msg.textContent = '✅ Correct!';
+  if (cur >= done) { done = cur + 1; save('htmllab_done', done); }
+  renderPath(); renderTop();
+  const n = $('#nextBtn'); n.removeAttribute('disabled'); n.removeAttribute('aria-disabled');
+}
+
+/* Editor buttons and keys */
+$('#runBtn').onclick = runCode;
+$('#clearBtn').onclick = () => { preview.srcdoc = ''; msg.textContent = ''; $('#status').textContent = 'Output cleared'; };
+$('#resetCode').onclick = () => { editor.value = taskActive ? LESSONS[cur].start : LESSONS[cur].code; runCode(); };
+$('#checkBtn').onclick = checkCode;
+editor.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); runCode(); }          // Ctrl+Enter = run
+  if (e.key === 'Tab') { e.preventDefault(); editor.setRangeText('    ', editor.selectionStart, editor.selectionEnd, 'end'); } // Tab = 4 spaces
+});
+
+/* Copy buttons on code blocks (on lesson page) */
+function addCopyButtons(){
+  document.querySelectorAll('.codebox').forEach(box => {
+    const pre = box.querySelector('pre'), b = document.createElement('button');
+    b.className = 'copy'; b.type = 'button'; b.textContent = 'Copy';
+    b.onclick = async () => {
+      try { await navigator.clipboard.writeText(pre.innerText); b.textContent = 'Copied'; }
+      catch(e) { b.textContent = 'Press Ctrl+C'; }
+      setTimeout(() => b.textContent = 'Copy', 1500);
+    };
+    box.appendChild(b);
+  });
+}
+
+/* Highlight the active mini-menu link while scrolling */
+function watchMenu(){
+  const links = [...document.querySelectorAll('#miniMenu a')];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+  }), {rootMargin:'-30% 0px -60% 0px'});
+  document.querySelectorAll('.lesson-main section').forEach(s => io.observe(s));
+}
+
+/* ===================================================
+   SECTION H: START
+   =================================================== */
+if (mode === 'subjects') renderSubjects();
+if (mode === 'lesson') renderLesson();
+
+/* ===================================================
+   SECTION I: LANGUAGE (Google Translate)
+   =================================================== */
+let pendingLang = null;
+function googleTranslateElementInit(){
+  new google.translate.TranslateElement({pageLanguage:'en', includedLanguages:'en,uz,ru,tr', autoDisplay:false}, 'google_translate_element');
+  if (pendingLang) setTimeout(() => setLang(pendingLang), 300);
+}
+function setLang(l){
+  const s = document.querySelector('.goog-te-combo');
+  if (!s) { pendingLang = l; return; }
+  s.value = l; s.dispatchEvent(new Event('change', {bubbles:true})); pendingLang = null;
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const sel = $('#languageSelector');
+  sel.addEventListener('change', () => { setLang(sel.value); try { localStorage.setItem('htmllab_lang', sel.value); } catch(e){} });
+  let saved = null; try { saved = localStorage.getItem('htmllab_lang'); } catch(e){}
+  if (['en','uz','ru','tr'].includes(saved)) { sel.value = saved; pendingLang = saved; }
+});
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

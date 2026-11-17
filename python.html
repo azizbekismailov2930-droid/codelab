@@ -1,0 +1,2377 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PythonLab | Learn Python</title>
+<link rel="stylesheet" href="python.css">
+</head>     
+
+<body>
+
+<script>
+(function () {
+    const params = new URLSearchParams(window.location.search);
+
+    if (!params.has("lesson")) {
+        if (params.has("lessons")) {
+            document.body.classList.add("subjects-mode");
+        } else {
+            document.body.classList.add("landing-mode");
+        }
+    }
+})();
+</script>
+
+<canvas id="code-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1"></canvas>
+<script>
+(function(){
+  const cv = document.getElementById("code-bg"), ctx = cv.getContext("2d");
+  const chars = "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789{}[]<>/\\=+*#$%&;:_".split("");
+  const size = 18;
+  let cols, y, speed;
+  function resize(){
+    cv.width = innerWidth; cv.height = innerHeight;
+    cols = Math.floor(cv.width / size);
+    y = Array.from({length: cols}, () => Math.random() * -50);
+    speed = Array.from({length: cols}, () => 0.4 + Math.random() * 0.9);
+  }
+  function rnd(){ return chars[Math.floor(Math.random() * chars.length)]; }
+  function draw(){
+    ctx.fillStyle = "rgba(2,8,4,.09)";
+    ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.font = size + "px Consolas, monospace";
+    for(let i = 0; i < cols; i++){
+      const x = i * size, py = y[i] * size;
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "rgba(22,237,112,.75)";
+      ctx.fillText(rnd(), x, py - size);
+      ctx.shadowColor = "#16ed70"; ctx.shadowBlur = 12;
+      ctx.fillStyle = "#d9ffe8";
+      ctx.fillText(rnd(), x, py);
+      y[i] += speed[i];
+      if(py > cv.height && Math.random() > .96) y[i] = Math.random() * -20;
+    }
+    ctx.shadowBlur = 0;
+  }
+  resize(); addEventListener("resize", resize);
+  ctx.fillStyle = "#020804"; ctx.fillRect(0, 0, cv.width, cv.height);
+  if(!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(draw, 45);
+})();
+</script>
+
+<div id="google_language_change">
+  <select class="language-select" id="langSel" translate="no" aria-label="Language">
+    <option value="en">en English</option>
+    <option value="uz">uz O'zbek</option>
+    <option value="ru">ru Русский</option>
+    <option value="tr">tr Türkçe</option>
+  </select>
+  <span class="language-arrow">v</span>
+</div>
+<div id="google_translate_element" style="display:none"></div>
+
+<!-- PYTHON EDITOR SUPPORT
+     This editor is moved into the individual lesson page by JavaScript.
+     It is not part of the old page. -->
+
+<div id="compiler" class="pl-editor-support">
+    <div class="card">
+        <textarea id="code" spellcheck="false" translate="no">print("Hello, Python!")</textarea>
+
+        <div class="row">
+            <button id="runBtn" onclick="runCode()">▶ Run</button>
+            <button class="ghost" onclick="clearOut()">Clear output</button>
+            <button class="ghost" onclick="resetCode()">↺ Reset code</button>
+            <button id="checkBtn" onclick="checkTask()" style="display:none">
+                ✔ Check answer
+            </button>
+            <span class="status" id="status">Loading Python…</span>
+        </div>
+
+        <div class="out" id="out" translate="no">
+            Output will appear here.
+        </div>
+
+        <div class="tip">
+            Tip: press Ctrl + Enter to run. input() opens a popup window.
+        </div>
+
+        <div id="checkMsg" class="msg" style="display:none"></div>
+    </div>
+</div>
+
+<style>
+    .pl-editor-support {
+        display: none;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script>  /* ---------- DATA: lessons and examples (title, text, code) ---------- */
+/* Basic Python explanation + basic codes (section 1) */
+const basics = [{"t": "How a Python program looks", "d": "A program is a list of instructions. Python reads them from top to bottom, one line at a time, and does each one. There is no extra setup: you write a line and Python runs it.", "c": "# A tiny program: instructions run from top to bottom\nprint(\"Step 1\")\nprint(\"Step 2\")\nprint(\"Step 3\")"}, {"t": "Numbers and math operators", "d": "Python works like a calculator. + - * are the usual ones. / always gives a decimal number, // gives the whole part of a division, % gives the remainder, ** is the power.", "c": "print(10 + 3)    # 13  addition\nprint(10 - 3)    # 7   subtraction\nprint(10 * 3)    # 30  multiplication\nprint(10 / 3)    # 3.33...  division (decimal)\nprint(10 // 3)   # 3   whole part\nprint(10 % 3)    # 1   remainder\nprint(2 ** 5)    # 32  power"}, {"t": "Strings (text)", "d": "Text is called a string and lives inside quotes. Strings have ready-made tools called methods (upper, lower ...). You can join strings with + and repeat them with *.", "c": "text = \"Python\"\nprint(text.upper())     # PYTHON\nprint(text.lower())     # python\nprint(len(text))        # 6 letters\nprint(text[0], text[-1])  # first and last letter\nprint(text + \" is fun\")   # joining\nprint(text * 2)           # repeating"}, {"t": "Data types and converting", "d": "Python has four basic types: int (42), float (3.5), str (\"hi\") and bool (True/False). You can convert one type to another with int(), float(), str() and bool().", "c": "print(int(\"42\") + 1)       # 43   text -> whole number\nprint(float(\"3.5\") * 2)    # 7.0  text -> decimal\nprint(str(100) + \" points\") # 100 points  number -> text\nprint(bool(0), bool(\"hi\")) # False True"}, {"t": "Comparison and logic", "d": "Comparisons give True or False. Combine them with and (both must be True), or (at least one True) and not (reverses the answer). Remember: = stores a value, == compares.", "c": "x = 7\nprint(x > 5)             # True\nprint(x == 7)            # True\nprint(x != 7)            # False\nprint(x > 5 and x < 10)  # True\nprint(x < 5 or x == 7)   # True\nprint(not x > 5)         # False"}, {"t": "Useful built-in functions", "d": "Built-in functions are ready to use without any setup. These are the ones you will use every day: len, max, min, sum, sorted, round and abs.", "c": "nums = [4, 9, 2, 7]\nprint(len(nums))          # 4  how many items\nprint(max(nums), min(nums)) # 9 2\nprint(sum(nums))          # 22\nprint(sorted(nums))       # [2, 4, 7, 9]\nprint(round(3.14159, 2))  # 3.14\nprint(abs(-8))            # 8"}, {"t": "Modules: using extra tools", "d": "A module is a file of extra tools. You load it with import and then use it with a dot: math.sqrt(49). Python comes with many modules: math, random, datetime and more.", "c": "import math\nimport random\nprint(math.sqrt(49))        # 7.0\nprint(math.pi)              # 3.14159...\nprint(random.randint(1, 6)) # random number from 1 to 6"}];
+
+const lessons = [
+ {t:"1. print() and comments", d:"print() shows text on the screen. Everything after # is a comment and is ignored.",
+  c:'# This is a comment\nprint("Hello, world!")\nprint(2 + 3)\nprint("Python", "is", "fun")'},
+ {t:"2. Variables and types", d:"A variable stores a value. Main types: int, float, str, bool.",
+  c:'age = 19            # int\nprice = 4.5         # float\nname = "Aziz"       # str\nis_student = True   # bool\nprint(name, age, price, is_student)\nprint(type(age), type(name))'},
+ {t:"3. Input and f-strings", d:"input() reads text from the user (a popup will ask you). f-strings put variables inside text.",
+  c:'name = input("Your name: ")\nyear = int(input("Birth year: "))\nprint(f"Hi {name}, you are about {2026 - year} years old")'},
+ {t:"4. if / elif / else", d:"Conditions let the program choose. Indentation (4 spaces) is required.",
+  c:'score = 78\nif score >= 90:\n    print("Excellent")\nelif score >= 60:\n    print("Good")\nelse:\n    print("Try again")'},
+ {t:"5. Loops: for and while", d:"for repeats over a sequence, while repeats until the condition is False.",
+  c:'for i in range(1, 6):\n    print("for:", i)\n\nn = 3\nwhile n > 0:\n    print("while:", n)\n    n -= 1'},
+ {t:"6. Lists", d:"A list stores many values in order. Index starts from 0.",
+  c:'fruits = ["apple", "banana", "cherry"]\nfruits.append("mango")\nprint(fruits[0], fruits[-1])\nprint(len(fruits))\nfor f in fruits:\n    print(f.upper())'},
+ {t:"7. Dictionaries", d:"A dictionary stores key: value pairs.",
+  c:'user = {"name": "Aziz", "age": 19}\nuser["city"] = "Tashkent"\nprint(user["name"])\nfor key, value in user.items():\n    print(key, "->", value)'},
+ {t:"8. Functions", d:"A function is a reusable block of code. Use return to give a result.",
+  c:'def square(x):\n    return x * x\n\ndef greet(name="friend"):\n    return f"Hello, {name}!"\n\nprint(square(7))\nprint(greet())\nprint(greet("Aziz"))'},
+ {t:"9. Classes (OOP basics)", d:"A class is a blueprint for objects. __init__ runs when an object is created.",
+  c:'class Dog:\n    def __init__(self, name):\n        self.name = name\n    def bark(self):\n        print(self.name, "says Woof!")\n\nd = Dog("Rex")\nd.bark()'},
+ {t:"10. Errors: try / except", d:"try/except catches errors so the program does not crash.",
+  c:'try:\n    x = int("abc")\nexcept ValueError:\n    print("That is not a number!")\nfinally:\n    print("Done")'}
+];
+
+/* Extra details for each lesson: intro, key points, expected output, tip, task, starter code */
+const lessonInfo = [
+{"intro":"print() sends text or numbers to the screen. A comment starts with # and is ignored by Python.","pts":["Text must be inside quotes: \"Hello\" or 'Hello'.","Numbers need no quotes: print(2 + 3) shows 5.","print(a, b) puts a space between the values.","Everything after # on a line is ignored by Python."],"o":"Hello, world!\n5\nPython is fun","tip":"If you forget a closing quote or bracket, Python shows a SyntaxError.","task":"Print your name, then your age on the next line, then the result of 12 * 4.","s":"# Task: print your name, your age, and the result of 12 * 4\n# Write your code below\n"},
+{"intro":"A variable is a name that stores a value, like a labeled box. You create it with = and can change it later. Every value has a type.","pts":["Names have no spaces and cannot start with a digit.","int = whole number, float = decimal number, str = text, bool = True or False.","type(x) shows the type of x.","= means store the value; == compares values."],"o":"Aziz 19 4.5 True\n<class 'int'> <class 'str'>","tip":"Names are case sensitive: age and Age are different variables.","task":"Create variables city and year, then print one sentence that uses both of them.","s":"# Task: make variables city and year, then print them together\ncity = \nyear = \n"},
+{"intro":"input() asks the user to type something. It ALWAYS returns text (str), even when the user types a number. Convert it with int() or float(). An f-string lets you put variables inside text with {}.","pts":["name = input(\"Question: \") stores the answer as text.","int(text) turns text into a whole number; float(text) into a decimal number.","f\"Hi {name}\" inserts the value of name into the text.","In this site, input() opens a popup window."],"o":"Your name: Ali\nBirth year: 2005\nHi Ali, you are about 21 years old","tip":"\"5\" + \"5\" gives \"55\", but 5 + 5 gives 10. Convert input to numbers before doing math.","task":"Ask the user for two numbers and print their sum.","s":"# Task: ask for two numbers and print their sum\na = int(input(\"First number: \"))\n# continue here\n"},
+{"intro":"Conditions let your program choose what to do. Python checks them from top to bottom and runs only the first block that is True.","pts":["Comparisons: ==, !=, <, >, <=, >=. They give True or False.","A condition line ends with a colon :","elif is checked only if all earlier conditions were False.","else runs when nothing else matched."],"o":"Good","tip":"If indentation is wrong you get an IndentationError. Use consistent spaces inside a block.","task":"Ask the user for their age. Print child if under 13, teen if under 18, otherwise adult.","s":"# Task: ask for age, then print child / teen / adult\nage = int(input(\"Age: \"))\n"},
+{"intro":"Loops repeat code so you do not have to write it many times. Use for when you know what to go through, and while when you repeat until something changes.","pts":["range(1, 6) gives 1, 2, 3, 4, 5: the last number is NOT included.","A while loop must change its variable, otherwise it never stops.","break leaves the loop; continue skips to the next round.","Code inside the loop is indented."],"o":"for: 1\nfor: 2\nfor: 3\nfor: 4\nfor: 5\nwhile: 3\nwhile: 2\nwhile: 1","tip":"An infinite loop freezes the page. If it happens, refresh the browser tab.","task":"Use a while loop to print the numbers from 10 down to 1.","s":"# Task: print 10, 9, 8 ... 1 using a while loop\nn = 10\n"},
+{"intro":"A list stores many values in one variable, in order. Every item has an index, and the first index is 0.","pts":["fruits[0] is the first item, fruits[-1] is the last.","append(x) adds an item to the end; remove(x) deletes one.","len(list) gives the number of items.","for item in list: goes through every item."],"o":"apple mango\n4\nAPPLE\nBANANA\nCHERRY\nMANGO","tip":"fruits[10] on a list with 4 items gives IndexError.","task":"Make a list of 3 numbers, add one more with append, then print the sum using sum().","s":"# Task: list of 3 numbers, append one, print the sum\nnumbers = [4, 8, 15]\n"},
+{"intro":"A dictionary stores data as key: value pairs. You find a value by its key instead of a number position.","pts":["Create: {\"name\": \"Aziz\"}. Read: user[\"name\"].","Add or change: user[\"city\"] = \"Tashkent\".","Keys are unique: the same key twice keeps only the last value.","items() gives key and value together in a loop."],"o":"Aziz\nname -> Aziz\nage -> 19\ncity -> Tashkent","tip":"Reading a key that does not exist gives KeyError. Use user.get(\"phone\") to get None instead.","task":"Make a dictionary for a book with at least 3 pairs, then print every key and value with a for loop.","s":"# Task: dictionary for a book, print every key and value\nbook = {}\n"},
+{"intro":"A function is a named block of code you can use again and again. It can take inputs (parameters) and give back a result with return.","pts":["def name(parameters): starts a function, the body is indented.","return sends a value back; the function stops there.","A default value is used when you give no argument.","A function runs only when you call it."],"o":"49\nHello, friend!\nHello, Aziz!","tip":"print() shows something on the screen; return gives the value back to your code.","task":"Write a function area(w, h) that returns w * h, then print area(3, 4).","s":"# Task: function area(w, h) that returns w * h\ndef area(w, h):\n    pass\n"},
+{"intro":"A class is a blueprint for making objects that have their own data (attributes) and actions (methods).","pts":["class Dog: defines the blueprint; Dog(\"Rex\") creates an object.","__init__ runs automatically when the object is created.","self means this object and must be the first parameter of every method.","Use self.name to store data inside the object."],"o":"Rex says Woof!","tip":"Remember to include self in method definitions: def bark(self).","task":"Make a class Car with a brand and a method info() that prints the brand. Create one car and call info().","s":"# Task: class Car with brand and method info()\nclass Car:\n    pass\n"},
+{"intro":"Errors will happen: a user types text instead of a number, or a file is missing. try/except catches an error so your program shows a friendly message instead of crashing.","pts":["Put risky code in try:, and the reaction in except ErrorType:.","Name the error: ValueError, ZeroDivisionError, KeyError ...","finally: always runs, with or without an error.","Catch specific errors, not everything."],"o":"That is not a number!\nDone","tip":"int(\"abc\") raises ValueError. Read the error name in the red message to know which except you need.","task":"Ask for a number, print 100 divided by it. Catch ZeroDivisionError and ValueError with separate messages.","s":"# Task: divide 100 by the user's number safely\ntry:\n    n = int(input(\"Number: \"))\nexcept ValueError:\n    pass\n"}
+];
+
+const examples = [
+ {t:"Even or odd", d:"Checks a number using the % (remainder) operator.", c:'n = 17\nif n % 2 == 0:\n    print(n, "is even")\nelse:\n    print(n, "is odd")'},
+ {t:"Multiplication table", d:"Nested loops build a table.", c:'for i in range(1, 6):\n    row = ""\n    for j in range(1, 6):\n        row += str(i * j).rjust(4)\n    print(row)'},
+ {t:"Fibonacci numbers", d:"Each number is the sum of the previous two.", c:'a, b = 0, 1\nfor _ in range(10):\n    print(a, end=" ")\n    a, b = b, a + b'},
+ {t:"Prime checker", d:"A function that tests if a number is prime.", c:'def is_prime(n):\n    if n < 2:\n        return False\n    for i in range(2, int(n ** 0.5) + 1):\n        if n % i == 0:\n            return False\n    return True\n\nprint([x for x in range(1, 40) if is_prime(x)])'},
+ {t:"Count words", d:"Counts how many times each word appears.", c:'text = "python is fun and python is easy"\ncounts = {}\nfor w in text.split():\n    counts[w] = counts.get(w, 0) + 1\nprint(counts)'},
+ {t:"Reverse and palindrome", d:"Slicing [::-1] reverses a string.", c:'word = "level"\nprint(word[::-1])\nprint("Palindrome!" if word == word[::-1] else "Not a palindrome")'},
+ {t:"Simple calculator", d:"Functions + dictionary of operations.", c:'def calc(a, op, b):\n    ops = {"+": a + b, "-": a - b, "*": a * b, "/": a / b if b else "error"}\n    return ops.get(op, "unknown")\n\nprint(calc(8, "+", 2))\nprint(calc(8, "/", 0))'},
+ {t:"List comprehension", d:"A short way to build lists.", c:'squares = [x ** 2 for x in range(1, 11)]\nevens = [x for x in squares if x % 2 == 0]\nprint(squares)\nprint(evens)'},
+ {t:"Bank account class", d:"A small OOP program with checks.", c:'class Account:\n    def __init__(self, balance=0):\n        self.balance = balance\n    def deposit(self, x):\n        self.balance += x\n    def withdraw(self, x):\n        if x > self.balance:\n            print("Not enough money")\n        else:\n            self.balance -= x\n\na = Account(100)\na.deposit(50)\na.withdraw(500)\na.withdraw(30)\nprint("Balance:", a.balance)'}
+];
+
+/* ---------- Render the lesson/example cards ---------- */
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function render(list, boxId, prefix){
+  document.getElementById(boxId).innerHTML = list.map((x,i)=>
+    `<div class="card"><h3>${x.t}</h3><p>${x.d}</p><div class="codebox"><pre translate="no">${esc(x.c)}</pre><button class="copy" onclick="copyCode(this)">Copy</button></div>
+     <div class="row"><button onclick="tryCode('${prefix}',${i})">▶ Try it</button></div></div>`).join("");
+}
+const LOCK_TEST = true;
+let done = 0;
+try{ done = Math.min(parseInt(localStorage.getItem("pylab_done")) || 0, lessons.length); }catch(e){}
+const LEVELS = [
+  {name:"Level 1", sub:"print, variables, input, if, loops", from:0, to:4, q:[0,1,3,4,5]},
+  {name:"Level 2", sub:"lists, dictionaries, functions, classes, errors", from:5, to:9, q:[2,6,7,8,9]}
+];
+const PASS = 4;
+let levelPassed = 0;
+try {
+    levelPassed = Math.min(
+        parseInt(localStorage.getItem("pylab_levels")) || 0,
+        LEVELS.length
+    );
+} catch (e) {}
+
+if (levelPassed > 0) {
+    done = Math.max(done, LEVELS[levelPassed - 1].to + 1);
+}
+
+let curLevel = Math.min(levelPassed, LEVELS.length - 1);
+
+function saveLevels() {
+    try {
+        localStorage.setItem("pylab_levels", levelPassed);
+    } catch (e) {}
+}
+
+let currentTask = null;
+let checkerReady = false;
+
+function saveProgress() {
+    try {
+        localStorage.setItem("pylab_done", done);
+    } catch (e) {}
+}
+
+/* Automatic tests for lesson tasks */
+const tests = [
+    { cases: [{ in: [], ok: "L=[l.strip() for l in out.strip().splitlines()]; ok = len(L)>=3 and L[0]!='' and L[1]!='' and L[-1]=='48'" }] },
+    { cases: [{ in: [], ok: "ok = isinstance(g.get('city'),str) and g['city'].strip()!='' and 'year' in g and g['city'] in out and str(g['year']) in out" }] },
+    { cases: [
+        { in: ["3", "4"], ok: "ok = '7' in out" },
+        { in: ["10", "25"], ok: "ok = '35' in out" },
+        { in: ["50", "8"], ok: "ok = '58' in out" }
+    ]},
+    { cases: [
+        { in: ["8"], ok: "o=out.lower(); ok = 'child' in o and 'teen' not in o and 'adult' not in o" },
+        { in: ["13"], ok: "o=out.lower(); ok = 'teen' in o and 'child' not in o and 'adult' not in o" },
+        { in: ["17"], ok: "o=out.lower(); ok = 'teen' in o and 'adult' not in o" },
+        { in: ["18"], ok: "o=out.lower(); ok = 'adult' in o and 'teen' not in o and 'child' not in o" }
+    ]},
+    { cases: [{ in: [], ok: "ok = 'while' in code and out.split()==[str(i) for i in range(10,0,-1)]" }] },
+    { cases: [{ in: [], ok: "n=g.get('numbers'); ok = isinstance(n,list) and len(n)==4 and 'append' in code and out.strip()==str(sum(n))" }] },
+    { cases: [{ in: [], ok: "b=g.get('book'); ok = isinstance(b,dict) and len(b)>=3 and 'for' in code and all(str(k) in out and str(v) in out for k,v in b.items())" }] },
+    { cases: [{ in: [], ok: "f=g.get('area'); ok = callable(f) and f(3,4)==12 and f(5,6)==30 and '12' in out" }] },
+    { cases: [{ in: [], ok: "C=g.get('Car'); ok = out.strip()!='' and 'Audi' in cap(C('Audi').info)" }] },
+    { cases: [
+        { in: ["4"], ok: "ok = 'except' in code and '25' in out" },
+        { in: ["0"], ok: "ok = 'except' in code and out.strip()!=''" },
+        { in: ["abc"], ok: "ok = 'except' in code and out.strip()!=''" }
+    ]}
+];
+
+/* Python helper that runs one test safely */
+const PYCHECK = `import io, contextlib, builtins
+
+def _run_case(code, inputs, ok_src):
+    out = io.StringIO()
+    g = {"__name__": "__main__"}
+    it = iter(list(inputs))
+    error = None
+
+    def fake_input(prompt=""):
+        try:
+            return next(it)
+        except StopIteration:
+            raise EOFError("input() was called more times than expected")
+
+    old = builtins.input
+    builtins.input = fake_input
+
+    try:
+        with contextlib.redirect_stdout(out):
+            exec(compile(code, "<your code>", "exec"), g)
+    except BaseException as e:
+        error = type(e).__name__ + ": " + str(e)
+    finally:
+        builtins.input = old
+
+    o = out.getvalue()
+
+    def cap(f, *a):
+        b = io.StringIO()
+        with contextlib.redirect_stdout(b):
+            f(*a)
+        return b.getvalue()
+
+    ns = {
+        "g": g,
+        "out": o,
+        "code": code,
+        "error": error,
+        "cap": cap
+    }
+
+    ok = False
+
+    if error is None:
+        try:
+            exec(ok_src, ns)
+            ok = bool(ns.get("ok"))
+        except BaseException:
+            ok = False
+
+    return {"ok": ok, "error": error or "", "out": o}
+`;
+
+function lessonBody(i) {
+    const x = lessons[i];
+    const n = lessonInfo[i];
+
+    return `
+        <p>${esc(n.intro)}</p>
+
+        <h4>Key points</h4>
+        <ul>
+            ${n.pts.map(p => `<li>${esc(p)}</li>`).join("")}
+        </ul>
+
+        <h4>Example</h4>
+
+        <div class="codebox">
+            <pre translate="no">${esc(x.c)}</pre>
+            <button class="copy" onclick="copyCode(this)">Copy</button>
+        </div>
+
+        <div class="row">
+            <button onclick="tryCode('L',${i})">▶ Try it</button>
+        </div>
+
+        <h4>Expected output</h4>
+        <pre class="outpre" translate="no">${esc(n.o)}</pre>
+
+        <div class="tip">💡 ${esc(n.tip)}</div>
+
+        <div class="task">
+            <b>✍ Your task:</b> ${esc(n.task)}
+            <div class="row">
+                <button onclick="tryTask(${i})">Start task</button>
+            </div>
+        </div>
+    `;
+}
+
+function renderLessons() {
+    document.getElementById("lessonList").innerHTML =
+        lessons.map((x, i) => {
+
+            if (
+                i < LEVELS[curLevel].from ||
+                i > LEVELS[curLevel].to
+            ) {
+                return "";
+            }
+
+            if (i > done) {
+                return `
+                    <div class="card locked" id="lesson-${i}">
+                        <h3>🔒 ${x.t}</h3>
+                        <p>
+                            Locked. Solve the task of lesson ${i}
+                            to unlock this lesson.
+                        </p>
+                    </div>
+                `;
+            }
+
+            if (i < done) {
+                return `
+                    <details class="card" id="lesson-${i}">
+                        <summary>
+                            ✅ ${x.t} (completed, click to open)
+                        </summary>
+                        ${lessonBody(i)}
+                    </details>
+                `;
+            }
+
+            return `
+                <div class="card current" id="lesson-${i}">
+                    <h3>
+                        ▶ ${x.t}
+                        <span class="badge">current lesson</span>
+                    </h3>
+                    ${lessonBody(i)}
+                </div>
+            `;
+        }).join("");
+
+    renderLevelTabs();
+    renderLevelTest();
+    updateProgress();
+}
+
+function updateProgress() {
+    const total = lessons.length;
+
+    document.getElementById("bar").style.width =
+        (done / total * 100) + "%";
+
+    document.getElementById("progText").textContent =
+        done + " / " + total + " lessons completed" +
+        (done === total ? " 🎉" : "");
+
+    const locked =
+        LOCK_TEST && levelPassed < LEVELS.length;
+
+    document.getElementById("testLock").style.display =
+        locked ? "block" : "none";
+
+    document.getElementById("quizBox").style.display =
+        locked ? "none" : "block";
+}
+
+function updateCheckBtn() {
+    const b = document.getElementById("checkBtn");
+
+    b.style.display =
+        currentTask === null ? "none" : "inline-block";
+
+    if (currentTask !== null) {
+        b.textContent =
+            "✔ Check answer (lesson " + (currentTask + 1) + ")";
+    }
+}
+
+function showMsg(html, ok) {
+    const m = document.getElementById("checkMsg");
+
+    m.className = "msg " + (ok ? "ok" : "bad");
+    m.innerHTML = html;
+    m.style.display = "block";
+}
+
+async function checkTask() {
+    if (currentTask === null) return;
+
+    if (!py) {
+        showMsg(
+            "Python is still loading… wait a moment and press again.",
+            false
+        );
+        return;
+    }
+
+    if (!checkerReady) {
+        py.runPython(PYCHECK);
+        checkerReady = true;
+    }
+
+    const i = currentTask;
+    const code = document.getElementById("code").value;
+    const run = py.globals.get("_run_case");
+
+    let fail = null;
+
+    for (const c of tests[i].cases) {
+        const r = run(
+            code,
+            py.toPy(c.in),
+            c.ok
+        ).toJs({
+            dict_converter: Object.fromEntries
+        });
+
+        if (!r.ok) {
+            fail = { c, r };
+            break;
+        }
+    }
+
+    if (!fail) {
+        if (i === done) {
+            done++;
+            saveProgress();
+            renderLessons();
+        }
+
+        const next =
+            i === LEVELS[curLevel].to
+                ? ` All lessons of ${LEVELS[curLevel].name} are done! <a href="#levelTest">Take the level test →</a>`
+                : ` <a href="#lesson-${i + 1}">Open the next lesson →</a>`;
+
+        showMsg(
+            "✅ Correct! Lesson " + (i + 1) +
+            " completed." + next,
+            true
+        );
+
+    } else {
+        const inp = fail.c.in.length
+            ? " With input " + esc(JSON.stringify(fail.c.in)) + ","
+            : "";
+
+        const why = fail.r.error
+            ? " Error: " + esc(fail.r.error)
+            : inp +
+              " your program printed:<pre class='outpre'>" +
+              esc(fail.r.out || "(nothing)") +
+              "</pre>";
+
+        showMsg(
+            "❌ Not correct yet." + why +
+            " Re-read the task and the key points, then try again.",
+            false
+        );
+    }
+}/* ---------- Levels: tabs, level test, next level ---------- */
+
+function renderLevelTabs() {
+    document.getElementById("levelTabs").innerHTML =
+        LEVELS.map((L, i) => {
+            const locked = i > levelPassed;
+            const icon = locked
+                ? "🔒 "
+                : (i < levelPassed ? "✅ " : "");
+
+            return `
+                <button
+                    class="tab${i === curLevel ? " active" : ""}"
+                    ${locked ? "disabled" : ""}
+                    onclick="showLevel(${i})"
+                >
+                    ${icon}${L.name}
+                    <small>${L.sub}</small>
+                </button>
+            `;
+        }).join("");
+}
+
+function showLevel(i) {
+    if (i > levelPassed) return;
+
+    curLevel = i;
+    currentTask = null;
+
+    updateCheckBtn();
+    renderLessons();
+
+    document.getElementById("lessons").scrollIntoView();
+}
+
+function renderLevelTest() {
+    const L = LEVELS[curLevel];
+    const box = document.getElementById("levelTest");
+
+    if (done <= L.to) {
+        box.innerHTML = `
+            <h3>🔒 ${L.name} test</h3>
+            <p>Finish all lessons of this level to unlock the test.</p>
+        `;
+        return;
+    }
+
+    if (curLevel < levelPassed) {
+        const more =
+            curLevel + 1 < LEVELS.length
+                ? `<div class="row">
+                    <button onclick="showLevel(${curLevel + 1})">
+                        Go to ${LEVELS[curLevel + 1].name} →
+                    </button>
+                   </div>`
+                : `<p>You finished all levels! The final test is unlocked below.</p>`;
+
+        box.innerHTML = `
+            <h3>✅ ${L.name} test passed</h3>
+            ${more}
+        `;
+        return;
+    }
+
+    box.innerHTML =
+        `<h3>📝 ${L.name} test</h3>
+         <p>
+            Answer all ${L.q.length} questions.
+            You need ${PASS} correct answers to go to the next level.
+         </p>` +
+
+        L.q.map((qi, j) => `
+            <div class="q" id="lq${j}">
+                <p>${j + 1}. ${esc(quiz[qi].q)}</p>
+
+                ${quiz[qi].o.map((o, k) => `
+                    <label>
+                        <input type="radio" name="lq${j}" value="${k}">
+                        ${esc(o)}
+                    </label>
+                `).join("")}
+
+                <div class="why">${quiz[qi].w}</div>
+            </div>
+        `).join("") +
+
+        `<div class="row">
+            <button onclick="checkLevelQuiz()">Check answers</button>
+         </div>
+         <div id="lvlScore"></div>`;
+}
+
+function checkLevelQuiz() {
+    const L = LEVELS[curLevel];
+    let ok = 0;
+
+    L.q.forEach((qi, j) => {
+        const box = document.getElementById("lq" + j);
+
+        box.classList.remove("right", "wrong");
+
+        box.querySelectorAll("label").forEach(label => {
+            label.classList.remove("sel");
+        });
+
+        const pick = box.querySelector("input:checked");
+
+        if (pick) {
+            pick.parentElement.classList.add("sel");
+        }
+
+        const good = pick && +pick.value === quiz[qi].a;
+
+        box.classList.add(good ? "right" : "wrong");
+
+        if (good) ok++;
+    });
+
+    const sc = document.getElementById("lvlScore");
+
+    if (ok >= PASS) {
+        levelPassed = Math.max(levelPassed, curLevel + 1);
+        saveLevels();
+
+        const more =
+            curLevel + 1 < LEVELS.length
+                ? `<div class="row">
+                    <button onclick="showLevel(${curLevel + 1})">
+                        Go to ${LEVELS[curLevel + 1].name} →
+                    </button>
+                   </div>`
+                : `<p>
+                    🎉 All levels completed!
+                    The final test is unlocked:
+                    <a href="#test">go to the final test</a>.
+                   </p>`;
+
+        sc.className = "msg ok";
+        sc.innerHTML =
+            `✅ Score ${ok}/${L.q.length}. ${L.name} completed!` +
+            more;
+
+        renderLevelTabs();
+        updateProgress();
+
+    } else {
+        sc.className = "msg bad";
+        sc.innerHTML = `
+            ❌ Score ${ok}/${L.q.length}.
+            You need ${PASS}.
+            Read the explanations, review the lessons and try again.
+
+            <div class="row">
+                <button onclick="renderLevelTest()">Try again</button>
+            </div>
+        `;
+    }
+}
+
+function resetProgress() {
+    if (!confirm("Reset your progress? Lessons will be locked again.")) {
+        return;
+    }
+
+    done = 0;
+    saveProgress();
+
+    levelPassed = 0;
+    saveLevels();
+
+    curLevel = 0;
+    currentTask = null;
+
+    updateCheckBtn();
+    renderLessons();
+}
+
+render(basics, "basicList", "B");
+render(examples, "exampleList", "E");
+
+function tryCode(prefix, i) {
+    const src =
+        prefix === "L"
+            ? lessons
+            : prefix === "B"
+                ? basics
+                : examples;
+
+    document.getElementById("code").value = src[i].c;
+    originalCode = src[i].c;
+
+    currentTask = null;
+    updateCheckBtn();
+
+    document.getElementById("compiler").scrollIntoView();
+
+    runCode();
+}
+
+/* Render lesson explanations and examples */
+
+function renderLessonsAll() {
+    document.getElementById("lessonList").innerHTML =
+        lessons.map((x, i) => {
+            const n = lessonInfo[i];
+
+            return `
+                <div class="card">
+                    <h3>${x.t}</h3>
+
+                    <p>${esc(n.intro)}</p>
+
+                    <h4>Key points</h4>
+
+                    <ul>
+                        ${n.pts.map(p => `<li>${esc(p)}</li>`).join("")}
+                    </ul>
+
+                    <h4>Example</h4>
+
+                    <div class="codebox">
+                        <pre translate="no">${esc(x.c)}</pre>
+                        <button class="copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+
+                    <div class="row">
+                        <button onclick="tryCode('L',${i})">▶ Try it</button>
+                    </div>
+
+                    <h4>Expected output</h4>
+
+                    <pre class="outpre" translate="no">${esc(n.o)}</pre>
+
+                    <div class="tip">💡 ${esc(n.tip)}</div>
+
+                    <div class="task">
+                        <b>✍ Your task:</b> ${esc(n.task)}
+
+                        <div class="row">
+                            <button onclick="tryTask(${i})">Start task</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join("");
+}
+
+/* Start a lesson task */
+
+function tryTask(i) {
+    document.getElementById("code").value = lessonInfo[i].s;
+    originalCode = lessonInfo[i].s;
+
+    currentTask = i;
+    updateCheckBtn();
+
+    document.getElementById("compiler").scrollIntoView();
+
+    out.classList.remove("err");
+    out.textContent = "Task loaded. Write your solution and press Run.";
+}
+
+/* ---------- Python compiler ---------- */
+
+let py = null;
+let outBuf = "";
+
+const out = document.getElementById("out");
+const statusEl = document.getElementById("status");
+
+async function initPy() {
+    try {
+        py = await loadPyodide();
+
+        py.setStdout({
+            batched: s => {
+                outBuf += s + "\n";
+            }
+        });
+
+        py.setStderr({
+            batched: s => {
+                outBuf += s + "\n";
+            }
+        });
+
+        py.runPython(`
+import builtins, js
+
+def _inp(p=''):
+    r = js.prompt(str(p))
+    return '' if r is None else r
+
+builtins.input = _inp
+        `);
+
+        statusEl.textContent = "Python is ready ✔";
+
+    } catch (e) {
+        statusEl.textContent =
+            "Could not load Python (check internet).";
+    }
+}
+
+async function runCode() {
+    if (!py) {
+        statusEl.textContent = "Python is still loading…";
+        return;
+    }
+
+    outBuf = "";
+    out.classList.remove("err");
+    out.textContent = "Running…";
+
+    try {
+        await py.runPythonAsync(
+            document.getElementById("code").value
+        );
+
+        out.textContent =
+            outBuf || "(program finished, no output)";
+
+    } catch (e) {
+        out.textContent =
+            outBuf +
+            String(e.message)
+                .trim()
+                .split("\n")
+                .slice(-4)
+                .join("\n");
+
+        out.classList.add("err");
+    }
+}
+
+function clearOut() {
+    out.classList.remove("err");
+    out.textContent = "";
+}
+
+const ta = document.getElementById("code");
+
+ta.addEventListener("keydown", e => {
+    if (e.key === "Tab") {
+        e.preventDefault();
+
+        const s = ta.selectionStart;
+
+        ta.setRangeText(
+            "    ",
+            s,
+            ta.selectionEnd,
+            "end"
+        );
+    }
+
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        runCode();
+    }
+});
+
+initPy();/* ---------- Final test ---------- */
+
+const quiz = [
+    {
+        q: "Which function prints text on the screen?",
+        o: ["echo()", "print()", "show()", "write()"],
+        a: 1,
+        w: "print() is the built-in output function."
+    },
+    {
+        q: "What is the type of 3.14?",
+        o: ["int", "str", "float", "bool"],
+        a: 2,
+        w: "Numbers with a decimal point are float."
+    },
+    {
+        q: "What does len([4, 5, 6]) return?",
+        o: ["2", "3", "4", "6"],
+        a: 1,
+        w: "The list has 3 items."
+    },
+    {
+        q: "What will range(3) produce?",
+        o: ["1, 2, 3", "0, 1, 2", "0, 1, 2, 3", "1, 2"],
+        a: 1,
+        w: "range(3) starts from 0 and stops before 3."
+    },
+    {
+        q: "Which symbol starts a comment?",
+        o: ["//", "<!-- -->", "#", "/* */"],
+        a: 2,
+        w: "In Python a comment starts with #."
+    },
+    {
+        q: "What is the result of 7 // 2?",
+        o: ["3.5", "3", "4", "2"],
+        a: 1,
+        w: "// is floor division: 7 // 2 = 3."
+    },
+    {
+        q: "How do you define a function?",
+        o: ["function f():", "def f():", "func f():", "define f():"],
+        a: 1,
+        w: "Functions start with the keyword def."
+    },
+    {
+        q: "What is the first index of a list?",
+        o: ["1", "-1", "0", "Any"],
+        a: 2,
+        w: "Python indexes start from 0."
+    },
+    {
+        q: "Which one is a dictionary?",
+        o: ["[1, 2]", "(1, 2)", '{"a": 1}', "{1, 2}"],
+        a: 2,
+        w: "Dictionaries use {key: value}."
+    },
+    {
+        q: "What prints? x = 'Hi'; print(x * 2)",
+        o: ["Hi2", "HiHi", "Error", "Hi Hi"],
+        a: 1,
+        w: "A string multiplied by a number repeats: HiHi."
+    }
+];
+
+function buildQuiz() {
+    document.getElementById("score").textContent = "";
+
+    document.getElementById("quiz").innerHTML =
+        quiz.map((x, i) => `
+            <div class="q" id="q${i}">
+                <p>${i + 1}. ${esc(x.q)}</p>
+
+                ${x.o.map((o, j) => `
+                    <label>
+                        <input
+                            type="radio"
+                            name="q${i}"
+                            value="${j}"
+                        >
+                        ${esc(o)}
+                    </label>
+                `).join("")}
+
+                <div class="why">${x.w}</div>
+            </div>
+        `).join("");
+}
+
+function checkQuiz() {
+    let ok = 0;
+
+    quiz.forEach((x, i) => {
+        const box = document.getElementById("q" + i);
+
+        box.classList.remove("right", "wrong");
+
+        box.querySelectorAll("label").forEach(label => {
+            label.classList.remove("sel");
+        });
+
+        const pick = box.querySelector("input:checked");
+
+        if (pick) {
+            pick.parentElement.classList.add("sel");
+
+            const good = +pick.value === x.a;
+
+            box.classList.add(good ? "right" : "wrong");
+
+            if (good) ok++;
+
+        } else {
+            box.classList.add("wrong");
+        }
+    });
+
+    const pct = Math.round(ok / quiz.length * 100);
+
+    document.getElementById("score").textContent =
+        `Score: ${ok}/${quiz.length} (${pct}%) — ` +
+        (
+            pct >= 80
+                ? "Great job! 🎉"
+                : pct >= 50
+                    ? "Good, keep practicing 💪"
+                    : "Review the lessons and try again 📚"
+        );
+}
+
+buildQuiz();
+
+renderLessons();
+
+/* ---------- Reset code ---------- */
+
+let originalCode = document.getElementById("code").value;
+
+function resetCode() {
+    document.getElementById("code").value = originalCode;
+
+    clearOut();
+
+    out.textContent = "Original code restored. Press Run.";
+}
+
+/* ---------- Copy button ---------- */
+
+function copyCode(btn) {
+    navigator.clipboard.writeText(
+        btn.previousElementSibling.textContent
+    );
+
+    btn.textContent = "Copied!";
+
+    setTimeout(() => {
+        btn.textContent = "Copy";
+    }, 1200);
+}
+
+/* ---------- Active menu link while scrolling ---------- */
+
+const navLinks = document.querySelectorAll("nav a");
+
+const spy = new IntersectionObserver(es => {
+    es.forEach(e => {
+        if (e.isIntersecting) {
+            navLinks.forEach(a => {
+                a.classList.toggle(
+                    "active",
+                    a.getAttribute("href") === "#" + e.target.id
+                );
+            });
+        }
+    });
+}, {
+    rootMargin: "-40% 0px -55% 0px"
+});
+
+document.querySelectorAll("main section").forEach(sec => {
+    spy.observe(sec);
+});
+
+/* ---------- Google Translate ---------- */
+
+function googleTranslateElementInit() {
+    new google.translate.TranslateElement(
+        {
+            pageLanguage: "en",
+            autoDisplay: false
+        },
+        "google_translate_element"
+    );
+}
+
+document.getElementById("langSel").addEventListener("change", e => {
+    const combo = document.querySelector(".goog-te-combo");
+
+    if (combo) {
+        combo.value = e.target.value;
+
+        combo.dispatchEvent(
+            new Event("change")
+        );
+    }
+});
+</script>
+
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<!-- PYTHONLAB SEPARATE LESSON PAGE SYSTEM -->
+
+<style id="pythonlab-page-styles">
+body.lesson-mode { overflow-x:hidden; }
+
+body.lesson-mode > header,
+body.lesson-mode > nav,
+body.lesson-mode > main,
+body.lesson-mode > footer,
+body.lesson-mode > #google_language_change,
+body.lesson-mode > #google_translate_element {
+    display:none !important;
+}
+
+#pythonLessonApp {
+    display:none;
+    min-height:100vh;
+    color:var(--text,#eaf0ff);
+}
+
+body.lesson-mode #pythonLessonApp {
+    display:block;
+}
+
+.pl-topbar {
+    position:sticky;
+    top:0;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    padding:13px 22px;
+    background:rgba(5,12,24,.94);
+    border-bottom:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(14px);
+}
+
+.pl-brand {
+    color:#fff;
+    font-weight:800;
+    text-decoration:none;
+    letter-spacing:.5px;
+}
+
+.pl-top-actions {
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.pl-progress-label {
+    color:#b8c5dc;
+    font-size:13px;
+}
+
+.pl-progress-track {
+    width:130px;
+    height:7px;
+    background:#26334a;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.pl-progress-fill {
+    height:100%;
+    width:0;
+    background:linear-gradient(90deg,#20df9a,#55b7ff);
+    transition:width .25s;
+}
+
+.pl-layout {
+    display:grid;
+    grid-template-columns:250px minmax(300px,1fr) minmax(320px,.95fr);
+    gap:20px;
+    max-width:1600px;
+    margin:auto;
+    padding:22px;
+    align-items:start;
+}
+
+.pl-sidebar,
+.pl-lesson-panel,
+.pl-editor-panel {
+    background:rgba(13,22,40,.94);
+    border:1px solid rgba(255,255,255,.11);
+    border-radius:16px;
+}
+
+.pl-sidebar {
+    position:sticky;
+    top:78px;
+    padding:17px;
+    max-height:calc(100vh - 100px);
+    overflow:auto;
+}
+
+.pl-side-heading {
+    color:#8fa3c3;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    margin:8px 0 12px;
+}
+
+.pl-lesson-link {
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:#dbe7fa;
+    text-decoration:none;
+    padding:10px 11px;
+    margin:4px 0;
+    border-radius:9px;
+    font-size:13px;
+    line-height:1.4;
+}
+
+.pl-lesson-link:hover {
+    background:rgba(75,140,255,.12);
+}
+
+.pl-lesson-link.active {
+    color:#fff;
+    background:rgba(45,220,160,.14);
+    outline:1px solid rgba(45,220,160,.35);
+}
+
+.pl-lesson-link.locked {
+    opacity:.42;
+}
+
+.pl-lesson-panel {
+    padding:clamp(20px,3vw,36px);
+    min-height:70vh;
+}
+
+.pl-kicker {
+    color:#39e2a4;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+}
+
+.pl-lesson-panel h1 {
+    color:#fff;
+    font-size:clamp(25px,3vw,38px);
+    margin:10px 0 18px;
+}
+
+.pl-lesson-panel h2 {
+    color:#fff;
+    font-size:19px;
+    margin:25px 0 10px;
+}
+
+.pl-lesson-panel p,
+.pl-lesson-panel li {
+    color:#c2cde0;
+    line-height:1.8;
+}
+
+.pl-lesson-panel li {
+    margin:7px 0;
+}
+
+.pl-example {
+    background:#080f1d;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:11px;
+    padding:16px;
+    overflow:auto;
+    color:#a9f5d2;
+    white-space:pre-wrap;
+    font:13px/1.7 Consolas,monospace;
+}
+
+.pl-tip {
+    background:rgba(255,190,70,.09);
+    border-left:3px solid #eebd57;
+    padding:13px 15px;
+    border-radius:7px;
+    color:#e6d5a8;
+    line-height:1.6;
+    margin:18px 0;
+}
+
+.pl-task {
+    background:rgba(48,205,155,.08);
+    border:1px solid rgba(48,205,155,.25);
+    padding:16px;
+    border-radius:12px;
+    line-height:1.7;
+    color:#dcebe7;
+}
+
+.pl-editor-panel {
+    position:sticky;
+    top:78px;
+    overflow:hidden;
+}
+
+.pl-editor-heading {
+    padding:16px 18px;
+    border-bottom:1px solid rgba(255,255,255,.1);
+    color:#fff;
+    font-weight:800;
+}
+
+#plEditorMount {
+    padding:16px;
+}
+
+#plEditorMount .card {
+    margin:0;
+    padding:0;
+    background:transparent;
+    border:0;
+    box-shadow:none;
+}
+
+#plEditorMount textarea {
+    width:100%;
+    min-height:330px;
+    resize:vertical;
+    box-sizing:border-box;
+    background:#060b15;
+    color:#d7fbe9;
+    border:1px solid #31415c;
+    border-radius:10px;
+    padding:14px;
+    font:13px/1.65 Consolas,monospace;
+}
+
+#plEditorMount .row {
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:12px 0;
+}
+
+#plEditorMount button,
+.pl-next-btn,
+.pl-back-btn {
+    cursor:pointer;
+    border:0;
+    border-radius:8px;
+    padding:10px 14px;
+    font-weight:700;
+}
+
+#plEditorMount .out {
+    min-height:90px;
+    max-height:220px;
+    overflow:auto;
+    white-space:pre-wrap;
+    background:#050a12;
+    color:#a9f5d2;
+    border:1px solid #26364e;
+    border-radius:9px;
+    padding:13px;
+}
+
+#plEditorMount .tip {
+    color:#9aa9bf;
+    font-size:12px;
+}
+
+.pl-next-row {
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:28px;
+    flex-wrap:wrap;
+}
+
+.pl-next-btn {
+    background:linear-gradient(100deg,#18c98b,#36a9ef);
+    color:#06131a;
+    text-decoration:none;
+    display:inline-block;
+}
+
+.pl-back-btn {
+    background:#26344a;
+    color:#eaf0ff;
+    text-decoration:none;
+    display:inline-block;
+}
+
+.pl-locked-note {
+    padding:30px;
+    text-align:center;
+    color:#d5dfef;
+}
+
+/* Introduction and subjects pages */
+
+body.landing-mode,
+body.subjects-mode {
+    min-height:100vh;
+    overflow-x:hidden;
+    background:#050b16;
+    color:#edf4ff;
+}
+
+body.landing-mode > header,
+body.landing-mode > nav,
+body.landing-mode > main,
+body.landing-mode > .back-wrap,
+body.landing-mode > footer,
+body.subjects-mode > header,
+body.subjects-mode > nav,
+body.subjects-mode > main,
+body.subjects-mode > .back-wrap,
+body.subjects-mode > footer {
+    display:none !important;
+}
+
+#pythonLanding,
+#pythonSubjects {
+    display:none;
+    position:relative;
+    z-index:1;
+    min-height:100vh;
+    box-sizing:border-box;
+    color:#edf4ff;
+}
+
+body.landing-mode #pythonLanding,
+body.subjects-mode #pythonSubjects {
+    display:block;
+}
+
+#pythonLanding {
+    padding:28px clamp(20px,6vw,90px) 55px;
+}
+
+.pl-landing-nav {
+    max-width:1320px;
+    margin:0 auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:18px;
+}
+
+.pl-logo {
+    color:#fff;
+    text-decoration:none;
+    font-size:19px;
+    font-weight:900;
+    letter-spacing:1.5px;
+}
+
+.pl-logo span {
+    color:#36e6a4;
+}
+
+.pl-nav-note {
+    color:#9aabc5;
+    font-size:13px;
+}
+
+.pl-hero {
+    max-width:1320px;
+    min-height:calc(100vh - 130px);
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:1.15fr .85fr;
+    align-items:center;
+    gap:55px;
+    padding:50px 0 35px;
+}
+
+.pl-eyebrow {
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    padding:9px 14px;
+    border:1px solid rgba(63,230,169,.28);
+    border-radius:30px;
+    background:rgba(39,205,148,.08);
+    color:#6af0bd;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+}
+
+.pl-eyebrow:before {
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#45edb1;
+    box-shadow:0 0 14px #45edb1;
+}
+
+.pl-hero h1 {
+    max-width:760px;
+    margin:24px 0 20px;
+    color:#fff;
+    font-size:clamp(48px,7.2vw,92px);
+    line-height:.99;
+    letter-spacing:-4px;
+}
+
+.pl-hero h1 span {
+    background:linear-gradient(100deg,#45edb1,#64baff 65%,#a58aff);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
+.pl-hero-copy {
+    max-width:610px;
+    color:#aebbd0;
+    font-size:clamp(16px,1.6vw,19px);
+    line-height:1.85;
+}
+
+.pl-hero-actions {
+    display:flex;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-top:32px;
+}
+
+.pl-start-btn {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    padding:16px 25px;
+    border-radius:12px;
+    background:linear-gradient(105deg,#36e6a4,#48b9ff);
+    color:#06131b;
+    text-decoration:none;
+    font-weight:900;
+    box-shadow:0 12px 35px rgba(54,230,164,.18);
+    transition:transform .2s,box-shadow .2s;
+}
+
+.pl-start-btn:hover {
+    transform:translateY(-4px);
+    box-shadow:0 18px 42px rgba(54,230,164,.28);
+}
+
+.pl-hero-caption {
+    color:#8192ad;
+    font-size:13px;
+}
+
+.pl-hero-visual {
+    position:relative;
+    min-height:410px;
+    display:grid;
+    place-items:center;
+}
+
+.pl-orbit {
+    position:absolute;
+    width:min(34vw,390px);
+    aspect-ratio:1;
+    border:1px solid rgba(83,211,194,.23);
+    border-radius:50%;
+    box-shadow:0 0 80px rgba(50,190,180,.08),inset 0 0 70px rgba(50,190,180,.05);
+}
+
+.pl-orbit:before,
+.pl-orbit:after {
+    content:"";
+    position:absolute;
+    border:1px solid rgba(105,157,255,.18);
+    border-radius:50%;
+    inset:35px;
+}
+
+.pl-orbit:after {
+    inset:75px;
+    border-color:rgba(72,230,174,.18);
+}
+
+.pl-code-window {
+    position:relative;
+    width:min(100%,390px);
+    padding:22px;
+    border:1px solid rgba(157,185,220,.2);
+    border-radius:18px;
+    background:linear-gradient(145deg,rgba(16,31,52,.96),rgba(8,17,32,.96));
+    box-shadow:0 28px 90px rgba(0,0,0,.42);
+    transform:rotate(-3deg);
+}
+
+.pl-window-dots {
+    display:flex;
+    gap:7px;
+    padding-bottom:19px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.pl-window-dots i {
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#ff6e79;
+}
+
+.pl-window-dots i:nth-child(2) {
+    background:#ffc65b;
+}
+
+.pl-window-dots i:nth-child(3) {
+    background:#49dfa0;
+}
+
+.pl-code-window pre {
+    margin:20px 0 4px;
+    color:#b5f6d9;
+    font:14px/2 Consolas,monospace;
+    white-space:pre-wrap;
+}
+
+.pl-code-window pre .purple {
+    color:#b6a2ff;
+}
+
+.pl-code-window pre .blue {
+    color:#80c9ff;
+}
+
+.pl-code-window pre .yellow {
+    color:#ffd47b;
+}
+
+.pl-float-tag {
+    position:absolute;
+    padding:11px 15px;
+    border:1px solid rgba(255,255,255,.13);
+    border-radius:11px;
+    background:rgba(13,26,44,.95);
+    color:#d9e8fa;
+    font:700 12px Consolas,monospace;
+    box-shadow:0 12px 35px rgba(0,0,0,.25);
+}
+
+.pl-float-tag.one {
+    top:12%;
+    right:0;
+    color:#79e9bd;
+}
+
+.pl-float-tag.two {
+    bottom:13%;
+    left:0;
+    color:#a9a0ff;
+}
+
+.pl-landing-bottom {
+    max-width:1320px;
+    margin:0 auto;
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    color:#71839f;
+    font-size:12px;
+    border-top:1px solid rgba(255,255,255,.09);
+    padding-top:20px;
+}
+
+/* Subjects page */
+
+#pythonSubjects {
+    padding:28px clamp(18px,5vw,70px) 60px;
+}
+
+.pl-subjects-wrap {
+    max-width:1250px;
+    margin:0 auto;
+}
+
+.pl-subjects-top {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+}
+
+.pl-subjects-heading {
+    margin:55px 0 12px;
+    color:#fff;
+    font-size:clamp(34px,5vw,55px);
+    letter-spacing:-2px;
+}
+
+.pl-subjects-intro {
+    color:#9eafc8;
+    line-height:1.7;
+    max-width:650px;
+}
+
+.pl-subject-progress {
+    margin:28px 0 30px;
+    padding:17px 20px;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:13px;
+    background:rgba(13,25,43,.8);
+    color:#b8c7dc;
+}
+
+.pl-subject-progress-track {
+    height:7px;
+    margin-top:12px;
+    overflow:hidden;
+    border-radius:20px;
+    background:#26364b;
+}
+
+.pl-subject-progress-fill {
+    width:0;
+    height:100%;
+    background:linear-gradient(90deg,#36e6a4,#55baff);
+}
+
+.pl-subject-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:15px;
+}
+
+.pl-subject-card {
+    display:flex;
+    flex-direction:column;
+    min-height:170px;
+    padding:22px;
+    border:1px solid rgba(148,174,210,.16);
+    border-radius:16px;
+    background:linear-gradient(145deg,rgba(17,34,56,.94),rgba(9,19,35,.94));
+    color:#eaf2ff;
+    text-decoration:none;
+    transition:transform .2s,border-color .2s,background .2s;
+}
+
+.pl-subject-card:not(.locked):hover {
+    transform:translateY(-4px);
+    border-color:rgba(58,228,168,.5);
+    background:linear-gradient(145deg,rgba(19,48,62,.97),rgba(9,19,35,.97));
+}
+
+.pl-subject-card.locked {
+    opacity:.52;
+    cursor:not-allowed;
+}
+
+.pl-subject-number {
+    color:#54e7b0;
+    font:800 12px Consolas,monospace;
+    letter-spacing:1px;
+}
+
+.pl-subject-card h3 {
+    margin:15px 0 8px;
+    color:#fff;
+    font-size:19px;
+}
+
+.pl-subject-card p {
+    margin:0;
+    color:#9eafc8;
+    font-size:13px;
+    line-height:1.65;
+}
+
+.pl-subject-status {
+    margin-top:auto;
+    padding-top:18px;
+    color:#69e9b8;
+    font-size:12px;
+    font-weight:800;
+}
+
+.pl-subject-card.locked .pl-subject-status {
+    color:#a1aec1;
+}
+
+.pl-subjects-footer {
+    margin-top:28px;
+    color:#7487a2;
+    font-size:12px;
+}
+
+/* Responsive layout */
+
+@media(max-width:1050px) {
+    .pl-layout {
+        grid-template-columns:210px minmax(0,1fr);
+    }
+
+    .pl-editor-panel {
+        grid-column:2;
+        position:static;
+    }
+
+    .pl-sidebar {
+        grid-row:1 / span 2;
+    }
+}
+
+@media(max-width:700px) {
+    .pl-topbar {
+        padding:11px 13px;
+    }
+
+    .pl-layout {
+        display:flex;
+        flex-direction:column;
+        padding:12px;
+        gap:12px;
+    }
+
+    .pl-sidebar,
+    .pl-editor-panel {
+        position:static;
+        width:auto;
+        max-height:none;
+    }
+
+    .pl-sidebar {
+        order:0;
+    }
+
+    .pl-lesson-panel {
+        order:1;
+        width:auto;
+        padding:19px;
+        min-height:0;
+    }
+
+    .pl-editor-panel {
+        order:2;
+        width:auto;
+    }
+
+    .pl-sidebar nav {
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:4px;
+    }
+
+    .pl-lesson-link {
+        font-size:12px;
+        padding:8px;
+    }
+
+    #plEditorMount textarea {
+        min-height:250px;
+    }
+
+    .pl-progress-track {
+        width:75px;
+    }
+}
+
+@media(max-width:850px) {
+    .pl-hero {
+        grid-template-columns:1fr;
+        gap:10px;
+        padding-top:75px;
+    }
+
+    .pl-hero-visual {
+        min-height:330px;
+    }
+
+    .pl-orbit {
+        width:290px;
+    }
+
+    .pl-code-window {
+        max-width:350px;
+    }
+
+    .pl-float-tag.one {
+        right:5%;
+    }
+
+    .pl-float-tag.two {
+        left:5%;
+    }
+}
+
+@media(max-width:560px) {
+    #pythonLanding {
+        padding:20px 19px 28px;
+    }
+
+    .pl-hero {
+        min-height:auto;
+        padding:85px 0 45px;
+    }
+
+    .pl-hero h1 {
+        letter-spacing:-2.5px;
+        font-size:clamp(44px,13vw,65px);
+    }
+
+    .pl-hero-visual {
+        min-height:280px;
+    }
+
+    .pl-orbit {
+        width:245px;
+    }
+
+    .pl-code-window {
+        width:85%;
+        padding:17px;
+    }
+
+    .pl-code-window pre {
+        font-size:12px;
+    }
+
+    .pl-landing-bottom {
+        flex-direction:column;
+    }
+
+    .pl-subject-grid {
+        grid-template-columns:1fr;
+    }
+
+    .pl-subjects-heading {
+        margin-top:40px;
+    }
+
+    .pl-subject-card {
+        min-height:145px;
+    }
+}
+</style>
+
+<!-- INTRODUCTION PAGE -->
+
+<div id="pythonLanding">
+    <div class="pl-landing-nav">
+        <a class="pl-logo" href="python.html">
+            PYTHON<span>LAB</span>
+        </a>
+
+        <span class="pl-nav-note">
+            A practical place to learn Python
+        </span>
+    </div>
+
+    <section class="pl-hero">
+        <div class="pl-hero-content">
+            <div class="pl-eyebrow">
+                Your coding journey starts here
+            </div>
+
+            <h1>
+                Think it.<br>
+                Code it.<br>
+                <span>Python it.</span>
+            </h1>
+
+            <p class="pl-hero-copy">
+                Learn Python step by step, practise with real code,
+                and build your programming skills one lesson at a time.
+                No experience needed — just curiosity.
+            </p>
+
+            <div class="pl-hero-actions">
+                <a class="pl-start-btn" href="python.html?lessons=1">
+                    Explore lessons <span aria-hidden="true">→</span>
+                </a>
+
+                <span class="pl-hero-caption">
+                    10 guided lessons · Interactive code editor
+                </span>
+            </div>
+        </div>
+
+        <div class="pl-hero-visual" aria-hidden="true">
+            <div class="pl-orbit"></div>
+
+            <div class="pl-code-window">
+                <div class="pl-window-dots">
+                    <i></i><i></i><i></i>
+                </div>
+
+                <pre><span class="purple">def</span> <span class="blue">start_journey</span>():
+    goal = <span class="yellow">"Learn Python"</span>
+    skills = [<span class="yellow">"logic"</span>, <span class="yellow">"practice"</span>]
+
+    <span class="purple">for</span> skill <span class="purple">in</span> skills:
+        print(<span class="yellow">"Learning"</span>, skill)
+
+start_journey()</pre>
+            </div>
+
+            <div class="pl-float-tag one">
+                &lt; keep_learning /&gt;
+            </div>
+
+            <div class="pl-float-tag two">
+                print("Hello, future dev!")
+            </div>
+        </div>
+    </section>
+
+    <div class="pl-landing-bottom">
+        <span>PYTHONLAB · LEARN BY DOING</span>
+        <span>Start small. Keep building.</span>
+    </div>
+       <!-- RETURN TO FIRST PAGE -->
+    <div class="back-wrap">
+        <a class="back-link" href="index.html">
+            ← Return to First Page
+        </a>
+    </div>
+</div>
+
+<!-- LESSON SUBJECTS PAGE -->
+
+<div id="pythonSubjects">
+    <div class="pl-subjects-wrap">
+        <div class="pl-subjects-top">
+            <a class="pl-logo" href="python.html">
+                ‹ PYTHON<span>LAB</span>
+            </a>
+
+            <a class="pl-back-btn" href="python.html">
+                ← Introduction
+            </a>
+        </div>
+
+        <h1 class="pl-subjects-heading">
+            Choose your first lesson.
+        </h1>
+
+        <p class="pl-subjects-intro">
+            Follow the learning path in order. Complete each task
+            to unlock the next topic and track your progress as you go.
+        </p>
+
+        <div class="pl-subject-progress">
+            <span id="plSubjectProgressText">
+                0 / 10 lessons completed
+            </span>
+
+            <div class="pl-subject-progress-track">
+                <div
+                    class="pl-subject-progress-fill"
+                    id="plSubjectProgressFill"
+                ></div>
+            </div>
+        </div>
+
+        <div
+            class="pl-subject-grid"
+            id="plSubjectGrid"
+        ></div>
+
+        <div class="pl-subjects-footer">
+            Your progress is saved in this browser on this device.
+        </div>
+    </div>
+</div>
+
+<!-- INDIVIDUAL LESSON PAGE -->
+
+<div id="pythonLessonApp">
+    <div class="pl-topbar">
+        <a class="pl-brand" href="python.html">
+            ‹ PYTHONLAB
+        </a>
+
+        <div class="pl-top-actions">
+            <span
+                class="pl-progress-label"
+                id="plProgressText"
+            ></span>
+
+            <div class="pl-progress-track">
+                <div
+                    class="pl-progress-fill"
+                    id="plProgressFill"
+                ></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pl-layout">
+        <aside class="pl-sidebar">
+            <div class="pl-side-heading">
+                Your learning path
+            </div>
+
+            <div id="plLessonNav"></div>
+
+            <div style="margin-top:18px">
+                <a class="pl-back-btn" href="python.html">
+                    ← Course home
+                </a>
+            </div>
+        </aside>
+
+        <article
+            class="pl-lesson-panel"
+            id="plLessonContent"
+        ></article>
+
+        <section class="pl-editor-panel">
+            <div class="pl-editor-heading">
+                ⌨️ Python code editor
+            </div>
+
+            <div id="plEditorMount"></div>
+        </section>
+    </div>
+    
+</div>
+
+<script>
+(function() {
+    const params = new URLSearchParams(location.search);
+
+    if (!params.has("lesson")) {
+
+        if (params.has("lessons")) {
+            document.body.classList.add("subjects-mode");
+
+            const total = lessons.length;
+            const pct = Math.round((done / total) * 100);
+
+            document.getElementById(
+                "plSubjectProgressText"
+            ).textContent =
+                `${done} / ${total} lessons completed`;
+
+            document.getElementById(
+                "plSubjectProgressFill"
+            ).style.width = pct + "%";
+
+            document.getElementById(
+                "plSubjectGrid"
+            ).innerHTML = lessons.map((item, i) => {
+                const locked = i > done;
+
+                const title = item.t.replace(/^\d+\.\s*/, "");
+
+                return `
+                    <a
+                        class="pl-subject-card ${locked ? "locked" : ""}"
+                        ${locked
+                            ? 'aria-disabled="true"'
+                            : `href="python.html?lesson=${i}"`
+                        }
+                    >
+                        <span class="pl-subject-number">
+                            LESSON ${String(i + 1).padStart(2, "0")}
+                        </span>
+
+                        <h3>${title}</h3>
+
+                        <p>
+                            ${locked
+                                ? "Complete the previous lesson to unlock this topic."
+                                : item.d
+                            }
+                        </p>
+
+                        <span class="pl-subject-status">
+                            ${i < done
+                                ? "✓ COMPLETED"
+                                : locked
+                                    ? "🔒 LOCKED"
+                                    : "START LESSON →"
+                            }
+                        </span>
+                    </a>
+                `;
+            }).join("");
+
+        } else {
+            document.body.classList.add("landing-mode");
+        }
+
+        return;
+    }
+
+    document.body.classList.add("lesson-mode");
+
+    const app = document.getElementById("pythonLessonApp");
+
+    const index = Math.max(
+        0,
+        Math.min(
+            lessons.length - 1,
+            parseInt(params.get("lesson"), 10) || 0
+        )
+    );
+
+    const isLocked = index > done;
+
+    const editorCard = document.querySelector("#compiler .card");
+
+    if (editorCard) {
+        document.getElementById("plEditorMount")
+            .appendChild(editorCard);
+    }
+
+    const progress = Math.round(
+        (done / lessons.length) * 100
+    );
+
+    document.getElementById("plProgressText").textContent =
+        `${done}/${lessons.length} completed`;
+
+    document.getElementById("plProgressFill").style.width =
+        progress + "%";
+
+    document.getElementById("plLessonNav").innerHTML = `
+        <div class="pl-side-heading">
+            Level 1 · Foundations
+        </div>
+
+        ${lessons.map((x, i) => `
+            <a
+                class="pl-lesson-link ${i === index ? "active" : ""} ${i > done ? "locked" : ""}"
+                href="${i > done ? "#" : "python.html?lesson=" + i}"
+                ${i > done ? 'aria-disabled="true"' : ""}
+            >
+                <span>
+                    ${i < done
+                        ? "✓"
+                        : i > done
+                            ? "🔒"
+                            : String(i + 1).padStart(2, "0")
+                    }
+                </span>
+
+                <span>
+                    ${x.t.replace(/^\d+\.\s*/, "")}
+                </span>
+            </a>
+        `).join("")}
+    `;
+
+    const content = document.getElementById("plLessonContent");
+
+    if (isLocked) {
+        content.innerHTML = `
+            <div class="pl-locked-note">
+                <div style="font-size:38px">🔒</div>
+
+                <h1>Lesson locked</h1>
+
+                <p>
+                    Complete the previous lesson's task
+                    to unlock this lesson.
+                </p>
+
+                <a
+                    class="pl-next-btn"
+                    href="python.html?lesson=${Math.max(0, done)}"
+                >
+                    Go to available lesson →
+                </a>
+            </div>
+        `;
+
+        if (editorCard) {
+            editorCard.style.display = "none";
+        }
+
+        return;
+    }
+
+    const x = lessons[index];
+    const info = lessonInfo[index];
+
+    content.innerHTML = `
+        <div class="pl-kicker">
+            Python course · Lesson ${index + 1} of ${lessons.length}
+        </div>
+
+        <h1>${x.t}</h1>
+
+        <p>${info.intro}</p>
+
+        <h2>Key points</h2>
+
+        <ul>
+            ${info.pts.map(point => `<li>${point}</li>`).join("")}
+        </ul>
+
+        <h2>Example</h2>
+
+        <pre class="pl-example">${x.c
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+        }</pre>
+
+        <h2>Expected output</h2>
+
+        <pre class="pl-example">${info.o
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+        }</pre>
+
+        <div class="pl-tip">
+            💡 ${info.tip}
+        </div>
+
+        <div class="pl-task">
+            <strong>✍ Your task</strong>
+
+            <p>${info.task}</p>
+
+            <button
+                class="pl-next-btn"
+                id="plStartTask"
+            >
+                Start task in editor ↓
+            </button>
+        </div>
+
+        <div class="pl-next-row">
+            <a class="pl-back-btn" href="python.html">
+                Course home
+            </a>
+
+            ${index < lessons.length - 1
+                ? `<a class="pl-next-btn" id="plNextLink" href="python.html?lesson=${index + 1}">Next lesson →</a>`
+                : ""
+            }
+        </div>
+    `;
+
+    /* Load the lesson task into the existing Python editor */
+
+    const taskBtn = document.getElementById("plStartTask");
+
+    taskBtn.addEventListener("click", () => {
+        document.getElementById("code").value = info.s;
+
+        originalCode = info.s;
+        currentTask = index;
+
+        updateCheckBtn();
+
+        document.getElementById("out").textContent =
+            "Task loaded. Write your solution and press Run.";
+
+        document.getElementById("code").focus();
+    });
+
+    /* Hide Next until the current task is completed */
+
+    const nextLink = document.getElementById("plNextLink");
+
+    if (nextLink && index >= done) {
+        nextLink.style.opacity = ".35";
+        nextLink.style.pointerEvents = "none";
+
+        nextLink.title =
+            "Complete this lesson's task to unlock the next lesson.";
+    }
+
+    const check = document.getElementById("checkBtn");
+
+    if (check) {
+        check.addEventListener("click", () => {
+            setTimeout(() => {
+                if (done > index) {
+                    document.getElementById(
+                        "plProgressText"
+                    ).textContent =
+                        `${done}/${lessons.length} completed`;
+
+                    document.getElementById(
+                        "plProgressFill"
+                    ).style.width =
+                        `${Math.round(done / lessons.length * 100)}%`;
+
+                    if (nextLink) {
+                        nextLink.style.opacity = "1";
+                        nextLink.style.pointerEvents = "auto";
+                        nextLink.removeAttribute("title");
+                    }
+
+                    const navLink =
+                        document.querySelectorAll(".pl-lesson-link")[index];
+
+                    if (navLink) {
+                        navLink.classList.remove("locked");
+                    }
+                }
+            }, 100);
+        });
+    }
+
+})();
+</script>
+
+<!-- END PYTHONLAB SEPARATE LESSON PAGE SYSTEM -->
+
+</body>
+</html>

@@ -1,0 +1,2334 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AZIZBEK | Main Page</title>
+    <meta name="author" content="azizbek ismailov kaxramanovich">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet" href="main.css">
+    
+
+    <style>
+        /* =========================================
+           MODERN LANGUAGE SELECTOR
+        ========================================= */
+
+        #google_language_change {
+            position: fixed;
+            top: 22px;
+            right: 25px;
+            z-index: 10001;
+            font-family: inherit;
+        }
+
+        .language-select {
+            appearance: none;
+            -webkit-appearance: none;
+            padding: 12px 42px 12px 16px;
+            border: 1px solid rgba(0, 234, 255, 0.4);
+            border-radius: 14px;
+            background: rgba(17, 17, 40, 0.95);
+            backdrop-filter: blur(15px);
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+            transition: 0.3s ease;
+        }
+
+        .language-select:hover {
+            border-color: #00eaff;
+            box-shadow: 0 0 20px rgba(0, 234, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .language-select option {
+            background: #17172f;
+            color: white;
+        }
+
+        .language-arrow {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00eaff;
+            pointer-events: none;
+        }
+
+        /* Keep Google's translation control available but off-screen */
+        #google_translate_element {
+            position: absolute;
+            left: -10000px;
+            top: 0;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+
+        .goog-te-banner-frame {
+            display: none !important;
+        }
+
+        body {
+            top: 0 !important;
+        }
+
+        .goog-logo-link,
+        .goog-te-gadget span {
+            display: none !important;
+        }
+
+        @media(max-width: 600px) {
+            #google_language_change {
+                top: 15px;
+                right: 12px;
+            }
+
+            .language-select {
+                padding: 10px 35px 10px 12px;
+                font-size: 12px;
+            }
+        }
+
+        /* =========================================
+           STACKING CARDS
+        ========================================= */
+
+        .stack-wrapper {
+            position: relative;
+            width: min(90%, 900px);
+            margin: 100px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+            padding-bottom: 20vh;
+        }
+
+        .stack-card {
+            position: sticky;
+            top: 100px;
+            min-height: 430px;
+            padding: 45px;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #17152e, #25204a);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+            color: white;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .stack-card:nth-child(1) { top: 100px; z-index: 1; }
+        .stack-card:nth-child(2) { top: 120px; z-index: 2; }
+        .stack-card:nth-child(3) { top: 140px; z-index: 3; }
+
+        .stack-card h2 {
+            font-size: clamp(28px, 4vw, 42px);
+            margin: 20px 0;
+        }
+
+        .stack-card p { line-height: 1.7; }
+
+        .stack-number {
+            color: #5ddcff;
+            font-size: 13px;
+            letter-spacing: 3px;
+            font-weight: bold;
+        }
+
+        .stack-card .skill { margin-top: 22px; }
+
+        .skill-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .bar {
+            height: 9px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .bar i {
+            display: block;
+            height: 100%;
+            width: var(--value);
+            background: linear-gradient(90deg, #00c6ff, #8b5cf6);
+            border-radius: 20px;
+        }
+
+        .timeline {
+            list-style: none;
+            padding: 0;
+            margin-top: 25px;
+        }
+
+        .timeline li {
+            border-left: 2px solid #5ddcff;
+            padding: 0 0 20px 22px;
+            margin-left: 5px;
+        }
+
+        .timeline time {
+            color: #5ddcff;
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+
+        .timeline h3 { margin: 8px 0; }
+        .stack-card ul { line-height: 2; }
+
+        /* =========================================
+           COMMUNITY SECTION
+        ========================================= */
+
+        .community-section {
+            padding: 100px 8%;
+            background: linear-gradient(135deg, #09091d, #11102d);
+            color: white;
+        }
+
+        .community-heading {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 50px;
+        }
+
+        .community-heading span,
+        .table-heading span:first-child {
+            color: #00eaff;
+            font-size: 13px;
+            letter-spacing: 3px;
+            font-weight: bold;
+        }
+
+        .community-heading h2 {
+            font-size: clamp(30px, 5vw, 48px);
+            margin: 15px 0;
+        }
+
+        .community-heading p {
+            color: #aaa;
+            line-height: 1.7;
+        }
+
+        .community-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            max-width: 800px;
+            margin: 0 auto 50px;
+        }
+
+        .community-stat {
+            text-align: center;
+            padding: 30px;
+            border: 1px solid rgba(0, 234, 255, 0.2);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            transition: 0.3s;
+        }
+
+        .community-stat:hover {
+            transform: translateY(-7px);
+            border-color: #00eaff;
+            box-shadow: 0 10px 30px rgba(0, 234, 255, 0.1);
+        }
+
+        .community-stat span { font-size: 35px; }
+
+        .community-stat h2 {
+            font-size: 38px;
+            margin: 12px 0;
+            color: #00eaff;
+        }
+
+        .community-stat p { color: #aaa; }
+
+        .community-table-box {
+            max-width: 1100px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .table-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .table-heading h2 { margin-top: 10px; }
+        .online-label { color: #00eaff; font-size: 12px; }
+        .table-scroll { overflow-x: auto; }
+
+        .community-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 550px;
+        }
+
+        .community-table th,
+        .community-table td {
+            padding: 18px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .community-table th {
+            color: #00eaff;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .community-table td { color: #ddd; }
+
+        .community-table tbody tr:hover {
+            background: rgba(0, 234, 255, 0.05);
+        }
+
+        #emptyCommunity {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            color: #aaa;
+        }
+
+        .community-register-link {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 13px 25px;
+            border-radius: 10px;
+            color: white;
+            text-decoration: none;
+            background: linear-gradient(90deg, #00c6ff, #8b5cf6);
+        }
+
+        /* =========================================
+           REGISTRATION AND LOGIN SCREEN
+        ========================================= */
+
+        .registration-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 55px 6%;
+            color: #fff;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(0,198,255,.18), transparent 32%),
+                radial-gradient(circle at 85% 80%, rgba(139,92,246,.2), transparent 32%),
+                #09091d;
+            box-sizing: border-box;
+        }
+
+        .registration-container {
+            width: min(1100px, 100%);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 55px;
+            align-items: center;
+        }
+
+        .registration-tag,
+        .form-small-title {
+            color: #00eaff;
+            letter-spacing: 3px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .registration-info h1 {
+            font-size: clamp(38px, 5vw, 60px);
+            line-height: 1.08;
+            margin: 18px 0;
+        }
+
+        .registration-info h1 span { color: #00d9ff; }
+
+        .registration-info > p,
+        .registration-form-box > p {
+            color: #b8bdd0;
+            line-height: 1.7;
+        }
+
+        .registration-feature {
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+            margin-top: 28px;
+        }
+
+        .registration-feature > span {
+            color: #00eaff;
+            font-weight: 800;
+            border: 1px solid rgba(0,234,255,.35);
+            border-radius: 12px;
+            padding: 10px 12px;
+        }
+
+        .registration-feature h3 { margin: 0 0 6px; }
+
+        .registration-feature p {
+            margin: 0;
+            color: #aeb5c9;
+        }
+
+        .registration-form-box {
+            padding: 35px;
+            border: 1px solid rgba(0,234,255,.25);
+            border-radius: 24px;
+            background: rgba(255,255,255,.06);
+            box-shadow: 0 25px 70px rgba(0,0,0,.3);
+            backdrop-filter: blur(14px);
+        }
+
+        .registration-form-box h2 {
+            font-size: 32px;
+            margin: 12px 0 5px;
+        }
+
+        #registrationForm {
+            display: grid;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        #registrationForm label {
+            color: #e5e9f5;
+            font-size: 14px;
+            margin-top: 7px;
+        }
+
+        #registrationForm input,
+        #registrationForm select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,.16);
+            background: #17172f;
+            color: #fff;
+            outline: none;
+        }
+
+        #registrationForm input:focus,
+        #registrationForm select:focus {
+            border-color: #00eaff;
+            box-shadow: 0 0 0 3px rgba(0,234,255,.1);
+        }
+
+        .register-btn {
+            margin-top: 15px;
+            border: 0;
+            border-radius: 10px;
+            padding: 15px;
+            color: #07101d;
+            font-weight: 800;
+            cursor: pointer;
+            background: linear-gradient(90deg, #00c6ff, #8b5cf6);
+        }
+
+        .register-btn:disabled {
+            opacity: .65;
+            cursor: wait;
+        }
+
+        #registrationMessage {
+            min-height: 20px;
+            margin: 5px 0 0;
+            color: #00eaff;
+            overflow-wrap: anywhere;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 12px;
+            color: #b8bdd0;
+            font-size: 14px;
+        }
+
+        .auth-switch button {
+            border: 0;
+            background: transparent;
+            color: #00eaff;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        #mainWebsite[hidden],
+        #registrationSection[hidden] {
+            display: none !important;
+        }
+
+        @media (max-width: 760px) {
+            .registration-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .registration-section { padding: 35px 5%; }
+            .registration-form-box { padding: 25px; }
+        }
+
+        @media (max-width: 600px) {
+            .stack-wrapper {
+                width: 92%;
+                gap: 20px;
+            }
+
+            .stack-card {
+                top: 80px;
+                min-height: 450px;
+                padding: 25px;
+            }
+
+            .stack-card:nth-child(1) { top: 80px; }
+            .stack-card:nth-child(2) { top: 100px; }
+            .stack-card:nth-child(3) { top: 120px; }
+
+            .community-section { padding: 70px 5%; }
+            .community-stats { grid-template-columns: 1fr; }
+            .community-table-box { padding: 18px; }
+
+            .table-heading {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+
+        /* COMMUNITY: SHOW ONLY SHARED TOTAL */
+
+        .community-stats {
+            grid-template-columns: 1fr;
+            max-width: 500px;
+        }
+
+        .community-stat:nth-child(2),
+        .community-table-box {
+            display: none !important;
+        }
+
+        /* =========================================
+           ACCOUNT DASHBOARD
+        ========================================= */
+
+        .account-page[hidden],
+        .ai-window[hidden] {
+            display: none !important;
+        }
+
+        .account-page {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            overflow-y: auto;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(0,198,255,.15), transparent 35%),
+                radial-gradient(circle at 85% 85%, rgba(139,92,246,.2), transparent 35%),
+                #09091d;
+            color: white;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .account-container {
+            position: relative;
+            width: min(850px, 100%);
+            margin: 30px auto;
+        }
+
+        .account-close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 42px;
+            height: 42px;
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 12px;
+            background: rgba(255,255,255,.08);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .account-header { margin-bottom: 30px; }
+
+        .account-label {
+            color: #00eaff;
+            letter-spacing: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .account-header h1 {
+            font-size: clamp(35px, 5vw, 50px);
+            margin: 15px 0;
+        }
+
+        .account-header p { color: #aeb5c9; }
+
+        .profile-card {
+            text-align: center;
+            padding: 35px 20px;
+            border-radius: 22px;
+            border: 1px solid rgba(0,234,255,.25);
+            background: rgba(255,255,255,.05);
+            box-shadow: 0 20px 50px rgba(0,0,0,.25);
+        }
+
+        .profile-avatar {
+            width: 95px;
+            height: 95px;
+            margin: auto;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00c6ff, #8b5cf6);
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            box-shadow: 0 0 35px rgba(0,198,255,.25);
+        }
+
+        .profile-card h2 {
+            margin: 18px 0 5px;
+            font-size: 27px;
+            overflow-wrap: anywhere;
+        }
+
+        .profile-card > p {
+            color: #aaa;
+            overflow-wrap: anywhere;
+        }
+
+        .profile-status {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 9px 15px;
+            border-radius: 30px;
+            background: rgba(0,234,255,.1);
+            color: #00eaff;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        .account-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin-top: 25px;
+        }
+
+        .account-detail {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 23px;
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 16px;
+            background: rgba(255,255,255,.045);
+            min-width: 0;
+        }
+
+        .account-detail > span { font-size: 27px; }
+
+        .account-detail small {
+            color: #00eaff;
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        .account-detail h3 {
+            margin: 8px 0 0;
+            font-size: 15px;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .account-actions { margin-top: 25px; }
+
+        .logout-btn {
+            padding: 14px 25px;
+            border: 1px solid rgba(255,100,130,.4);
+            border-radius: 10px;
+            background: rgba(255,70,100,.1);
+            color: #ff8299;
+            font-weight: bold;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .logout-btn:hover {
+            background: #ff466c;
+            color: white;
+        }
+
+        /* MOBILE ACCOUNT BUTTON */
+
+        #mobileAccountButton {
+            display: none;
+            position: fixed;
+            top: 75px;
+            right: 12px;
+            z-index: 9997;
+            border: 1px solid rgba(0,234,255,.45);
+            border-radius: 25px;
+            padding: 11px 15px;
+            color: white;
+            background: linear-gradient(135deg, #087da9, #7046bb);
+            box-shadow: 0 5px 20px rgba(0,0,0,.3);
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* =========================================
+           AI ASSISTANT BUTTON
+        ========================================= */
+
+        .ai-assistant {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            z-index: 9998;
+        }
+
+        .ai-toggle {
+            width: 68px;
+            height: 68px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            cursor: pointer;
+            color: white;
+            background: linear-gradient(135deg, #00c6ff, #8b5cf6);
+            box-shadow: 0 0 30px rgba(0,198,255,.35);
+            transition: .3s;
+        }
+
+        .ai-toggle:hover { transform: scale(1.1) rotate(8deg); }
+        .ai-toggle span { display: block; font-size: 27px; }
+        .ai-toggle small { font-weight: bold; font-size: 10px; }
+
+        /* AI CHAT WINDOW */
+
+        .ai-window {
+            position: absolute;
+            right: 0;
+            bottom: 85px;
+            width: min(370px, calc(100vw - 35px));
+            height: 510px;
+            max-height: calc(100vh - 130px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(0,234,255,.3);
+            border-radius: 20px;
+            background: #111128;
+            color: white;
+            box-shadow: 0 20px 70px rgba(0,0,0,.5);
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 17px;
+            background: linear-gradient(100deg, #171b42, #25204a);
+            border-bottom: 1px solid rgba(255,255,255,.1);
+        }
+
+        .ai-avatar {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00c6ff, #8b5cf6);
+            font-size: 23px;
+        }
+
+        .ai-header h3 { margin: 0 0 5px; font-size: 15px; }
+        .ai-header span { color: #00eaff; font-size: 10px; }
+
+        .ai-header #aiClose {
+            margin-left: auto;
+            background: transparent;
+            color: white;
+            border: 0;
+            cursor: pointer;
+            font-size: 19px;
+        }
+
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: 13px 15px;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background: #252545;
+            border: 1px solid rgba(0,234,255,.15);
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #087da9, #7046bb);
+        }
+
+        .ai-suggestions {
+            display: flex;
+            gap: 7px;
+            padding: 10px 15px;
+            overflow-x: auto;
+        }
+
+        .ai-suggestions button {
+            flex-shrink: 0;
+            padding: 7px 12px;
+            border: 1px solid rgba(0,234,255,.3);
+            border-radius: 20px;
+            background: transparent;
+            color: #00eaff;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .ai-input-area {
+            display: flex;
+            gap: 9px;
+            padding: 13px;
+            border-top: 1px solid rgba(255,255,255,.1);
+        }
+
+        .ai-input-area input {
+            flex: 1;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 10px;
+            outline: none;
+            background: #20203a;
+            color: white;
+        }
+
+        .ai-input-area input:focus { border-color: #00eaff; }
+
+        .ai-input-area button {
+            width: 43px;
+            border: 0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #00c6ff, #8b5cf6);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        @media(max-width: 600px) {
+            .account-page {
+                padding: 20px 13px;
+            }
+
+            .account-container {
+                margin: 15px auto;
+                padding-top: 45px;
+            }
+
+            .account-header { margin-bottom: 20px; }
+
+            .account-header h1 {
+                font-size: 34px;
+            }
+
+            .profile-card {
+                padding: 25px 15px;
+            }
+
+            .profile-avatar {
+                width: 78px;
+                height: 78px;
+                font-size: 32px;
+            }
+
+            .account-details {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .account-detail {
+                padding: 17px;
+                gap: 13px;
+            }
+
+            .account-detail h3 { font-size: 14px; }
+
+            #mobileAccountButton { display: block; }
+
+            .ai-assistant {
+                right: 15px;
+                bottom: 15px;
+            }
+
+            .ai-window {
+                right: -5px;
+                width: calc(100vw - 30px);
+                height: min(510px, calc(100dvh - 130px));
+            }
+
+            .registration-form-box {
+                padding: 20px;
+            }
+        }
+    </style>
+
+    <!-- FIREBASE SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+</head>
+
+<body>
+
+<div class="azizbek-atmosphere">
+    <div class="ambient-glow glow-blue"></div>
+    <div class="ambient-glow glow-purple"></div>
+    <div class="ambient-glow glow-cyan"></div>
+    <div class="ambient-grid"></div>
+    <div class="ambient-light"></div>
+</div>
+    
+    <!-- MODERN LANGUAGE SELECTOR -->
+    <div id="google_language_change">
+        <select
+            class="language-select"
+            id="languageSelector"
+            aria-label="Choose website language"
+        >
+            <option value="en">🇬🇧 English</option>
+            <option value="uz">🇺🇿 O'zbek</option>
+            <option value="ru">🇷🇺 Русский</option>
+        </select>
+
+        <span class="language-arrow">⌄</span>
+    </div>
+
+    <!-- GOOGLE TRANSLATE ENGINE -->
+    <div id="google_translate_element"></div>
+
+    <!-- FIRST SCREEN: REGISTRATION / LOGIN -->
+    <section class="registration-section" id="registrationSection">
+        <div class="registration-container">
+
+            <div class="registration-info">
+                <span class="registration-tag">WELCOME TO AZIZBEK</span>
+
+                <h1>Start Your <span>IT Journey</span></h1>
+
+                <p>
+                    Register to enter the website and become part
+                    of our programming and web development community.
+                </p>
+
+                <div class="registration-feature">
+                    <span>01</span>
+                    <div>
+                        <h3>Learn Programming</h3>
+                        <p>Explore HTML, CSS, JavaScript and C++.</p>
+                    </div>
+                </div>
+
+                <div class="registration-feature">
+                    <span>02</span>
+                    <div>
+                        <h3>Build Projects</h3>
+                        <p>Improve your skills through practical projects.</p>
+                    </div>
+                </div>
+
+                <div class="registration-feature">
+                    <span>03</span>
+                    <div>
+                        <h3>Grow Together</h3>
+                        <p>Take your first step towards your IT future.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="registration-form-box">
+                <span class="form-small-title" id="formSmallTitle">CREATE YOUR PROFILE</span>
+
+                <h2 id="formHeading">Registration</h2>
+
+                <p id="formDescription">
+                    Complete the form to continue to the main website.
+                </p>
+
+                <form id="registrationForm">
+
+                    <div id="profileFields">
+                        <label for="fullName">Full Name</label>
+                        <input
+                            type="text"
+                            id="fullName"
+                            placeholder="Enter your full name"
+                            autocomplete="name"
+                            required
+                        >
+
+                        <label for="gender">Gender</label>
+                        <select id="gender" required>
+                            <option value="">Select your gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Prefer not to say">Prefer not to say</option>
+                        </select>
+
+                        <label for="course">Choose Your Course</label>
+                        <select id="course" required>
+                            <option value="">Select a course</option>
+                            <option value="HTML">HTML</option>
+                            <option value="CSS">CSS</option>
+                            <option value="JavaScript">JavaScript</option>
+                            <option value="C++">C++</option>
+                            <option value="Full-Stack Development">Full-Stack Development</option>
+                        </select>
+                    </div>
+
+                    <label for="email">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="example@gmail.com"
+                        autocomplete="email"
+                        required
+                    >
+
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="At least 6 characters"
+                        minlength="6"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                    <div id="confirmPasswordGroup">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            placeholder="Enter your password again"
+                            minlength="6"
+                            autocomplete="new-password"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="register-btn" id="authSubmitButton">
+                        REGISTER & ENTER WEBSITE →
+                    </button>
+
+                    <p id="registrationMessage" role="status" aria-live="polite"></p>
+
+                    <p class="auth-switch">
+                        <span id="authSwitchText">Already have an account?</span>
+                        <button type="button" id="authSwitchButton">Log in</button>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- MAIN WEBSITE -->
+    <div id="mainWebsite" hidden>
+
+        <div class="photos">
+            <img src="azizbek.png" alt="Azizbek">
+        </div>
+
+        <!-- NAVIGATION -->
+        <nav class="nav">
+            <a class="logo" href="#top">AZIZBEK</a>
+
+            <ul>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#path">Path</a></li>
+                <li><a href="#community">Community</a></li>
+                <li><a href="#" id="accountButton">My Account</a></li>
+
+                <!-- MOBILE ACCOUNT BUTTON -->
+                <button type="button" id="mobileAccountButton">
+                    👤 MY ACCOUNT
+                </button>
+            </ul>
+        </nav>
+
+        <!-- HERO -->
+        <header class="hero" id="top">
+            <h1>I build websites and programs.</h1>
+            <p>
+                IT student learning HTML, CSS, JavaScript and C++
+                one project at a time.
+            </p>
+        </header>
+
+        <div class="card">
+            <h2><i>IT digital college student</i></h2>
+            <h2><i>learning C++/HTML/CSS/JavaScript</i></h2>
+            <h2><i>Lets practise and learn with me</i></h2>
+        </div>
+
+        <!-- FLOATING STICKERS -->
+        <div class="sticker html a1">HTML</div>
+        <div class="sticker css a2">CSS</div>
+        <div class="sticker cpp a3">C++</div>
+        <div class="sticker html a4">HTML</div>
+        <div class="sticker css a5">CSS</div>
+        <div class="sticker cpp a6">C++</div>
+        <div class="sticker html a7">HTML</div>
+        <div class="sticker css a8">CSS</div>
+        <div class="sticker cpp a9">C++</div>
+        <div class="sticker cpp a10">CSS</div>
+        <div class="sticker html a11">HTML</div>
+
+        <!-- SKILLS -->
+        <h2 class="section-title" id="skills">What I'm learning</h2>
+
+        <div class="cards">
+            <div class="mini-card">
+                <div class="badge cpp-b">C++</div>
+                <span class="tag">LANGUAGE</span>
+                <h4>C++</h4>
+                <p>Basics and practice</p>
+                <a href="HTMLPage1.html" class="open-btn">OPEN SECTION</a>
+            </div>
+
+            <div class="mini-card">
+                <div class="badge html-b">HTML</div>
+                <span class="tag">STRUCTURE</span>
+                <h4>HTML</h4>
+                <p>Pages and elements</p>
+                <a href="html.html" class="open-btn">OPEN SECTION</a>
+            </div>
+
+            <div class="mini-card">
+                <div class="badge css-b">CSS</div>
+                <span class="tag">STYLE</span>
+                <h4>CSS</h4>
+                <p>Colors and layout</p>
+                <a href="css.html" class="open-btn">OPEN SECTION</a>
+            </div>
+
+            <div class="mini-card">
+                <div class="badge js-b">JS</div>
+                <span class="tag">LOGIC</span>
+                <h4>JavaScript</h4>
+                <p>Structure and basic code</p>
+                <a href="java.html" class="open-btn">OPEN SECTION</a>
+            </div>
+             <div class="mini-card">
+                <div class="badge html-b">PYTHON</div>
+                <span class="tag">STRUCTURE</span>
+                <h4>PYTHON</h4>
+                <p>Pages and elements</p>
+                <a href="python.html" class="open-btn">OPEN SECTION</a>
+            </div>
+        </div>
+
+        <!-- WEBSITE DEVELOPMENT INFORMATION -->
+        <section class="website-section" id="projects">
+            <h2 class="section-title">How Websites Are Created</h2>
+
+            <p class="website-intro">
+                Creating a website is a process that combines creativity,
+                design and programming. Here are the main steps.
+            </p>
+
+            <div class="website-grid">
+
+    <div class="website-block interactive-card">
+        <span class="website-number">01</span>
+        <div class="website-icon">💡</div>
+        <h3>Planning and Ideas</h3>
+        <p>
+            Every website starts with an idea. First, we decide
+            the website's purpose, target audience and content.
+            Planning helps us create a clear structure.
+        </p>
+        <span class="website-tag">CREATIVE THINKING</span>
+
+        <div class="card-extra">
+            <h4>What happens here?</h4>
+            <p>
+                We create a website plan, choose its main features,
+                organize information and prepare a design concept.
+            </p>
+        </div>
+
+        <button class="card-toggle" type="button">Explore More <span>＋</span></button>
+    </div>
+
+    <div class="website-block interactive-card">
+        <span class="website-number">02</span>
+        <div class="website-icon">🏗️</div>
+        <h3>HTML – Website Structure</h3>
+        <p>
+            HTML creates the structure of a website. It adds
+            headings, paragraphs, images, links, buttons,
+            forms and other important elements.
+        </p>
+        <span class="website-tag">HTML5</span>
+
+        <div class="card-extra">
+            <h4>What happens here?</h4>
+            <p>
+                HTML organizes the content into sections and gives
+                every element its place on the webpage.
+            </p>
+        </div>
+
+        <button class="card-toggle" type="button">Explore More <span>＋</span></button>
+    </div>
+
+    <div class="website-block interactive-card">
+        <span class="website-number">03</span>
+        <div class="website-icon">🎨</div>
+        <h3>CSS – Website Design</h3>
+        <p>
+            CSS makes websites attractive. We use colors,
+            fonts, backgrounds, animations, layouts and
+            responsive design to improve the appearance.
+        </p>
+        <span class="website-tag">CSS3</span>
+
+        <div class="card-extra">
+            <h4>What happens here?</h4>
+            <p>
+                We style the website with colors, spacing,
+                typography, responsive layouts and visual effects.
+            </p>
+        </div>
+
+        <button class="card-toggle" type="button">Explore More <span>＋</span></button>
+    </div>
+
+    <div class="website-block interactive-card">
+        <span class="website-number">04</span>
+        <div class="website-icon">⚡</div>
+        <h3>JavaScript – Interactivity</h3>
+        <p>
+            JavaScript makes websites interactive. It allows
+            buttons, menus, sliders, animations and forms
+            to respond to user actions.
+        </p>
+        <span class="website-tag">JAVASCRIPT</span>
+
+        <div class="card-extra">
+            <h4>What happens here?</h4>
+            <p>
+                We add functionality such as interactive menus,
+                form validation, dynamic content and animations.
+            </p>
+        </div>
+
+        <button class="card-toggle" type="button">Explore More <span>＋</span></button>
+    </div>
+
+    <div class="website-block interactive-card">
+        <span class="website-number">05</span>
+        <div class="website-icon">🚀</div>
+        <h3>Testing and Publishing</h3>
+        <p>
+            Finally, we test the website on different devices,
+            fix errors, improve performance and publish it
+            online so people can visit it.
+        </p>
+        <span class="website-tag">LAUNCH WEBSITE</span>
+
+        <div class="card-extra">
+            <h4>What happens here?</h4>
+            <p>
+                We check mobile compatibility, test all features,
+                fix bugs and deploy the finished website online.
+            </p>
+        </div>
+
+        <button class="card-toggle" type="button">Explore More <span>＋</span></button>
+    </div>
+
+</div>
+                    <span class="website-tag">WEB DEVELOPMENT</span>
+                </div>
+            </div>
+        </section>
+<!-- CODING TEACHER SECTION -->
+<section class="teacher-section" id="teacher">
+    <div class="teacher-container">
+
+        <!-- Teacher illustration (SVG) -->
+        <div class="teacher-visual">
+            <svg viewBox="0 0 320 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Coding teacher pointing at a code board">
+                <defs>
+                    <linearGradient id="tBody" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" stop-color="#00c6ff"/>
+                        <stop offset="1" stop-color="#8b5cf6"/>
+                    </linearGradient>
+                </defs>
+
+                <!-- code board -->
+                <rect x="10" y="10" width="300" height="175" rx="16" fill="#0d0d26" stroke="#00eaff" stroke-opacity=".5"/>
+                <circle cx="30" cy="30" r="5" fill="#ff5f56"/>
+                <circle cx="48" cy="30" r="5" fill="#ffbd2e"/>
+                <circle cx="66" cy="30" r="5" fill="#27c93f"/>
+                <text x="28" y="75"  fill="#5ddcff" font-family="monospace" font-size="15">&lt;h1&gt;Hello World&lt;/h1&gt;</text>
+                <text x="28" y="105" fill="#8b5cf6" font-family="monospace" font-size="15">let skill = "coding";</text>
+                <text x="28" y="135" fill="#27c93f" font-family="monospace" font-size="15">if (practice) { grow(); }</text>
+                <rect x="28" y="150" width="9" height="16" fill="#00eaff" class="cursor"/>
+
+                <!-- body -->
+                <path d="M85 360 L85 290 Q85 245 130 245 L190 245 Q235 245 235 290 L235 360 Z" fill="url(#tBody)"/>
+                <!-- neck -->
+                <rect x="145" y="225" width="30" height="28" rx="8" fill="#f2c6a0"/>
+                <!-- head -->
+                <circle cx="160" cy="205" r="38" fill="#f2c6a0"/>
+                <!-- hair -->
+                <path d="M122 200 Q120 160 160 160 Q202 160 198 200 Q185 178 160 178 Q135 178 122 200 Z" fill="#2b2140"/>
+                <!-- glasses -->
+                <rect x="132" y="198" width="22" height="16" rx="5" fill="none" stroke="#0d0d26" stroke-width="3"/>
+                <rect x="166" y="198" width="22" height="16" rx="5" fill="none" stroke="#0d0d26" stroke-width="3"/>
+                <line x1="154" y1="206" x2="166" y2="206" stroke="#0d0d26" stroke-width="3"/>
+                <!-- smile -->
+                <path d="M148 225 Q160 235 172 225" fill="none" stroke="#9a5b3c" stroke-width="3" stroke-linecap="round"/>
+                <!-- pointing arm -->
+                <path d="M225 270 Q275 250 262 200" fill="none" stroke="#25204a" stroke-width="18" stroke-linecap="round"/>
+                <circle cx="262" cy="196" r="10" fill="#f2c6a0"/>
+            </svg>
+        </div>
+
+        <!-- Text -->
+        <div class="teacher-info">
+            <span class="teacher-tag">YOUR CODING MENTOR</span>
+            <h2>Learn to code <span>step by step</span></h2>
+            <p>
+                Every lesson starts simple: read the example, write your own
+                code, and break things on purpose. Mistakes are how
+                programmers grow.
+            </p>
+
+            <ul class="teacher-points">
+                <li>✔ Clear examples for HTML, CSS, JavaScript and C++</li>
+                <li>✔ Small practical projects after every topic</li>
+                <li>✔ Ask the AI assistant when you get stuck</li>
+            </ul>
+
+            <div class="teacher-code">
+                <span>// lesson 01</span>
+                <code>console.log("Let's start!");</code>
+            </div>
+
+            <a href="#skills" class="teacher-btn">Start Learning →</a>
+            
+        </div>
+        
+
+
+    </div>
+</section>
+        <!-- STACKING CARDS -->
+        <section class="stack-wrapper" id="path">
+
+            <article class="stack-card">
+                <span class="stack-number">01 / MY SKILLS</span>
+                <h2>My Skill Levels</h2>
+                <p>
+                    I am developing my programming skills and learning
+                    how to create modern websites and applications.
+                </p>
+
+                <div class="skill">
+                    <div class="skill-top">
+                        <span>HTML</span><span>70%</span>
+                    </div>
+                    <div class="bar"><i style="--value: 70%"></i></div>
+                </div>
+
+                <div class="skill">
+                    <div class="skill-top">
+                        <span>CSS</span><span>55%</span>
+                    </div>
+                    <div class="bar"><i style="--value: 55%"></i></div>
+                </div>
+
+                <div class="skill">
+                    <div class="skill-top">
+                        <span>JavaScript</span><span>35%</span>
+                    </div>
+                    <div class="bar"><i style="--value: 35%"></i></div>
+                </div>
+
+                <div class="skill">
+                    <div class="skill-top">
+                        <span>C++</span><span>40%</span>
+                    </div>
+                    <div class="bar"><i style="--value: 40%"></i></div>
+                </div>
+            </article>
+
+            <article class="stack-card">
+                <span class="stack-number">02 / MY JOURNEY</span>
+                <h2>My Learning Journey</h2>
+                <p>
+                    Every project is another step towards becoming
+                    a professional developer.
+                </p>
+
+                <ul class="timeline">
+                    <li>
+                        <time>STEP 01</time>
+                        <h3>Started IT Digital College</h3>
+                        <p>
+                            Learning the fundamentals of information
+                            technology and computer systems.
+                        </p>
+                    </li>
+
+                    <li>
+                        <time>STEP 02</time>
+                        <h3>First Web Pages</h3>
+                        <p>
+                            Learning HTML and CSS to build
+                            attractive and responsive websites.
+                        </p>
+                    </li>
+
+                    <li>
+                        <time>STEP 03</time>
+                        <h3>Learning JavaScript</h3>
+                        <p>
+                            Developing interactive websites
+                            and improving programming logic.
+                        </p>
+                    </li>
+                </ul>
+            </article>
+
+            <article class="stack-card">
+                <span class="stack-number">03 / MY FUTURE</span>
+                <h2>My Future Goals</h2>
+                <p>
+                    My goal is to become a skilled full-stack
+                    developer and create useful digital products.
+                </p>
+
+                <h3>What I want to achieve:</h3>
+                <ul>
+                    <li>Master HTML, CSS and JavaScript.</li>
+                    <li>Become confident in C++ programming.</li>
+                    <li>Build professional websites.</li>
+                    <li>Develop real-world applications.</li>
+                    <li>Work on creative IT projects.</li>
+                </ul>
+
+                <h3>Keep learning. Keep building. Keep improving.</h3>
+            </article>
+        </section>
+
+        <!-- COMMUNITY SECTION -->
+        <section class="community-section" id="community">
+            <div class="community-heading">
+                <span>AZIZBEK IT COMMUNITY</span>
+                <h2>Our Learning Community</h2>
+                <p>
+                    Welcome to our community! Learn programming,
+                    develop your skills and connect with other students.
+                </p>
+                <a href="#top" class="community-register-link">
+                    Explore Our Website →
+                </a>
+            </div>
+
+            <div class="community-stats">
+                <div class="community-stat">
+                    <span>👥</span>
+                    <h2 id="totalRegistered">0</h2>
+                    <p>Registered People</p>
+                </div>
+
+                <div class="community-stat">
+                    <span>💻</span>
+                    <h2 id="differentCourses">0</h2>
+                    <p>Different Courses</p>
+                </div>
+            </div>
+
+            <div class="community-table-box">
+                <div class="table-heading">
+                    <div>
+                        <span>OUR MEMBERS</span>
+                        <h2>Registered Students</h2>
+                    </div>
+                    <span class="online-label">● COMMUNITY</span>
+                </div>
+
+                <div class="table-scroll">
+                    <table class="community-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Student Name</th>
+                                <th>Course</th>
+                                <th>Registration Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registeredPeople"></tbody>
+                    </table>
+                </div>
+
+                <p id="emptyCommunity">
+                    No students have registered yet. Be the first!
+                </p>
+            </div>
+        </section>
+        <div class="instagram-wrapper">
+<div class="instagram-contact">
+    <div class="instagram-info">
+        <span class="instagram-icon">
+            <i class="fa-brands fa-instagram"></i>
+        </span>
+
+        <div>
+            <h3>Found a mistake or have advice?</h3>
+            <p>Help me improve! Send me your ideas on Instagram.</p>
+        </div>
+    </div>
+
+    <a
+        href="https://www.instagram.com/kaxramonovich__001/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="instagram-button"
+    >
+        <i class="fa-brands fa-instagram"></i>
+        Visit My Instagram
+        <span>↗</span>
+    </a>
+</div>
+        </div>
+        <!-- FOOTER -->
+        <footer class="footer">
+            <p>© 2026 Azizbek Ismailov</p>
+        </footer>
+
+        <a class="to-top" href="#top" aria-label="Back to top">↑</a>
+
+        <!-- ACCOUNT DASHBOARD -->
+        <section id="accountPage" class="account-page" hidden>
+            <div class="account-container">
+
+                <button id="closeAccount" class="account-close"
+                        aria-label="Close account">
+                    ✕
+                </button>
+
+                <div class="account-header">
+                    <span class="account-label">PERSONAL DASHBOARD</span>
+                    <h1>My Account</h1>
+                    <p>Manage and view your registration information.</p>
+                </div>
+
+                <div class="profile-card">
+                    <div class="profile-avatar" id="profileAvatar">A</div>
+                    <h2 id="accountName">Your Name</h2>
+                    <p id="accountEmail">your@email.com</p>
+                    <span class="profile-status">● REGISTERED MEMBER</span>
+                </div>
+
+                <div class="account-details">
+                    <div class="account-detail">
+                        <span>👤</span>
+                        <div>
+                            <small>FULL NAME</small>
+                            <h3 id="detailName">Not available</h3>
+                        </div>
+                    </div>
+
+                    <div class="account-detail">
+                        <span>✉️</span>
+                        <div>
+                            <small>EMAIL ADDRESS</small>
+                            <h3 id="detailEmail">Not available</h3>
+                        </div>
+                    </div>
+
+                    <div class="account-detail">
+                        <span>⚧</span>
+                        <div>
+                            <small>GENDER</small>
+                            <h3 id="detailGender">Not available</h3>
+                        </div>
+                    </div>
+
+                    <div class="account-detail">
+                        <span>💻</span>
+                        <div>
+                            <small>SELECTED COURSE</small>
+                            <h3 id="detailCourse">Not available</h3>
+                        </div>
+                    </div>
+
+                    <div class="account-detail">
+                        <span>📅</span>
+                        <div>
+                            <small>REGISTRATION DATE</small>
+                            <h3 id="detailDate">Not available</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="account-actions">
+                    <button id="logoutButton" class="logout-btn">
+                        LOG OUT →
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI ASSISTANT -->
+        <div class="ai-assistant">
+            <button id="aiToggle" class="ai-toggle"
+                    aria-label="Open AI assistant">
+                <span>✦</span>
+                <small>AI</small>
+            </button>
+
+            <div class="ai-window" id="aiWindow" hidden>
+                <div class="ai-header">
+                    <div class="ai-avatar">✦</div>
+                    <div>
+                        <h3>AZIZBEK AI</h3>
+                        <span>● Your learning assistant</span>
+                    </div>
+                    <button id="aiClose" aria-label="Close chat">✕</button>
+                </div>
+
+                <div class="ai-messages" id="aiMessages">
+                    <div class="ai-message bot-message">
+                        Hello! 👋 Welcome to AZIZBEK website.
+
+                        I'm your learning assistant. Ask me about HTML,
+                        CSS, JavaScript, C++, or website development!
+                    </div>
+                </div>
+
+                <div class="ai-suggestions">
+                    <button type="button" data-question="What is HTML?">HTML</button>
+                    <button type="button" data-question="What is CSS?">CSS</button>
+                    <button type="button" data-question="What is JavaScript?">JavaScript</button>
+                    <button type="button" data-question="What is C++?">C++</button>
+                </div>
+
+                <form id="aiForm" class="ai-input-area">
+                    <input
+                        type="text"
+                        id="aiInput"
+                        placeholder="Ask me anything..."
+                        autocomplete="off"
+                        required
+                    >
+                    <button type="submit" aria-label="Send message">➤</button>
+                    
+                </form>
+                
+            </div>
+            
+        </div>
+        
+    </div>
+    <!-- END MAIN WEBSITE -->
+
+
+    <!-- 3D HOVER JAVASCRIPT -->
+    <script>
+        document.querySelectorAll('.mini-card').forEach((card) => {
+            card.addEventListener('mousemove', (e) => {
+                const r = card.getBoundingClientRect();
+                const x = (e.clientX - r.left) / r.width - 0.5;
+                const y = (e.clientY - r.top) / r.height - 0.5;
+
+                card.style.setProperty('--ry', (x * 20) + 'deg');
+                card.style.setProperty('--rx', (-y * 20) + 'deg');
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.setProperty('--rx', '0deg');
+                card.style.setProperty('--ry', '0deg');
+            });
+        });
+    </script>
+
+
+    <!-- FADE-IN ANIMATION -->
+    <script>
+        const items = document.querySelectorAll('.reveal');
+
+        if ('IntersectionObserver' in window) {
+            const io = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        io.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15 });
+
+            items.forEach(function(item) {
+                io.observe(item);
+            });
+        } else {
+            items.forEach(function(item) {
+                item.classList.add('visible');
+            });
+        }
+    </script>
+
+
+    <!-- FIREBASE AUTHENTICATION AND REGISTRATION SYSTEM -->
+    <script>
+        // FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyBCKvEEIQrAUQir6Rk0Y8t3vZKY0bOeYJo",
+            authDomain: "azizbek-b0b5c.firebaseapp.com",
+            databaseURL: "https://azizbek-b0b5c-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "azizbek-b0b5c",
+            storageBucket: "azizbek-b0b5c.firebasestorage.app",
+            messagingSenderId: "8197604788",
+            appId: "1:8197604788:web:69fcdea8e8b55b5fa8dee1",
+            measurementId: "G-SMT96LWQGE"
+        };
+
+        // INITIALIZE FIREBASE
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const database = firebase.database();
+        const auth = firebase.auth();
+
+        // KEEP USERS SIGNED IN ON THE DEVICE THEY USE.
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .catch(error => console.error("Auth persistence error:", error));
+
+        const counterRef = database.ref("community/totalRegistered");
+
+        // LOAD SHARED COMMUNITY COUNTER
+        function loadCommunity() {
+            const totalElement = document.getElementById("totalRegistered");
+
+            counterRef.on("value", function(snapshot) {
+                totalElement.textContent = snapshot.val() || 0;
+            }, function(error) {
+                console.error("Firebase count error:", error);
+                totalElement.textContent = "—";
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const registrationSection = document.getElementById("registrationSection");
+            const mainWebsite = document.getElementById("mainWebsite");
+            const form = document.getElementById("registrationForm");
+            const message = document.getElementById("registrationMessage");
+            const button = document.getElementById("authSubmitButton");
+
+            const profileFields = document.getElementById("profileFields");
+            const confirmPasswordGroup = document.getElementById("confirmPasswordGroup");
+            const passwordInput = document.getElementById("password");
+            const confirmPasswordInput = document.getElementById("confirmPassword");
+
+            const formSmallTitle = document.getElementById("formSmallTitle");
+            const formHeading = document.getElementById("formHeading");
+            const formDescription = document.getElementById("formDescription");
+            const authSwitchText = document.getElementById("authSwitchText");
+            const authSwitchButton = document.getElementById("authSwitchButton");
+
+            let isLoginMode = false;
+            let currentUserProfile = null;
+
+            // SWITCH BETWEEN REGISTER AND LOGIN
+            function setAuthMode(loginMode) {
+                isLoginMode = loginMode;
+
+                form.reset();
+                message.textContent = "";
+                message.style.color = "#00eaff";
+
+                profileFields.hidden = loginMode;
+                confirmPasswordGroup.hidden = loginMode;
+
+                document.getElementById("fullName").required = !loginMode;
+                document.getElementById("gender").required = !loginMode;
+                document.getElementById("course").required = !loginMode;
+                confirmPasswordInput.required = !loginMode;
+
+                passwordInput.autocomplete = loginMode
+                    ? "current-password"
+                    : "new-password";
+
+                confirmPasswordInput.autocomplete = "new-password";
+
+                if (loginMode) {
+                    formSmallTitle.textContent = "WELCOME BACK";
+                    formHeading.textContent = "Log In";
+                    formDescription.textContent =
+                        "Enter your email and password to open your account.";
+                    button.textContent = "LOG IN & ENTER WEBSITE →";
+                    authSwitchText.textContent = "Don't have an account?";
+                    authSwitchButton.textContent = "Register";
+                } else {
+                    formSmallTitle.textContent = "CREATE YOUR PROFILE";
+                    formHeading.textContent = "Registration";
+                    formDescription.textContent =
+                        "Complete the form to create your account.";
+                    button.textContent = "REGISTER & ENTER WEBSITE →";
+                    authSwitchText.textContent = "Already have an account?";
+                    authSwitchButton.textContent = "Log in";
+                }
+            }
+
+            authSwitchButton.addEventListener("click", function() {
+                setAuthMode(!isLoginMode);
+            });
+
+            // SHOW PROFILE INFORMATION FROM FIREBASE
+            async function displayAccount(user) {
+                if (!user) return;
+
+                try {
+                    const snapshot = await database.ref("users/" + user.uid).once("value");
+                    const profile = snapshot.val() || {};
+
+                    currentUserProfile = {
+                        name: profile.name || user.displayName || "Member",
+                        email: user.email || profile.email || "Not available",
+                        gender: profile.gender || "Not available",
+                        course: profile.course || "Not available",
+                        registrationDate: profile.registrationDate || "Not available"
+                    };
+
+                    document.getElementById("accountName").textContent =
+                        currentUserProfile.name;
+
+                    document.getElementById("accountEmail").textContent =
+                        currentUserProfile.email;
+
+                    document.getElementById("profileAvatar").textContent =
+                        currentUserProfile.name.charAt(0).toUpperCase();
+
+                    document.getElementById("detailName").textContent =
+                        currentUserProfile.name;
+
+                    document.getElementById("detailEmail").textContent =
+                        currentUserProfile.email;
+
+                    document.getElementById("detailGender").textContent =
+                        currentUserProfile.gender;
+
+                    document.getElementById("detailCourse").textContent =
+                        currentUserProfile.course;
+
+                    document.getElementById("detailDate").textContent =
+                        currentUserProfile.registrationDate;
+
+                } catch (error) {
+                    console.error("Profile loading error:", error);
+                    alert("Your account is signed in, but the profile could not be loaded. Check your Firebase database rules.");
+                }
+            }
+
+            // OPEN MAIN WEBSITE AFTER SUCCESSFUL AUTHENTICATION
+            async function enterWebsite(user) {
+                registrationSection.hidden = true;
+                mainWebsite.hidden = false;
+
+                await displayAccount(user);
+                loadCommunity();
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+            }
+
+            // AUTHENTICATION STATE
+            auth.onAuthStateChanged(async function(user) {
+                if (user) {
+                    await enterWebsite(user);
+                } else {
+                    mainWebsite.hidden = true;
+                    registrationSection.hidden = false;
+                    document.getElementById("accountPage").hidden = true;
+                }
+            });
+
+            // REGISTRATION AND LOGIN SUBMISSION
+            form.addEventListener("submit", async function(event) {
+                event.preventDefault();
+
+                const email = document.getElementById("email").value.trim();
+                const password = passwordInput.value;
+
+                if (!email || !password) {
+                    message.textContent = "Please enter your email and password.";
+                    message.style.color = "#ff8585";
+                    return;
+                }
+
+                button.disabled = true;
+                message.style.color = "#00eaff";
+
+                try {
+                    if (isLoginMode) {
+                        // EXISTING USER LOGIN
+                        button.textContent = "LOGGING IN...";
+                        message.textContent = "Checking your account...";
+
+                        await auth.signInWithEmailAndPassword(email, password);
+
+                        message.textContent = "Login successful! Opening your website...";
+
+                    } else {
+                        // NEW USER REGISTRATION
+                        const name = document.getElementById("fullName").value.trim();
+                        const gender = document.getElementById("gender").value;
+                        const course = document.getElementById("course").value;
+                        const confirmPassword = confirmPasswordInput.value;
+
+                        if (!name || !gender || !course) {
+                            throw new Error("Please complete every profile field.");
+                        }
+
+                        if (password.length < 6) {
+                            throw new Error("Your password must contain at least 6 characters.");
+                        }
+
+                        if (password !== confirmPassword) {
+                            throw new Error("Passwords do not match. Please check them.");
+                        }
+
+                        button.textContent = "CREATING ACCOUNT...";
+                        message.textContent = "Creating your secure account...";
+
+                        // CREATE FIREBASE AUTH USER
+                        const credential = await auth.createUserWithEmailAndPassword(
+                            email,
+                            password
+                        );
+
+                        const newUser = credential.user;
+
+                        const registrationDate = new Date().toLocaleDateString();
+
+                        // SAVE PROFILE UNDER THE USER'S UNIQUE FIREBASE UID.
+                        // PASSWORDS ARE NEVER SAVED IN THE DATABASE.
+                        const userProfile = {
+                            name: name,
+                            email: email,
+                            gender: gender,
+                            course: course,
+                            registrationDate: registrationDate,
+                            createdAt: firebase.database.ServerValue.TIMESTAMP
+                        };
+
+                        await database.ref("users/" + newUser.uid).set(userProfile);
+
+                        // INCREASE THE SHARED COUNT ONLY AFTER A NEW ACCOUNT
+                        const countResult = await counterRef.transaction(function(currentCount) {
+                            return (Number(currentCount) || 0) + 1;
+                        });
+
+                        if (!countResult.committed) {
+                            console.warn("The account was created, but the community counter did not update.");
+                        }
+
+                        message.textContent = "Registration successful! Opening your website...";
+                    }
+
+                    const signedInUser = auth.currentUser;
+
+                    if (signedInUser) {
+                        await enterWebsite(signedInUser);
+                    }
+
+                } catch (error) {
+                    console.error("Authentication error:", error);
+
+                    let errorMessage = error.message || "Something went wrong.";
+
+                    if (error.code === "auth/email-already-in-use") {
+                        errorMessage = "This email already has an account. Please log in instead.";
+                    } else if (error.code === "auth/invalid-email") {
+                        errorMessage = "Please enter a valid email address.";
+                    } else if (error.code === "auth/weak-password") {
+                        errorMessage = "Your password is too weak. Use at least 6 characters.";
+                    } else if (
+                        error.code === "auth/user-not-found" ||
+                        error.code === "auth/wrong-password" ||
+                        error.code === "auth/invalid-credential"
+                    ) {
+                        errorMessage = "Incorrect email or password. Please try again.";
+                    } else if (error.code === "auth/too-many-requests") {
+                        errorMessage = "Too many attempts. Please wait and try again later.";
+                    } else if (
+                        error.code === "PERMISSION_DENIED" ||
+                        error.code === "database/permission-denied"
+                    ) {
+                        errorMessage = "Firebase database permission denied. Please check your database rules.";
+                    }
+
+                    message.textContent = errorMessage;
+                    message.style.color = "#ff8585";
+
+                } finally {
+                    button.disabled = false;
+                    button.textContent = isLoginMode
+                        ? "LOG IN & ENTER WEBSITE →"
+                        : "REGISTER & ENTER WEBSITE →";
+                }
+            });
+
+            // ACCOUNT OPEN/CLOSE
+            const accountPage = document.getElementById("accountPage");
+            const accountButton = document.getElementById("accountButton");
+            const mobileAccountButton = document.getElementById("mobileAccountButton");
+            const closeAccount = document.getElementById("closeAccount");
+
+            async function openAccount(event) {
+                if (event) event.preventDefault();
+
+                const user = auth.currentUser;
+
+                if (!user) {
+                    alert("Please log in to view your account.");
+                    return;
+                }
+
+                await displayAccount(user);
+                accountPage.hidden = false;
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+            }
+
+            accountButton.addEventListener("click", openAccount);
+            mobileAccountButton.addEventListener("click", openAccount);
+
+            closeAccount.addEventListener("click", function() {
+                accountPage.hidden = true;
+            });
+
+            // LOG OUT
+            document.getElementById("logoutButton").addEventListener("click", async function() {
+                const confirmLogout = confirm("Are you sure you want to log out?");
+
+                if (!confirmLogout) return;
+
+                try {
+                    await auth.signOut();
+
+                    accountPage.hidden = true;
+                    mainWebsite.hidden = true;
+                    registrationSection.hidden = false;
+
+                    setAuthMode(true);
+
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
+
+                } catch (error) {
+                    console.error("Logout error:", error);
+                    alert("Could not log out. Please try again.");
+                }
+            });
+        });
+    </script>
+
+
+    <!-- AZIZBEK AI ASSISTANT JAVASCRIPT -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const aiToggle = document.getElementById("aiToggle");
+            const aiWindow = document.getElementById("aiWindow");
+            const aiClose = document.getElementById("aiClose");
+            const aiForm = document.getElementById("aiForm");
+            const aiInput = document.getElementById("aiInput");
+            const aiMessages = document.getElementById("aiMessages");
+
+            // OPEN AND CLOSE AI CHAT
+            aiToggle.addEventListener("click", function() {
+                aiWindow.hidden = !aiWindow.hidden;
+
+                if (!aiWindow.hidden) {
+                    aiInput.focus();
+                }
+            });
+
+            aiClose.addEventListener("click", function() {
+                aiWindow.hidden = true;
+            });
+
+            // ADD CHAT MESSAGE
+            function addMessage(text, type) {
+                const message = document.createElement("div");
+                message.className = "ai-message " + type;
+                message.textContent = text;
+                aiMessages.appendChild(message);
+                aiMessages.scrollTop = aiMessages.scrollHeight;
+            }
+
+            // AI ANSWER DATABASE
+            function getAIResponse(question) {
+                const q = question.toLowerCase().trim();
+
+                if (
+                    q.includes("hello") ||
+                    q.includes("hi") ||
+                    q.includes("hey")
+                ) {
+                    return "Hello! 👋 Welcome to AZIZBEK IT Community. How can I help you today?";
+                }
+
+                if (q.includes("html")) {
+                    return "HTML stands for HyperText Markup Language.\n\nIt creates the structure of websites using headings, paragraphs, images, links, buttons and forms.\n\nExample:\n\n<h1>Hello World</h1>\n<p>My first website</p>";
+                }
+
+                if (q.includes("css")) {
+                    return "CSS stands for Cascading Style Sheets.\n\nIt controls the appearance of websites, including colors, layouts, fonts, backgrounds, animations and responsive design.\n\nExample:\n\nh1 {\n  color: cyan;\n  font-size: 30px;\n}";
+                }
+
+                if (
+                    q.includes("javascript") ||
+                    q.includes("java script")
+                ) {
+                    return "JavaScript makes websites interactive.\n\nIt is used for buttons, forms, menus, animations and dynamic content.\n\nExample:\n\nalert('Hello World!');";
+                }
+
+                if (q.includes("c++") || q.includes("cpp")) {
+                    return "C++ is a powerful programming language used for software development, games, algorithms and system programming.\n\nExample:\n\n#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << \"Hello World!\";\n    return 0;\n}";
+                }
+
+                if (q.includes("course")) {
+                    return "Our website offers these learning courses:\n\n1. HTML\n2. CSS\n3. JavaScript\n4. C++\n5. Full-Stack Development\n\nVisit the Skills section to explore them.";
+                }
+
+                if (
+                    q.includes("website") ||
+                    q.includes("web development")
+                ) {
+                    return "To create a website, follow these steps:\n\n1. Plan your website.\n2. Use HTML for structure.\n3. Use CSS for design.\n4. Use JavaScript for functionality.\n5. Test your website.\n6. Publish it online.";
+                }
+
+                if (
+                    q.includes("account") ||
+                    q.includes("profile")
+                ) {
+                    return "Click My Account in the navigation bar or the My Account button on your phone to view your registration information.";
+                }
+
+                if (q.includes("project")) {
+                    return "Here are some beginner programming projects:\n\n1. Personal portfolio website.\n2. Calculator.\n3. Registration form.\n4. To-do list.\n5. Weather application.\n6. Responsive landing page.\n\nPractice makes you a better developer!";
+                }
+
+                if (q.includes("help")) {
+                    return "I can help you with:\n\n• HTML structure\n• CSS styling\n• JavaScript programming\n• C++ basics\n• Website development\n• Programming projects\n• Website navigation\n\nAsk me a question!";
+                }
+
+                if (
+                    q.includes("who are you") ||
+                    q.includes("your name")
+                ) {
+                    return "I am AZIZBEK AI, your website learning assistant! ✦ I help visitors understand programming and web development.";
+                }
+
+                return "That's an interesting question! 😊\n\nI can currently answer questions about HTML, CSS, JavaScript, C++, courses, projects and website development.\n\nTry asking me about one of these topics!";
+            }
+
+            // SEND MESSAGE
+            function sendAIMessage(question) {
+                if (!question.trim()) return;
+
+                addMessage(question, "user-message");
+                aiInput.value = "";
+
+                const response = getAIResponse(question);
+                addMessage(response, "bot-message");
+            }
+
+            // SUBMIT CHAT FORM
+            aiForm.addEventListener("submit", function(event) {
+                event.preventDefault();
+                sendAIMessage(aiInput.value);
+            });
+
+            // QUICK QUESTIONS
+            document.querySelectorAll(".ai-suggestions button").forEach(function(button) {
+                button.addEventListener("click", function() {
+                    sendAIMessage(button.dataset.question);
+                });
+            });
+        });
+    </script>
+
+
+    <!-- =========================================
+         LANGUAGE TRANSLATION SYSTEM
+    ========================================= -->
+
+    <script>
+        let pendingLanguage = null;
+
+        // APPLY SELECTED LANGUAGE
+        function changeWebsiteLanguage(language, attempts = 0) {
+
+            const translateSelect = document.querySelector(
+                ".goog-te-combo"
+            );
+
+            if (!translateSelect) {
+                if (attempts < 20) {
+                    setTimeout(function() {
+                        changeWebsiteLanguage(language, attempts + 1);
+                    }, 500);
+                } else {
+                    console.warn("Google Translate is not available yet.");
+                }
+
+                return;
+            }
+
+            translateSelect.value = language;
+
+            translateSelect.dispatchEvent(
+                new Event("change", { bubbles: true })
+            );
+        }
+
+        // GOOGLE TRANSLATE INITIALIZATION
+        function googleTranslateElementInit() {
+
+            new google.translate.TranslateElement(
+                {
+                    pageLanguage: "en",
+                    includedLanguages: "en,uz,ru",
+                    autoDisplay: false
+                },
+                "google_translate_element"
+            );
+
+            if (pendingLanguage) {
+                const language = pendingLanguage;
+                pendingLanguage = null;
+
+                setTimeout(function() {
+                    changeWebsiteLanguage(language);
+                }, 700);
+            }
+        }
+
+        // LANGUAGE SELECTOR
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const selector = document.getElementById(
+                "languageSelector"
+            );
+
+            // RESTORE SAVED LANGUAGE
+            const savedLanguage = localStorage.getItem(
+                "azizbek_language"
+            );
+
+            if (
+                savedLanguage &&
+                ["en", "uz", "ru"].includes(savedLanguage)
+            ) {
+                selector.value = savedLanguage;
+                pendingLanguage = savedLanguage;
+            }
+
+            // CHANGE LANGUAGE WHEN USER SELECTS AN OPTION
+            selector.addEventListener("change", function() {
+
+                const selectedLanguage = this.value;
+
+                localStorage.setItem(
+                    "azizbek_language",
+                    selectedLanguage
+                );
+
+                changeWebsiteLanguage(selectedLanguage);
+            });
+
+        });
+    </script>
+
+    <!-- GOOGLE TRANSLATE SCRIPT -->
+    <script
+        src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+    </script>
+<script>
+document.querySelectorAll(".interactive-card").forEach(card => {
+
+    const button = card.querySelector(".card-toggle");
+
+    button.addEventListener("click", () => {
+
+        card.classList.toggle("active");
+
+        const isOpen = card.classList.contains("active");
+
+        button.innerHTML = isOpen
+            ? 'Show Less <span>＋</span>'
+            : 'Explore More <span>＋</span>';
+
+        button.setAttribute("aria-expanded", isOpen);
+
+    });
+
+});
+</script>
+</body>
+</html>

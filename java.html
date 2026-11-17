@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JSLab | Learn JavaScript</title>
+<link rel="stylesheet" href="java.css">
+</head>
+
+<body>
+
+<!-- =========================================================
+     JSLAB: ONE FILE, FOUR PAGES
+     jslab.html            -> landing page (introduction)
+     jslab.html?lessons=1  -> subjects page (list of lessons)
+     jslab.html?lesson=N   -> one lesson (N = 0..9)
+     jslab.html?test=1|2|final -> level tests and final test
+     ========================================================= -->
+
+<!-- 1. DETECT THE PAGE. This runs first, so the wrong page never flashes. -->
+<script>
+(function () {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.has("lesson"))       document.body.classList.add("lesson-mode");
+    else if (params.has("test"))    document.body.classList.add("test-mode");
+    else if (params.has("lessons")) document.body.classList.add("subjects-mode");
+    else                            document.body.classList.add("landing-mode");
+})();
+</script>
+
+<!-- 2. MATRIX BACKGROUND (falling characters) -->
+<canvas id="code-bg"></canvas>
+
+<!-- 3. LANGUAGE SELECTOR (Google Translate) -->
+<div id="lang-box">
+  <select class="language-select" id="langSel" translate="no" aria-label="Language">
+    <option value="en">en English</option>
+    <option value="uz">uz O'zbek</option>
+    <option value="ru">ru Русский</option>
+    <option value="tr">tr Türkçe</option>
+  </select>
+  <span class="language-arrow">v</span>
+</div>
+<div id="google_translate_element" style="display:none"></div>
+
+<!-- =========================================================
+     PAGE 1: LANDING
+     ========================================================= -->
+<div id="jsLanding">
+  <div class="land-nav">
+    <a class="logo" href="?">JS<span>LAB</span></a>
+    <span class="nav-note">A practical place to learn JavaScript</span>
+  </div>
+
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Your first real code starts here</div>
+
+      <h1>Write it.<br>Run it.<br><span>Break it.</span></h1>
+
+      <p class="hero-copy">
+        Learn JavaScript step by step. Every lesson has a short explanation,
+        an example and a task. Write your answer in the browser,
+        and the site checks it for you.
+      </p>
+
+      <div class="hero-actions">
+        <a class="btn-main" href="?lessons=1">Explore lessons →</a>
+        <span class="hero-caption">10 guided lessons · Interactive code editor</span>
+      </div>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <div class="orbit"></div>
+
+      <div class="code-window">
+        <div class="dots"><i></i><i></i><i></i></div>
+<pre><span class="purple">function</span> <span class="blue">startJourney</span>() {
+  <span class="purple">const</span> skills = [<span class="yellow">"logic"</span>, <span class="yellow">"practice"</span>];
+
+  <span class="purple">for</span> (<span class="purple">const</span> skill <span class="purple">of</span> skills) {
+    console.log(<span class="yellow">"Learning"</span>, skill);
+  }
+}
+
+startJourney();</pre>
+      </div>
+
+      <div class="float-tag one">&lt; keep_learning /&gt;</div>
+      <div class="float-tag two">console.log("Hello, future dev!")</div>
+    </div>
+  </section>
+
+  <div class="land-bottom">
+    <span>JSLAB · LEARN BY DOING</span>
+    <span>Start small. Keep building.</span>
+  </div>
+
+  <div class="back-wrap">
+    <a class="back-link" href="index.html">← Return to First Page</a>
+  </div>
+</div>
+
+<!-- =========================================================
+     PAGE 2: SUBJECTS (list of lessons, level tests, final test)
+     ========================================================= -->
+<div id="jsSubjects">
+  <div class="wrap">
+    <div class="top-row">
+      <a class="logo" href="?">‹ JS<span>LAB</span></a>
+      <a class="btn-soft" href="?">← Introduction</a>
+    </div>
+
+    <h1 class="page-title">Choose your lesson.</h1>
+    <p class="page-intro">
+      Follow the path in order. Solve each task to unlock the next lesson.
+      After five lessons you take a level test to open the next level.
+    </p>
+
+    <div class="prog-box">
+      <span id="subjProgText">0 / 10 lessons completed</span>
+      <div class="bar"><i id="subjProgFill"></i></div>
+    </div>
+
+    <div id="subjGrid"></div>
+
+    <div class="sub-footer">
+      <span>Your progress is saved in this browser on this device.</span>
+      <button class="btn-soft" id="resetBtn" type="button">Reset progress</button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     PAGE 3: ONE LESSON (sidebar + lesson + code editor)
+     ========================================================= -->
+<div id="jsLessonApp">
+  <div class="topbar">
+    <a class="logo" href="?lessons=1">‹ JS<span>LAB</span></a>
+
+    <div class="top-actions">
+      <span class="prog-label" id="topProgText"></span>
+      <div class="bar"><i id="topProgFill"></i></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="side-heading">Your learning path</div>
+      <div id="sideList"></div>
+      <div style="margin-top:18px">
+        <a class="btn-soft" href="?lessons=1">← All lessons</a>
+      </div>
+    </aside>
+
+    <article class="lesson-panel" id="lessonContent"></article>
+
+    <section class="editor-panel" id="editorPanel">
+      <div class="editor-heading">⌨️ JavaScript code editor</div>
+
+      <div class="editor-body">
+        <textarea id="code" spellcheck="false" translate="no">console.log("Hello, JavaScript!");</textarea>
+
+        <div class="row">
+          <button class="btn-main" id="runBtn" type="button">▶ Run</button>
+          <button class="btn-soft" id="clearBtn" type="button">Clear output</button>
+          <button class="btn-soft" id="resetCodeBtn" type="button">↺ Reset code</button>
+          <button class="btn-main" id="checkBtn" type="button" style="display:none">✔ Check answer</button>
+        </div>
+
+        <div id="out" translate="no">Output will appear here.</div>
+
+        <div class="editor-tip">
+          Tip: press Ctrl + Enter to run. prompt() opens a popup window.
+          If the page freezes, you wrote an infinite loop: refresh the tab.
+        </div>
+
+        <div id="checkMsg" class="msg" style="display:none"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- =========================================================
+     PAGE 4: TEST (level tests and the final test)
+     ========================================================= -->
+<div id="jsTestApp">
+  <div class="test-wrap">
+    <div class="top-row">
+      <a class="logo" href="?lessons=1">‹ JS<span>LAB</span></a>
+      <a class="btn-soft" href="?lessons=1">← All lessons</a>
+    </div>
+
+    <div id="testContent"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   SECTION A: MATRIX BACKGROUND
+   Draws falling characters on the canvas. Every 45 ms one frame is drawn.
+   A half-transparent black rectangle on each frame makes the trails fade.
+   ========================================================= */
+(function () {
+    const cv = document.getElementById("code-bg");
+    const ctx = cv.getContext("2d");
+    const chars = "{}[]()<>/\\=+*#$%&;:_=>01JS".split("");
+    const size = 18;
+    let cols, y, speed;
+
+    function resize() {
+        cv.width = innerWidth;
+        cv.height = innerHeight;
+        cols = Math.floor(cv.width / size);
+        y = Array.from({ length: cols }, () => Math.random() * -50);
+        speed = Array.from({ length: cols }, () => 0.4 + Math.random() * 0.9);
+    }
+
+    function rnd() { return chars[Math.floor(Math.random() * chars.length)]; }
+
+    function draw() {
+        ctx.fillStyle = "rgba(5,11,22,.1)";
+        ctx.fillRect(0, 0, cv.width, cv.height);
+        ctx.font = size + "px Consolas, monospace";
+
+        for (let i = 0; i < cols; i++) {
+            const x = i * size, py = y[i] * size;
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "rgba(247,223,30,.55)";
+            ctx.fillText(rnd(), x, py - size);
+            ctx.shadowColor = "#f7df1e";
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = "#fffbd0";
+            ctx.fillText(rnd(), x, py);
+            y[i] += speed[i];
+            if (py > cv.height && Math.random() > .96) y[i] = Math.random() * -20;
+        }
+        ctx.shadowBlur = 0;
+    }
+
+    resize();
+    addEventListener("resize", resize);
+    ctx.fillStyle = "#050b16";
+    ctx.fillRect(0, 0, cv.width, cv.height);
+
+    /* Respect "reduce motion": draw nothing animated for those users */
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(draw, 45);
+})();
+
+
+/* =========================================================
+   SECTION B: LESSON DATA
+   Each lesson has:
+     t     title                 d     short description (subjects page)
+     intro explanation           pts   4 key points
+     c     example code          o     expected output
+     tip   tip                   task  the task text
+     s     starter code for the editor
+     vars  names of variables the checker reads after running the code
+     cases test cases: "in" = fake prompt() answers, "ok" = rule that must be true
+   In "ok", r.out = printed text, r.code = student code, r.v = variables,
+   r.cap(fn) = text printed while fn runs.
+   ========================================================= */
+const lessons = [
+{
+  t: "1. console.log() and comments",
+  d: "console.log() shows text in the output. Everything after // is a comment and is ignored.",
+  intro: "console.log() sends text or numbers to the output. A comment starts with // and is ignored by JavaScript. In a real page the output appears in the browser console (F12).",
+  pts: [
+    "Text must be inside quotes: \"Hello\" or 'Hello'.",
+    "Numbers need no quotes: console.log(2 + 3) shows 5.",
+    "console.log(a, b) puts a space between the values.",
+    "Everything after // on a line is ignored. Use /* ... */ for many lines."
+  ],
+  c: [
+    '// This is a comment',
+    'console.log("Hello, world!");',
+    'console.log(2 + 3);',
+    'console.log("JavaScript", "is", "fun");'
+  ].join("\n"),
+  o: "Hello, world!\n5\nJavaScript is fun",
+  tip: "If you forget a closing quote or bracket, JavaScript shows a SyntaxError.",
+  task: "Print your name, then your age on the next line, then the result of 12 * 4.",
+  s: "// Task: print your name, your age, and the result of 12 * 4\n// Write your code below\n",
+  vars: [],
+  cases: [{ in: [], ok: r => {
+      const L = r.out.trim().split("\n");
+      return L.length >= 3 && L[0].trim() !== "" && L[1].trim() !== "" && L[L.length - 1].trim() === "48";
+  } }]
+},
+{
+  t: "2. Variables and types",
+  d: "A variable stores a value. Use const when it will not change and let when it will.",
+  intro: "A variable is a name that stores a value, like a labeled box. Create it with const or let. Every value has a type.",
+  pts: [
+    "const = cannot be reassigned. let = can be changed later.",
+    "Types: number (42, 4.5), string (\"text\"), boolean (true / false), undefined, null.",
+    "typeof x shows the type of x.",
+    "= stores a value, === compares values (use it instead of ==)."
+  ],
+  c: [
+    'const name = "Aziz";',
+    'let age = 19;',
+    'age = 20;',
+    'const price = 4.5;',
+    'const isStudent = true;',
+    'console.log(name, age, price, isStudent);',
+    'console.log(typeof age, typeof name);'
+  ].join("\n"),
+  o: "Aziz 20 4.5 true\nnumber string",
+  tip: "Names are case sensitive: age and Age are different variables. Changing a const gives a TypeError.",
+  task: "Create variables city and year (give them real values), then print one sentence that uses both of them.",
+  s: "// Task: make variables city and year, then print them together\nconst city = \"\";\nconst year = 0;\n",
+  vars: ["city", "year"],
+  cases: [{ in: [], ok: r =>
+      typeof r.v.city === "string" && r.v.city.trim() !== "" &&
+      r.v.year !== undefined && r.v.year !== 0 &&
+      r.out.includes(r.v.city) && r.out.includes(String(r.v.year))
+  }]
+},
+{
+  t: "3. prompt() and template strings",
+  d: "prompt() asks the user to type something. Template strings put variables inside text.",
+  intro: "prompt() opens a popup and returns what the user typed. It ALWAYS returns text (a string), even when the user types a number. Convert it with Number(). A template string uses backticks and ${} to put variables inside text.",
+  pts: [
+    "const name = prompt(\"Question: \") stores the answer as text.",
+    "Number(text) turns text into a number.",
+    "`Hi ${name}` inserts the value of name into the text (backticks, not quotes).",
+    "If the user presses Cancel, prompt() returns null."
+  ],
+  c: [
+    'const name = prompt("Your name: ");',
+    'const year = Number(prompt("Birth year: "));',
+    'console.log(`Hi ${name}, you are about ${2026 - year} years old`);'
+  ].join("\n"),
+  o: "Your name: Ali\nBirth year: 2005\nHi Ali, you are about 21 years old",
+  tip: "\"5\" + \"5\" gives \"55\", but 5 + 5 gives 10. Convert input to numbers before doing math.",
+  task: "Ask the user for two numbers and print their sum.",
+  s: "// Task: ask for two numbers and print their sum\nconst a = Number(prompt(\"First number: \"));\n// continue here\n",
+  vars: [],
+  cases: [
+    { in: ["3", "4"],   ok: r => r.out.includes("7") },
+    { in: ["10", "25"], ok: r => r.out.includes("35") },
+    { in: ["50", "8"],  ok: r => r.out.includes("58") }
+  ]
+},
+{
+  t: "4. if / else if / else",
+  d: "Conditions let the program choose what to do. Curly brackets {} group the code.",
+  intro: "Conditions let your program choose. JavaScript checks them from top to bottom and runs only the first block whose condition is true.",
+  pts: [
+    "Comparisons: ===, !==, <, >, <=, >=. They give true or false.",
+    "The condition goes inside round brackets: if (score >= 60).",
+    "else if is checked only if all earlier conditions were false.",
+    "else runs when nothing else matched. && means and, || means or."
+  ],
+  c: [
+    'const score = 78;',
+    'if (score >= 90) {',
+    '  console.log("Excellent");',
+    '} else if (score >= 60) {',
+    '  console.log("Good");',
+    '} else {',
+    '  console.log("Try again");',
+    '}'
+  ].join("\n"),
+  o: "Good",
+  tip: "Use === and not =. Writing if (x = 5) stores 5 in x instead of comparing.",
+  task: "Ask the user for their age. Print child if under 13, teen if under 18, otherwise adult.",
+  s: "// Task: ask for age, then print child / teen / adult\nconst age = Number(prompt(\"Age: \"));\n",
+  vars: [],
+  cases: [
+    { in: ["8"],  ok: r => { const o = r.out.toLowerCase(); return o.includes("child") && !o.includes("teen") && !o.includes("adult"); } },
+    { in: ["13"], ok: r => { const o = r.out.toLowerCase(); return o.includes("teen") && !o.includes("child") && !o.includes("adult"); } },
+    { in: ["17"], ok: r => { const o = r.out.toLowerCase(); return o.includes("teen") && !o.includes("adult"); } },
+    { in: ["18"], ok: r => { const o = r.out.toLowerCase(); return o.includes("adult") && !o.includes("teen") && !o.includes("child"); } }
+  ]
+},
+{
+  t: "5. Loops: for and while",
+  d: "for repeats a set number of times, while repeats until the condition is false.",
+  intro: "Loops repeat code so you do not have to write it many times. Use for when you know how many rounds you need, and while when you repeat until something changes.",
+  pts: [
+    "for (let i = 1; i <= 5; i++) has 3 parts: start, condition, step.",
+    "The loop stops when the condition becomes false.",
+    "A while loop must change its variable, otherwise it never stops.",
+    "break leaves the loop; continue skips to the next round."
+  ],
+  c: [
+    'for (let i = 1; i <= 5; i++) {',
+    '  console.log("for:", i);',
+    '}',
+    '',
+    'let n = 3;',
+    'while (n > 0) {',
+    '  console.log("while:", n);',
+    '  n--;',
+    '}'
+  ].join("\n"),
+  o: "for: 1\nfor: 2\nfor: 3\nfor: 4\nfor: 5\nwhile: 3\nwhile: 2\nwhile: 1",
+  tip: "An infinite loop freezes the page. If it happens, refresh the browser tab.",
+  task: "Use a while loop to print the numbers from 10 down to 1.",
+  s: "// Task: print 10, 9, 8 ... 1 using a while loop\nlet n = 10;\n",
+  vars: [],
+  cases: [{ in: [], ok: r =>
+      r.code.includes("while") && r.out.trim().split(/\s+/).join(",") === "10,9,8,7,6,5,4,3,2,1"
+  }]
+},
+{
+  t: "6. Arrays",
+  d: "An array stores many values in order. The first index is 0.",
+  intro: "An array stores many values in one variable, in order. Every item has an index, and the first index is 0.",
+  pts: [
+    "fruits[0] is the first item, fruits[fruits.length - 1] is the last.",
+    "push(x) adds an item to the end; pop() removes the last one.",
+    "fruits.length gives the number of items.",
+    "for (const item of list) goes through every item."
+  ],
+  c: [
+    'const fruits = ["apple", "banana", "cherry"];',
+    'fruits.push("mango");',
+    'console.log(fruits[0], fruits[fruits.length - 1]);',
+    'console.log(fruits.length);',
+    'for (const f of fruits) {',
+    '  console.log(f.toUpperCase());',
+    '}'
+  ].join("\n"),
+  o: "apple mango\n4\nAPPLE\nBANANA\nCHERRY\nMANGO",
+  tip: "fruits[10] on a list with 4 items gives undefined (no error). fruits[-1] does NOT work as in Python: use fruits.at(-1).",
+  task: "Make an array of 3 numbers, add one more with push, then print the sum of all 4 numbers.",
+  s: "// Task: array of 3 numbers, push one more, print the sum\nconst numbers = [4, 8, 15];\n",
+  vars: ["numbers"],
+  cases: [{ in: [], ok: r => {
+      const n = r.v.numbers;
+      return Array.isArray(n) && n.length === 4 && r.code.includes("push") &&
+             r.out.trim() === String(n.reduce((a, b) => a + b, 0));
+  } }]
+},
+{
+  t: "7. Objects",
+  d: "An object stores key: value pairs.",
+  intro: "An object stores data as key: value pairs. You find a value by its key (its name) instead of a number position.",
+  pts: [
+    "Create: { name: \"Aziz\" }. Read: user.name or user[\"name\"].",
+    "Add or change: user.city = \"Tashkent\".",
+    "Keys are unique: the same key twice keeps only the last value.",
+    "for (const key in user) goes through all keys; user[key] gives the value."
+  ],
+  c: [
+    'const user = { name: "Aziz", age: 19 };',
+    'user.city = "Tashkent";',
+    'console.log(user.name);',
+    'for (const key in user) {',
+    '  console.log(key, "->", user[key]);',
+    '}'
+  ].join("\n"),
+  o: "Aziz\nname -> Aziz\nage -> 19\ncity -> Tashkent",
+  tip: "Reading a key that does not exist gives undefined. Writing user.phone.number when phone does not exist gives a TypeError.",
+  task: "Make an object for a book with at least 3 pairs, then print every key and value with a for loop.",
+  s: "// Task: object for a book, print every key and value\nconst book = {};\n",
+  vars: ["book"],
+  cases: [{ in: [], ok: r => {
+      const b = r.v.book;
+      return b && typeof b === "object" && Object.keys(b).length >= 3 && r.code.includes("for") &&
+             Object.entries(b).every(([k, v]) => r.out.includes(String(k)) && r.out.includes(String(v)));
+  } }]
+},
+{
+  t: "8. Functions",
+  d: "A function is a reusable block of code. Use return to give a result.",
+  intro: "A function is a named block of code you can use again and again. It can take inputs (parameters) and give back a result with return. An arrow function is a shorter way to write one.",
+  pts: [
+    "function name(parameters) { ... } starts a function.",
+    "return sends a value back; the function stops there.",
+    "A default value is used when you give no argument: (name = \"friend\").",
+    "A function runs only when you call it: square(7)."
+  ],
+  c: [
+    'function square(x) {',
+    '  return x * x;',
+    '}',
+    '',
+    'const greet = (name = "friend") => `Hello, ${name}!`;',
+    '',
+    'console.log(square(7));',
+    'console.log(greet());',
+    'console.log(greet("Aziz"));'
+  ].join("\n"),
+  o: "49\nHello, friend!\nHello, Aziz!",
+  tip: "console.log() shows something on the screen; return gives the value back to your code. A function without return gives undefined.",
+  task: "Write a function area(w, h) that returns w * h, then print area(3, 4).",
+  s: "// Task: function area(w, h) that returns w * h\nfunction area(w, h) {\n  // write your code here\n}\n",
+  vars: ["area"],
+  cases: [{ in: [], ok: r => {
+      const f = r.v.area;
+      return typeof f === "function" && f(3, 4) === 12 && f(5, 6) === 30 && r.out.includes("12");
+  } }]
+},
+{
+  t: "9. Classes (OOP basics)",
+  d: "A class is a blueprint for objects. constructor runs when an object is created.",
+  intro: "A class is a blueprint for making objects that have their own data (properties) and actions (methods).",
+  pts: [
+    "class Dog { } defines the blueprint; new Dog(\"Rex\") creates an object.",
+    "constructor runs automatically when the object is created.",
+    "this means this object. Use this.name to store data inside the object.",
+    "Methods are written without the word function: bark() { ... }."
+  ],
+  c: [
+    'class Dog {',
+    '  constructor(name) {',
+    '    this.name = name;',
+    '  }',
+    '  bark() {',
+    '    console.log(this.name, "says Woof!");',
+    '  }',
+    '}',
+    '',
+    'const d = new Dog("Rex");',
+    'd.bark();'
+  ].join("\n"),
+  o: "Rex says Woof!",
+  tip: "Always use the word new when you create an object: new Dog(\"Rex\"). Without it you get a TypeError.",
+  task: "Make a class Car with a brand and a method info() that prints the brand. Create one car and call info().",
+  s: "// Task: class Car with brand and method info()\nclass Car {\n  // write your code here\n}\n",
+  vars: ["Car"],
+  cases: [{ in: [], ok: r => {
+      const C = r.v.Car;
+      return typeof C === "function" && r.out.trim() !== "" && r.cap(() => new C("Audi").info()).includes("Audi");
+  } }]
+},
+{
+  t: "10. Errors: try / catch",
+  d: "try/catch catches errors so the program does not crash.",
+  intro: "Errors will happen: a user types text instead of a number, or data is broken. try/catch catches an error so your program shows a friendly message instead of crashing. You can also create your own error with throw.",
+  pts: [
+    "Put risky code in try { }, and the reaction in catch (error) { }.",
+    "error.message is the text of the error.",
+    "throw new Error(\"text\") creates your own error and jumps to catch.",
+    "finally { } always runs, with or without an error."
+  ],
+  c: [
+    'try {',
+    '  JSON.parse("not json");',
+    '} catch (error) {',
+    '  console.log("That is not valid JSON!");',
+    '} finally {',
+    '  console.log("Done");',
+    '}'
+  ].join("\n"),
+  o: "That is not valid JSON!\nDone",
+  tip: "In JavaScript 100 / 0 does NOT cause an error: it gives Infinity. That is why you check the value yourself and use throw.",
+  task: "Ask for a number. Inside try: if the number is 0 or not a number, throw an Error. Otherwise print 100 divided by it. In catch, print error.message.",
+  s: "// Task: divide 100 by the user's number safely\ntry {\n  const n = Number(prompt(\"Number: \"));\n  // throw new Error(\"...\") when n is 0 or NaN\n  // otherwise print 100 / n\n} catch (error) {\n  // print error.message\n}\n",
+  vars: [],
+  cases: [
+    { in: ["4"],   ok: r => r.code.includes("throw") && r.code.includes("catch") && r.out.includes("25") },
+    { in: ["0"],   ok: r => r.code.includes("throw") && r.out.trim() !== "" && !r.out.includes("Infinity") },
+    { in: ["abc"], ok: r => r.code.includes("throw") && r.out.trim() !== "" && !r.out.includes("NaN") }
+  ]
+}
+];
+
+/* =========================================================
+   SECTION C: LEVELS AND QUIZ QUESTIONS
+   Level 1 = lessons 0-4, Level 2 = lessons 5-9.
+   q = indexes of the quiz questions used in that level test.
+   PASS = how many correct answers are needed to pass a level test.
+   The final test uses all 10 questions.
+   ========================================================= */
+const LEVELS = [
+  { name: "Level 1", sub: "console.log, variables, prompt, if, loops",         from: 0, to: 4, q: [0, 1, 2, 3, 4] },
+  { name: "Level 2", sub: "arrays, objects, functions, classes, errors",       from: 5, to: 9, q: [5, 6, 7, 8, 9] }
+];
+const PASS = 4;
+
+const quiz = [
+  { q: "Which function prints text in the console?", o: ["print()", "console.log()", "echo()", "write()"], a: 1, w: "console.log() is the output function in JavaScript." },
+  { q: "Which keyword declares a variable that cannot be reassigned?", o: ["let", "const", "var", "set"], a: 1, w: "const creates a constant. let can be changed." },
+  { q: "What does 5 === \"5\" return?", o: ["true", "false", "error", "undefined"], a: 1, w: "=== compares the type too: number and string are different." },
+  { q: "What type does prompt() always return?", o: ["number", "boolean", "string (text)", "array"], a: 2, w: "prompt() returns text. Use Number() to convert it." },
+  { q: "How many times does for (let i = 0; i < 3; i++) run?", o: ["2", "3", "4", "Forever"], a: 1, w: "i is 0, 1, 2: three rounds. At 3 the condition is false." },
+  { q: "What is the index of the first item in an array?", o: ["1", "-1", "0", "Any"], a: 2, w: "Array indexes start from 0." },
+  { q: "Which method adds an item to the end of an array?", o: ["push()", "pop()", "slice()", "filter()"], a: 0, w: "push() adds to the end, pop() removes the last item." },
+  { q: "How do you read the name of the object student?", o: ["student->name", "student.name", "student::name", "student{name}"], a: 1, w: "Use a dot: student.name (or student[\"name\"])." },
+  { q: "Which line is a correct arrow function?", o: ["def f(x):", "const f = (x) => x * 2;", "function => f(x)", "f = x -> x * 2"], a: 1, w: "An arrow function is written (parameters) => result." },
+  { q: "Which block runs whether there was an error or not?", o: ["try", "catch", "finally", "throw"], a: 2, w: "finally always runs after try and catch." }
+];
+
+
+/* =========================================================
+   SECTION D: PROGRESS (saved in localStorage)
+   done        = how many lessons are completed (lesson i is open if i <= done)
+   levelPassed = how many level tests are passed (0, 1 or 2)
+   Everything is wrapped in try/catch because localStorage can be blocked.
+   ========================================================= */
+let done = 0;
+let levelPassed = 0;
+
+try { done = Math.min(parseInt(localStorage.getItem("jslab_done")) || 0, lessons.length); } catch (e) {}
+try { levelPassed = Math.min(parseInt(localStorage.getItem("jslab_levels")) || 0, LEVELS.length); } catch (e) {}
+
+/* If a level test is passed, all its lessons count as done */
+if (levelPassed > 0) done = Math.max(done, LEVELS[levelPassed - 1].to + 1);
+
+function saveProgress() {
+    try { localStorage.setItem("jslab_done", done); } catch (e) {}
+    try { localStorage.setItem("jslab_levels", levelPassed); } catch (e) {}
+}
+
+/* A lesson is open when: the previous task is solved AND
+   (it is in level 1, or the level 1 test is passed). */
+function lessonUnlocked(i) {
+    if (i > done) return false;
+    for (let L = 1; L < LEVELS.length; L++) {
+        if (i >= LEVELS[L].from && levelPassed < L) return false;
+    }
+    return true;
+}
+
+/* Which level does lesson i belong to? */
+function levelOf(i) { return LEVELS.findIndex(L => i >= L.from && i <= L.to); }
+
+/* Escape text so it is shown as text and never run as HTML */
+function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function copyCode(btn) {
+    navigator.clipboard.writeText(btn.previousElementSibling.textContent).then(() => {
+        btn.textContent = "Copied!";
+    }).catch(() => {
+        btn.textContent = "Press Ctrl+C";
+    });
+    setTimeout(() => { btn.textContent = "Copy"; }, 1400);
+}
+
+
+/* =========================================================
+   SECTION E: RUNNING JAVASCRIPT
+   execute() runs the student's code with new Function().
+   - console is replaced by fakeConsole, so output goes into a list
+   - prompt is replaced: with fake answers (for tests) or the real popup
+   - after the code, we read the variables that the test asks for
+   ========================================================= */
+function fmt(x) {
+    if (typeof x === "string") return x;
+    try {
+        const s = JSON.stringify(x);
+        return s === undefined ? String(x) : s;
+    } catch (e) {
+        return String(x);
+    }
+}
+
+function execute(code, inputs, varNames) {
+    const buf = [];
+    let error = null;
+    let v = {};
+
+    const log = (...a) => buf.push(a.map(fmt).join(" "));
+    const fakeConsole = { log: log, info: log, warn: log, error: log };
+
+    const queue = inputs ? inputs.slice() : null;
+    const fakePrompt = msg => {
+        if (queue) return queue.length ? queue.shift() : null;   /* test mode */
+        return window.prompt(String(msg === undefined ? "" : msg)); /* real popup */
+    };
+
+    /* Extra code at the end: return the variables the test needs */
+    const tail = varNames.length
+        ? "\n;return {" + varNames.map(n => n + ': typeof ' + n + ' !== "undefined" ? ' + n + ' : undefined').join(",") + "};"
+        : "";
+
+    try {
+        const fn = new Function("console", "prompt", code + tail);
+        const result = fn(fakeConsole, fakePrompt);
+        if (result) v = result;
+    } catch (e) {
+        error = e.name + ": " + e.message;
+    }
+
+    /* cap(fn): run fn and return only what it printed */
+    const cap = fn => {
+        const start = buf.length;
+        fn();
+        return buf.slice(start).join("\n");
+    };
+
+    return { out: buf.join("\n"), error: error, v: v, cap: cap, code: code };
+}
+
+
+/* =========================================================
+   SECTION F: EDITOR (Run, Clear, Reset, Check)
+   ========================================================= */
+const codeEl = document.getElementById("code");
+const outEl = document.getElementById("out");
+const checkBtn = document.getElementById("checkBtn");
+const checkMsg = document.getElementById("checkMsg");
+
+let originalCode = codeEl.value;   /* used by "Reset code" */
+let currentTask = null;            /* index of the lesson task in the editor */
+
+function runCode() {
+    outEl.classList.remove("err");
+
+    const r = execute(codeEl.value, null, []);
+    let text = r.out;
+
+    if (r.error) {
+        text += (text ? "\n" : "") + r.error;
+        outEl.classList.add("err");
+    }
+    outEl.textContent = text || "(program finished, no output)";
+}
+
+function clearOut() {
+    outEl.classList.remove("err");
+    outEl.textContent = "";
+}
+
+function resetCode() {
+    codeEl.value = originalCode;
+    clearOut();
+    outEl.textContent = "Original code restored. Press Run.";
+}
+
+function updateCheckBtn() {
+    checkBtn.style.display = currentTask === null ? "none" : "inline-block";
+    if (currentTask !== null) checkBtn.textContent = "✔ Check answer (lesson " + (currentTask + 1) + ")";
+}
+
+function showMsg(html, ok) {
+    checkMsg.className = "msg " + (ok ? "ok" : "bad");
+    checkMsg.innerHTML = html;
+    checkMsg.style.display = "block";
+}
+
+/* Check the student's answer: run every test case, stop at the first failure */
+function checkTask() {
+    if (currentTask === null) return;
+
+    const i = currentTask;
+    const L = lessons[i];
+    const code = codeEl.value;
+    let fail = null;
+
+    for (const c of L.cases) {
+        const r = execute(code, c.in, L.vars);
+        let ok = false;
+
+        if (!r.error) {
+            try { ok = !!c.ok(r); } catch (e) { ok = false; }
+        }
+        if (!ok) { fail = { c: c, r: r }; break; }
+    }
+
+    if (!fail) {
+        if (i === done) {            /* only a NEW lesson increases progress */
+            done++;
+            saveProgress();
+        }
+        refreshLessonUI(i);
+
+        const last = LEVELS[levelOf(i)].to === i;
+        const next = last
+            ? ` All lessons of ${LEVELS[levelOf(i)].name} are done! <a href="?test=${levelOf(i) + 1}">Take the level test →</a>`
+            : ` <a href="?lesson=${i + 1}">Open the next lesson →</a>`;
+
+        showMsg("✅ Correct! Lesson " + (i + 1) + " completed." + next, true);
+    } else {
+        const inp = fail.c.in.length ? " With input " + esc(JSON.stringify(fail.c.in)) + "," : "";
+        const why = fail.r.error
+            ? " Error: " + esc(fail.r.error)
+            : inp + " your program printed:<pre class='outpre'>" + esc(fail.r.out || "(nothing)") + "</pre>";
+
+        showMsg("❌ Not correct yet." + why + " Re-read the task and the key points, then try again.", false);
+    }
+}
+
+document.getElementById("runBtn").addEventListener("click", runCode);
+document.getElementById("clearBtn").addEventListener("click", clearOut);
+document.getElementById("resetCodeBtn").addEventListener("click", resetCode);
+checkBtn.addEventListener("click", checkTask);
+
+/* Tab inserts 2 spaces, Ctrl+Enter runs the code */
+codeEl.addEventListener("keydown", e => {
+    if (e.key === "Tab") {
+        e.preventDefault();
+        codeEl.setRangeText("  ", codeEl.selectionStart, codeEl.selectionEnd, "end");
+    }
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        runCode();
+    }
+});
+
+
+/* =========================================================
+   SECTION G: PAGE 2 - SUBJECTS
+   Builds the lesson cards, level test cards and the final test card.
+   ========================================================= */
+function renderSubjects() {
+    const total = lessons.length;
+
+    document.getElementById("subjProgText").textContent = done + " / " + total + " lessons completed";
+    document.getElementById("subjProgFill").style.width = Math.round(done / total * 100) + "%";
+
+    let html = "";
+
+    LEVELS.forEach((L, li) => {
+        html += `<h2 class="level-title">${L.name}</h2><p class="level-sub">${L.sub}</p><div class="grid">`;
+
+        for (let i = L.from; i <= L.to; i++) {
+            const x = lessons[i];
+            const locked = !lessonUnlocked(i);
+            const title = x.t.replace(/^\d+\.\s*/, "");
+            /* Level 1 has no previous level (LEVELS[-1] does not exist), so check li first */
+            const lockText = (i > done || li === 0)
+                ? "Complete the previous lesson to unlock this topic."
+                : "Pass the " + LEVELS[li - 1].name + " test to unlock this topic.";
+
+            html += `
+                <a class="card ${locked ? "locked" : ""}" ${locked ? 'aria-disabled="true"' : 'href="?lesson=' + i + '"'}>
+                    <span class="num">LESSON ${String(i + 1).padStart(2, "0")}</span>
+                    <h3>${esc(title)}</h3>
+                    <p>${esc(locked ? lockText : x.d)}</p>
+                    <span class="status">${i < done ? "✓ COMPLETED" : locked ? "🔒 LOCKED" : "START LESSON →"}</span>
+                </a>`;
+        }
+
+        /* the test card of this level */
+        const passed = levelPassed > li;
+        const open = !passed && done > L.to && levelPassed >= li;
+
+        html += `
+            <a class="card test ${passed || open ? "" : "locked"}" ${passed || open ? 'href="?test=' + (li + 1) + '"' : 'aria-disabled="true"'}>
+                <span class="num">TEST</span>
+                <h3>${L.name} test</h3>
+                <p>${L.q.length} questions. You need ${PASS} correct answers.</p>
+                <span class="status">${passed ? "✓ PASSED (try again)" : open ? "TAKE THE TEST →" : "🔒 FINISH THE LESSONS FIRST"}</span>
+            </a>`;
+
+        html += `</div>`;
+    });
+
+    /* the final test */
+    const finalOpen = levelPassed >= LEVELS.length;
+    html += `
+        <h2 class="level-title">Final test</h2>
+        <p class="level-sub">All 10 questions, your score in percent.</p>
+        <div class="grid">
+            <a class="card test ${finalOpen ? "" : "locked"}" ${finalOpen ? 'href="?test=final"' : 'aria-disabled="true"'}>
+                <span class="num">FINAL</span>
+                <h3>Final test</h3>
+                <p>${quiz.length} questions about everything you learned.</p>
+                <span class="status">${finalOpen ? "TAKE THE TEST →" : "🔒 PASS BOTH LEVEL TESTS FIRST"}</span>
+            </a>
+        </div>`;
+
+    document.getElementById("subjGrid").innerHTML = html;
+}
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+    if (!confirm("Reset your progress? Lessons will be locked again.")) return;
+
+    done = 0;
+    levelPassed = 0;
+    saveProgress();
+    renderSubjects();
+});
+
+
+/* =========================================================
+   SECTION H: PAGE 3 - ONE LESSON
+   ========================================================= */
+function updateTop() {
+    document.getElementById("topProgText").textContent = done + "/" + lessons.length + " completed";
+    document.getElementById("topProgFill").style.width = Math.round(done / lessons.length * 100) + "%";
+}
+
+function renderSidebar(index) {
+    let html = "";
+
+    LEVELS.forEach(L => {
+        html += `<div class="side-heading">${L.name}</div><div class="side-list">`;
+
+        for (let i = L.from; i <= L.to; i++) {
+            const locked = !lessonUnlocked(i);
+            const mark = i < done ? "✓" : locked ? "🔒" : String(i + 1).padStart(2, "0");
+
+            html += `
+                <a class="lesson-link ${i === index ? "active" : ""} ${locked ? "locked" : ""}"
+                   href="${locked ? "#" : "?lesson=" + i}"
+                   ${locked ? 'aria-disabled="true"' : ""}>
+                    <span>${mark}</span>
+                    <span>${esc(lessons[i].t.replace(/^\d+\.\s*/, ""))}</span>
+                </a>`;
+        }
+        html += `</div>`;
+    });
+
+    document.getElementById("sideList").innerHTML = html;
+}
+
+/* Next button: disabled until this lesson's task is solved */
+function updateNext(index) {
+    const btn = document.getElementById("nextBtn");
+    if (!btn) return;
+
+    const solved = done > index;
+    btn.classList.toggle("off", !solved);
+    btn.title = solved ? "" : "Complete this lesson's task to continue.";
+}
+
+function refreshLessonUI(index) {
+    updateTop();
+    renderSidebar(index);
+    updateNext(index);
+}
+
+function renderLesson() {
+    const params = new URLSearchParams(location.search);
+    const index = Math.max(0, Math.min(lessons.length - 1, parseInt(params.get("lesson"), 10) || 0));
+    const content = document.getElementById("lessonContent");
+
+    updateTop();
+    renderSidebar(index);
+
+    /* Locked lesson: show a message and hide the editor */
+    if (!lessonUnlocked(index)) {
+        const needTest = index <= done;   /* tasks are done, but the level test is not passed */
+        const li = levelOf(index);
+
+        content.innerHTML = `
+            <div class="locked-note">
+                <div style="font-size:38px">🔒</div>
+                <h1>Lesson locked</h1>
+                <p>${needTest
+                    ? "Pass the " + LEVELS[li - 1].name + " test to unlock this lesson."
+                    : "Complete the previous lesson's task to unlock this lesson."}</p>
+                <a class="btn-main" href="${needTest ? "?test=" + li : "?lesson=" + Math.min(done, lessons.length - 1)}">
+                    ${needTest ? "Go to the level test →" : "Go to available lesson →"}
+                </a>
+            </div>`;
+
+        document.getElementById("editorPanel").style.display = "none";
+        return;
+    }
+
+    const x = lessons[index];
+    const last = LEVELS[levelOf(index)].to === index;
+
+    /* The last lesson of a level leads to the level test, the others to the next lesson */
+    const nextHref = last ? "?test=" + (levelOf(index) + 1) : "?lesson=" + (index + 1);
+    const nextText = last ? "Take the " + LEVELS[levelOf(index)].name + " test →" : "Next lesson →";
+
+    content.innerHTML = `
+        <div class="kicker">JavaScript course · Lesson ${index + 1} of ${lessons.length}</div>
+        <h1>${esc(x.t)}</h1>
+        <p>${esc(x.intro)}</p>
+
+        <h2>Key points</h2>
+        <ul>${x.pts.map(p => `<li>${esc(p)}</li>`).join("")}</ul>
+
+        <h2>Example</h2>
+        <div class="codebox">
+            <pre translate="no">${esc(x.c)}</pre>
+            <button class="copy" type="button">Copy</button>
+        </div>
+        <button class="btn-soft" id="tryBtn" type="button">▶ Try it in the editor</button>
+
+        <h2>Expected output</h2>
+        <pre class="outpre" translate="no">${esc(x.o)}</pre>
+
+        <div class="tip">💡 ${esc(x.tip)}</div>
+
+        <div class="task">
+            <strong>✍ Your task</strong>
+            <p>${esc(x.task)}</p>
+            <button class="btn-main" id="startTask" type="button">Start task in editor →</button>
+        </div>
+
+        <div class="next-row">
+            <a class="btn-soft" href="?lessons=1">All lessons</a>
+            ${index < lessons.length ? `<a class="btn-main" id="nextBtn" href="${nextHref}">${nextText}</a>` : ""}
+        </div>`;
+
+    /* Copy button */
+    content.querySelector(".copy").addEventListener("click", e => copyCode(e.target));
+
+    /* "Try it": load the example into the editor and run it */
+    document.getElementById("tryBtn").addEventListener("click", () => {
+        codeEl.value = x.c;
+        originalCode = x.c;
+        currentTask = null;
+        updateCheckBtn();
+        checkMsg.style.display = "none";
+        runCode();
+    });
+
+    /* "Start task": load the starter code and turn on the Check button */
+    document.getElementById("startTask").addEventListener("click", () => {
+        codeEl.value = x.s;
+        originalCode = x.s;
+        currentTask = index;
+        updateCheckBtn();
+        checkMsg.style.display = "none";
+        outEl.classList.remove("err");
+        outEl.textContent = "Task loaded. Write your solution and press Run.";
+        codeEl.focus();
+    });
+
+    updateNext(index);
+}
+
+
+/* =========================================================
+   SECTION I: PAGE 4 - TESTS
+   ?test=1  -> Level 1 test      ?test=2 -> Level 2 test
+   ?test=final -> final test (all questions)
+   ========================================================= */
+function renderTestPage() {
+    const which = new URLSearchParams(location.search).get("test");
+    const box = document.getElementById("testContent");
+    const isFinal = which === "final";
+    const levelNo = isFinal ? null : Math.max(1, Math.min(LEVELS.length, parseInt(which, 10) || 1));
+
+    let list, title, intro;
+
+    if (isFinal) {
+        if (levelPassed < LEVELS.length) {
+            box.innerHTML = `<h1>🔒 Final test</h1><p>Pass both level tests to unlock the final test.</p>
+                             <a class="btn-main" href="?lessons=1">Back to lessons</a>`;
+            return;
+        }
+        list = quiz.map((_, i) => i);
+        title = "📝 Final test";
+        intro = "Answer all " + list.length + " questions. You get your score in percent.";
+    } else {
+        const L = LEVELS[levelNo - 1];
+
+        if (done <= L.to || levelPassed < levelNo - 1) {
+            box.innerHTML = `<h1>🔒 ${L.name} test</h1><p>Finish all lessons of this level to unlock the test.</p>
+                             <a class="btn-main" href="?lessons=1">Back to lessons</a>`;
+            return;
+        }
+        list = L.q;
+        title = "📝 " + L.name + " test";
+        intro = "Answer all " + list.length + " questions. You need " + PASS + " correct answers to continue.";
+    }
+
+    box.innerHTML = `
+        <h1>${title}</h1>
+        <p>${intro}</p>
+        ${list.map((qi, j) => `
+            <div class="q" id="tq${j}">
+                <p>${j + 1}. ${esc(quiz[qi].q)}</p>
+                ${quiz[qi].o.map((o, k) => `
+                    <label><input type="radio" name="tq${j}" value="${k}"> ${esc(o)}</label>
+                `).join("")}
+                <div class="why">${esc(quiz[qi].w)}</div>
+            </div>`).join("")}
+        <div class="row"><button class="btn-main" id="checkTest" type="button">Check answers</button></div>
+        <div id="testScore"></div>`;
+
+    document.getElementById("checkTest").addEventListener("click", () => checkTest(list, levelNo));
+}
+
+function checkTest(list, levelNo) {
+    let ok = 0;
+
+    list.forEach((qi, j) => {
+        const box = document.getElementById("tq" + j);
+        box.classList.remove("right", "wrong");
+        box.querySelectorAll("label").forEach(l => l.classList.remove("sel"));
+
+        const pick = box.querySelector("input:checked");
+        if (pick) pick.parentElement.classList.add("sel");
+
+        const good = pick && +pick.value === quiz[qi].a;
+        box.classList.add(good ? "right" : "wrong");
+        if (good) ok++;
+    });
+
+    const sc = document.getElementById("testScore");
+
+    /* Final test: show the score in percent */
+    if (levelNo === null) {
+        const pct = Math.round(ok / list.length * 100);
+        sc.className = "msg " + (pct >= 50 ? "ok" : "bad");
+        sc.textContent = "Score: " + ok + "/" + list.length + " (" + pct + "%) — " +
+            (pct >= 80 ? "Great job! 🎉" : pct >= 50 ? "Good, keep practicing 💪" : "Review the lessons and try again 📚");
+        return;
+    }
+
+    /* Level test: pass or fail */
+    const L = LEVELS[levelNo - 1];
+
+    if (ok >= PASS) {
+        levelPassed = Math.max(levelPassed, levelNo);
+        saveProgress();
+
+        const more = levelNo < LEVELS.length
+            ? `<div class="row"><a class="btn-main" href="?lesson=${LEVELS[levelNo].from}">Start ${LEVELS[levelNo].name} →</a></div>`
+            : `<div class="row"><a class="btn-main" href="?test=final">Go to the final test →</a></div>`;
+
+        sc.className = "msg ok";
+        sc.innerHTML = "✅ Score " + ok + "/" + list.length + ". " + L.name + " completed!" + more;
+    } else {
+        sc.className = "msg bad";
+        sc.innerHTML = "❌ Score " + ok + "/" + list.length + ". You need " + PASS +
+            ". Read the explanations, review the lessons and try again." +
+            `<div class="row"><button class="btn-soft" onclick="renderTestPage()">Try again</button></div>`;
+    }
+}
+
+
+/* =========================================================
+   SECTION J: START THE RIGHT PAGE
+   ========================================================= */
+if (document.body.classList.contains("subjects-mode")) renderSubjects();
+if (document.body.classList.contains("lesson-mode"))   renderLesson();
+if (document.body.classList.contains("test-mode"))     renderTestPage();
+
+
+/* =========================================================
+   SECTION K: LANGUAGE (Google Translate)
+   The selector changes the hidden Google Translate widget.
+   The chosen language is saved and restored on the next visit.
+   ========================================================= */
+let pendingLanguage = null;
+
+function googleTranslateElementInit() {
+    new google.translate.TranslateElement(
+        { pageLanguage: "en", includedLanguages: "en,uz,ru,tr", autoDisplay: false },
+        "google_translate_element"
+    );
+    if (pendingLanguage) setTimeout(() => changeWebsiteLanguage(pendingLanguage), 300);
+}
+
+function changeWebsiteLanguage(language) {
+    const combo = document.querySelector(".goog-te-combo");
+    if (!combo) { pendingLanguage = language; return; }
+
+    combo.value = language;
+    combo.dispatchEvent(new Event("change", { bubbles: true }));
+    pendingLanguage = null;
+}
+
+document.getElementById("langSel").addEventListener("change", function () {
+    changeWebsiteLanguage(this.value);
+    try { localStorage.setItem("azizbek_language", this.value); } catch (e) {}
+});
+
+(function () {
+    let saved = null;
+    try { saved = localStorage.getItem("azizbek_language"); } catch (e) {}
+
+    if (saved && ["en", "uz", "ru", "tr"].includes(saved)) {
+        document.getElementById("langSel").value = saved;
+        pendingLanguage = saved;
+    }
+})();
+</script>
+
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>

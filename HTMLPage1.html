@@ -1,0 +1,607 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CppLab – Learn C++</title>
+
+<style>
+/* ===== 1. THEME (colors) ===== */
+:root{--bg:#050912;--panel:rgba(8,16,30,.66);--line:rgba(125,242,182,.2);--text:#d7e6dc;--mute:#8aa0b2;--green:#16ed70;--mint:#7df2b6;--blue:#569cd6;--purple:#a78bfa;--cyan:#22d3ee;--yellow:#ffd166;--red:#ff6b6b}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;line-height:1.6;min-height:100vh}
+a{color:var(--green)}code,pre,textarea{font-family:Consolas,monospace}
+
+/* ===== 2. SPECTACULAR BACKGROUND (pure CSS, no canvas) =====
+   Layer 1 (body::before): slowly moving blurred "aurora" lights
+   Layer 2 (body::after) : glowing grid that drifts and fades out at the edges */
+body::before{content:"";position:fixed;inset:-20%;z-index:-2;pointer-events:none;
+  background:
+   radial-gradient(40% 35% at 20% 25%,rgba(22,237,112,.32),transparent 70%),
+   radial-gradient(35% 40% at 80% 20%,rgba(86,156,214,.34),transparent 70%),
+   radial-gradient(40% 40% at 70% 80%,rgba(167,139,250,.32),transparent 70%),
+   radial-gradient(30% 30% at 25% 85%,rgba(34,211,238,.24),transparent 70%);
+  filter:blur(30px);animation:aurora 26s ease-in-out infinite alternate}
+@keyframes aurora{
+  0%{transform:translate3d(-3%,-2%,0) rotate(0deg) scale(1)}
+  50%{transform:translate3d(4%,3%,0) rotate(6deg) scale(1.08)}
+  100%{transform:translate3d(-2%,4%,0) rotate(-5deg) scale(1.02)}}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:linear-gradient(rgba(125,242,182,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(125,242,182,.08) 1px,transparent 1px);
+  background-size:56px 56px;
+  -webkit-mask-image:radial-gradient(ellipse at 50% 35%,#000 0%,transparent 78%);
+  mask-image:radial-gradient(ellipse at 50% 35%,#000 0%,transparent 78%);
+  animation:gridmove 14s linear infinite}
+@keyframes gridmove{to{background-position:0 56px,56px 0}}
+.page,.topbar,.lang-box{position:relative;z-index:1}
+
+/* ===== 3. URL MODES: show only the right page ===== */
+.page,.topbar{display:none}
+body.landing-mode #landing,body.landing-mode #topMain,
+body.subjects-mode #subjects,body.subjects-mode #topMain,
+body.lesson-mode #lesson,body.lesson-mode #topLesson{display:block}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px}
+
+/* ===== 4. TOP BARS (glass) ===== */
+.topbar{padding:14px 0;border-bottom:1px solid var(--line);background:rgba(4,30,52,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.topbar .wrap{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{font-weight:800;letter-spacing:2px;color:#fff;text-decoration:none;font-size:1.2rem}.logo span{color:var(--green);text-shadow:0 0 14px var(--green)}
+.note{color:#cfe8ff;font-size:.85rem}
+#topLesson{position:sticky;top:0;z-index:5}
+.top-return{color:var(--green);text-decoration:none;font-size:.85rem;border:1px solid var(--green);border-radius:99px;padding:3px 12px}
+.top-return:hover{background:rgba(22,237,112,.15)}
+
+/* ===== 5. BUTTONS AND BARS (neon glow) ===== */
+.btn{display:inline-block;background:linear-gradient(90deg,var(--green),var(--cyan),var(--blue));color:#04110c;border:0;padding:11px 20px;border-radius:10px;font-weight:700;cursor:pointer;text-decoration:none;box-shadow:0 0 22px rgba(22,237,112,.35);transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 34px rgba(34,211,238,.55)}
+.btn.ghost{background:rgba(4,40,70,.55);color:var(--text);border:1px solid var(--line);box-shadow:none}
+.btn[disabled]{opacity:.35;cursor:not-allowed;box-shadow:none;transform:none}
+.bar{height:8px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;flex:1;min-width:90px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--cyan),var(--purple));box-shadow:0 0 12px var(--green);transition:width .4s}
+.mini-prog{display:flex;align-items:center;gap:10px;min-width:200px}
+.return-wrap{text-align:center;margin:20px 0}
+
+/* ===== 6. LANDING PAGE ===== */
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;min-height:70vh;padding:50px 0}
+.eyebrow{color:var(--green);text-transform:uppercase;letter-spacing:2px;font-size:.8rem}
+.hero h1{font-size:clamp(2.2rem,5vw,3.8rem);line-height:1.1;margin:.3em 0;background:linear-gradient(90deg,var(--green),var(--cyan),var(--purple),var(--green));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s linear infinite}
+@keyframes shine{to{background-position:200% center}}
+.hero p{color:var(--mute);max-width:520px}
+.caption{display:block;margin-top:14px;color:var(--mute);font-size:.85rem}
+.visual{position:relative;min-height:320px}
+.codewin{background:rgba(6,14,26,.78);border:1px solid var(--line);border-radius:14px;padding:14px 18px;position:relative;z-index:2;backdrop-filter:blur(12px);animation:floaty 6s ease-in-out infinite,glow 4s ease-in-out infinite}
+@keyframes floaty{50%{transform:translateY(-10px)}}
+@keyframes glow{0%,100%{box-shadow:0 0 30px rgba(22,237,112,.15)}50%{box-shadow:0 0 55px rgba(34,211,238,.35)}}
+.dots span{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;background:var(--red)}
+.dots span:nth-child(2){background:var(--yellow)}.dots span:nth-child(3){background:var(--green)}
+.codewin pre{margin:12px 0 0;font-size:.9rem;white-space:pre-wrap}
+.k{color:var(--blue)}.s{color:#ce9178}.f{color:var(--green)}
+.orbit{position:absolute;right:-10px;bottom:-30px;width:250px;height:250px;border-radius:50%;border:2px dashed var(--purple);opacity:.55;animation:spin 20s linear infinite}
+.orbit::after{content:"";position:absolute;top:-7px;left:50%;width:14px;height:14px;border-radius:50%;background:var(--green);box-shadow:0 0 16px var(--green)}
+.orbit.o2{left:-30px;top:-30px;right:auto;bottom:auto;width:170px;height:170px;border-color:var(--cyan);animation-direction:reverse;animation-duration:14s}
+@keyframes spin{to{transform:rotate(360deg)}}
+.float{position:absolute;z-index:3;background:rgba(6,14,26,.9);border:1px solid var(--green);color:var(--green);padding:4px 12px;border-radius:99px;font-size:.8rem;font-family:monospace;box-shadow:0 0 16px rgba(22,237,112,.3)}
+.f1{top:-14px;right:20px}.f2{bottom:10px;left:-10px}
+.bottom-row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:20px 0 40px;color:var(--mute);font-size:.9rem}
+
+/* ===== 7. SUBJECTS PAGE ===== */
+.subjects-head{padding:40px 0 10px}.subjects-head h1{font-size:clamp(1.8rem,4vw,2.8rem);margin:0}.subjects-head p{color:var(--mute)}
+.progress-box,.card,.side,.lesson-main,.editor-panel{background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.progress-box{border-radius:12px;padding:16px;margin:16px 0}
+.progress-box b{display:block;margin-bottom:8px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.card{display:block;border-radius:14px;padding:18px;color:var(--text);text-decoration:none;transition:transform .2s,box-shadow .2s,border-color .2s}
+a.card:hover{border-color:var(--green);transform:translateY(-4px);box-shadow:0 0 28px rgba(22,237,112,.25)}
+.card small{color:var(--purple);letter-spacing:2px;font-weight:700}
+.card h3{margin:.3em 0}.card p{color:var(--mute);margin:.2em 0 .8em;font-size:.92rem}
+.st-done{color:var(--green)}.st-open{color:var(--cyan)}.st-locked{color:var(--mute)}
+.card.locked{opacity:.4;pointer-events:none}
+.tests{margin-top:30px}
+.tests button.card{width:100%;text-align:left;cursor:pointer;font:inherit}
+.tests button.card:disabled{opacity:.4;cursor:not-allowed}
+.foot-note{color:var(--mute);text-align:center;padding:30px 0;font-size:.85rem}
+.reset{background:none;border:1px solid var(--red);color:var(--red);border-radius:8px;padding:6px 12px;cursor:pointer}
+
+/* ===== 8. LESSON LAYOUT (3 columns) ===== */
+.lesson-grid{display:grid;grid-template-columns:230px minmax(0,1fr) 400px;gap:20px;padding:24px 0;align-items:start}
+.side,.editor-panel{position:sticky;top:70px}
+.side,.lesson-main,.editor-panel{border-radius:14px;padding:14px}
+.lesson-main{padding:22px;min-width:0}
+.side h4{margin:0 0 8px;color:var(--mute);text-transform:uppercase;font-size:.75rem;letter-spacing:2px}
+.path-item{display:flex;gap:8px;padding:7px 8px;border-radius:8px;color:var(--text);text-decoration:none;font-size:.9rem}
+.path-item b{width:22px;text-align:center;color:var(--green)}
+.path-item.active{background:rgba(22,237,112,.14);outline:1px solid var(--green)}
+.path-item.locked{opacity:.4;pointer-events:none}
+.kicker{color:var(--green);font-size:.8rem;letter-spacing:2px;text-transform:uppercase}
+.lesson-main h1{margin:.2em 0}
+.howto{color:var(--mute);font-size:.88rem;border:1px dashed var(--line);border-radius:8px;padding:8px 12px;margin:10px 0}
+pre{background:rgba(2,6,3,.85);border-left:4px solid var(--blue);border-radius:6px;padding:12px;overflow:auto;margin:8px 0}
+.codebox{position:relative}
+.copy,.try{position:absolute;top:8px;background:#12202c;color:#cfe8ff;border:1px solid var(--blue);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:.75rem}
+.copy{right:8px}.try{right:70px;color:var(--green)}
+.tip{background:rgba(255,209,102,.1);border-left:4px solid var(--yellow);padding:10px 14px;margin:14px 0}
+.task{background:rgba(22,237,112,.09);border:1px solid rgba(22,237,112,.35);border-radius:10px;padding:12px 16px;margin:14px 0}
+.task p{margin:.4em 0}.task ol{margin:.4em 0 .6em;padding-left:22px}.task li{margin:4px 0}
+.task .exp b{color:var(--mint);font-size:.85rem}
+.nav-btns{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
+
+/* ===== 9. EDITOR PANEL ===== */
+.editor-panel textarea{width:100%;background:rgba(2,6,3,.88);color:var(--green);border:1px solid var(--line);border-radius:8px;padding:10px;resize:vertical;tab-size:4;height:280px;font-size:.9rem}
+.editor-panel textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 16px rgba(22,237,112,.25)}
+.editor-panel textarea#stdin{height:56px;color:var(--text);margin-top:6px}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.toolbar button{background:#12202c;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}
+.toolbar button:hover{border-color:var(--green)}
+.toolbar button[hidden]{display:none}
+#status{color:var(--mute);font-size:.8rem}
+#out{min-height:90px;max-height:200px;overflow:auto;white-space:pre-wrap;color:var(--text)}
+#out.err{color:var(--red)}
+#msg{font-weight:600}#msg.ok{color:var(--green)}#msg.bad{color:var(--red)}
+.locked-box{text-align:center;padding:40px 10px}
+
+/* ===== 10. QUIZ ===== */
+.q{margin:14px 0}
+.opt{display:block;width:100%;text-align:left;background:#12202c;color:var(--text);border:1px solid #29506e;border-radius:8px;padding:9px 12px;margin:5px 0;cursor:pointer;font-family:monospace}
+.opt.right{border-color:var(--green);background:#0f4d2b}
+.opt.wrong{border-color:var(--red);background:#5a1a1a}
+.why{color:var(--mute);font-size:.85rem}
+
+/* ===== 11. LANGUAGE SELECTOR ===== */
+.lang-box{position:fixed;right:14px;bottom:14px;z-index:20}
+.lang-box select{background:rgba(8,16,30,.9);color:#fff;border:1px solid var(--green);border-radius:99px;padding:8px 14px}
+.skiptranslate iframe,.goog-te-banner-frame{display:none!important}
+body{top:0!important}
+
+/* ===== 12. RESPONSIVE: desktop 3 / tablet 2 / phone 1 columns ===== */
+@media(max-width:1100px){.lesson-grid{grid-template-columns:1fr 1fr}.side{grid-column:1/-1;position:static}}
+@media(max-width:760px){.hero,.lesson-grid,.grid2{grid-template-columns:1fr}.editor-panel{position:static}}
+@media(prefers-reduced-motion:reduce){
+  body::before,body::after,.orbit,.codewin,.hero h1{animation:none}
+  html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<!-- LANGUAGE SELECTOR (Google Translate) -->
+<div class="lang-box"><select id="languageSelector" aria-label="Choose website language">
+  <option value="en">🇬🇧 English</option><option value="uz">🇺🇿 O'zbek</option>
+  <option value="ru">🇷🇺 Русский</option><option value="tr">🇹🇷 Türkçe</option></select></div>
+<div id="google_translate_element" style="display:none"></div>
+
+<!-- TOP BARS -->
+<div class="topbar" id="topMain"><div class="wrap">
+  <a class="logo" href="?">CPP<span>LAB</span></a>
+  <span class="note">Learn C++ by doing · needs internet to run code</span>
+</div></div>
+<div class="topbar" id="topLesson"><div class="wrap">
+  <a class="logo" href="?lessons=1">CPP<span>LAB</span></a>
+  <a class="top-return" href="index.html">← First Page</a>
+  <div class="mini-prog"><span id="lpText" class="note"></span><div class="bar"><i id="lpBar"></i></div></div>
+</div></div>
+
+<!-- ========== PAGE 1: LANDING ========== -->
+<div class="page" id="landing"><div class="wrap">
+  <section class="hero">
+    <div>
+      <span class="eyebrow">Your coding journey starts here</span>
+      <h1>Think it. Code it. C++ it.</h1>
+      <p>Learn C++ step by step: variables, decisions, loops, arrays, functions and classes. Every lesson has an example and a small task that changes that example.</p>
+      <a class="btn" href="?lessons=1">Explore lessons →</a>
+      <span class="caption">10 guided lessons · Interactive code editor</span>
+    </div>
+    <div class="visual" translate="no">
+      <span class="float f1">int main()</span><span class="float f2">cout &lt;&lt;</span>
+      <div class="codewin"><div class="dots"><span></span><span></span><span></span></div>
+<pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">using namespace</span> std;
+<span class="k">int</span> <span class="f">main</span>() {
+  cout &lt;&lt; <span class="s">"Hello, C++!"</span>;
+  <span class="k">return</span> 0;
+}</pre></div>
+      <div class="orbit"></div><div class="orbit o2"></div>
+    </div>
+  </section>
+  <div class="bottom-row"><span>Free course. Progress stays in your browser.</span><a href="index.html">← Return to First Page</a></div>
+</div></div>
+
+<!-- ========== PAGE 2: SUBJECTS ========== -->
+<div class="page" id="subjects"><div class="wrap">
+  <div class="subjects-head"><h1>Choose your first lesson.</h1><p>Lessons open one by one. Finish a task to unlock the next. After 5 lessons you take a level test.</p></div>
+  <div class="progress-box"><b id="progText"></b><div class="bar"><i id="progBar"></i></div></div>
+  <div class="grid2" id="cards"></div>
+  <div class="tests"><h2>Tests</h2><div class="grid2" id="testCards"></div><div id="testBox" class="progress-box" hidden></div></div>
+  <p class="return-wrap"><a class="btn ghost" href="index.html">← Return to First Page</a></p>
+  <p class="foot-note">Your progress is saved in this browser on this device.<br><button class="reset" id="resetBtn" type="button">Reset progress</button></p>
+</div></div>
+
+<!-- ========== PAGE 3: LESSON ========== -->
+<div class="page" id="lesson"><div class="wrap">
+  <div class="lesson-grid">
+    <aside class="side"><h4>Your learning path</h4><div id="path"></div></aside>
+    <article class="lesson-main" id="lessonMain"></article>
+    <aside class="editor-panel" id="editorPanel"><b>C++ editor (main.cpp)</b>
+      <textarea id="editor" spellcheck="false" translate="no" aria-label="C++ code editor"></textarea>
+      <textarea id="stdin" spellcheck="false" translate="no" placeholder="Input for cin, for example: 3 4" aria-label="Program input"></textarea>
+      <div class="toolbar">
+        <button id="runBtn" type="button">▶️ Run</button>
+        <button id="clearBtn" type="button">Clear output</button>
+        <button id="resetCode" type="button">↺ Reset code</button>
+        <button id="checkBtn" type="button" hidden>✔️ Check answer</button>
+      </div>
+      <span id="status">Ready</span>
+      <pre id="out" translate="no"></pre>
+      <div id="msg" aria-live="polite"></div>
+    </aside>
+  </div>
+  <p class="return-wrap"><a class="btn ghost" href="index.html">← Return to First Page</a></p>
+</div></div>
+
+<script>
+/* ===================================================
+   SECTION A: HELPERS + URL MODE
+   =================================================== */
+const $=s=>document.querySelector(s);
+// Escape text so code like <iostream> is shown as text, not as HTML
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const params=new URLSearchParams(location.search), lp=params.get('lesson');
+let mode='landing';
+if(lp!==null&&/^[0-9]$/.test(lp)) mode='lesson';          // ?lesson=N (0..9)
+else if(params.get('lessons')) mode='subjects';            // ?lessons=1
+document.body.classList.add(mode+'-mode');                 // CSS shows only the right page
+
+/* ===================================================
+   SECTION B: BACKGROUND
+   The canvas was deleted. The background is now pure CSS
+   (see "2. SPECTACULAR BACKGROUND" in the style block).
+   =================================================== */
+
+/* ===================================================
+   SECTION C: LESSON DATA (10 lessons)
+   Rule: the editor starts with the SAME code as the example;
+   the task is a small change to it.
+   code  = example          start = code loaded for the task
+   inp   = input for the example   tinp = input for the task
+   steps = numbered instructions   exp = exact output wanted
+   tests = [fake cin input, function(output) -> true/false]
+   must  = regex the code must contain (mustMsg = message)
+   T(body) wraps your lines into a full program.
+   =================================================== */
+const T=b=>`#include <iostream>\n#include <string>\n#include <vector>\nusing namespace std;\n\nint main() {\n${b}    return 0;\n}`;
+const Ls=o=>o.trim().split('\n').map(s=>s.trim());     // output as a list of lines
+const LESSONS=[
+/* 1 */
+{t:'Hello world and comments',d:'main(), cout and endl.',
+ intro:'Every C++ program starts in a function called main(). The word cout prints text on the screen, and endl moves to the next line.',
+ pts:['#include <iostream> gives you cout and cin.','Text goes between double quotes: "Hello".','Every statement ends with a semicolon ;','You can print a calculation: cout << 5 + 3;'],
+ code:T('    cout << "Hello, world!" << endl;\n    cout << 5 + 3 << endl;\n'),out:'Hello, world!\n8',
+ tip:'Forgetting the semicolon ; is the most common first error.',
+ task:'Change the example so it prints your own greeting and a new calculation.',
+ steps:['Change "Hello, world!" to "Hello, C++!" (keep the quotes).','Change 5 + 3 to 12 * 4.','Press Run, then Check answer.'],
+ exp:'Hello, C++!\n48',
+ start:T('    cout << "Hello, world!" << endl;\n    cout << 5 + 3 << endl;\n'),
+ tests:[['',o=>{const l=Ls(o);return /^Hello, C\+\+!$/.test(l[0])&&l[1]==='48';}]]},
+/* 2 */
+{t:'Variables and types',d:'string, int and double.',
+ intro:'A variable is a box with a name that stores a value. Each box has a type: string is for text, int for whole numbers and double for decimal numbers.',
+ pts:['string name = "Aziz"; stores text.','int age = 18; stores a whole number.','double price = 9.99; stores a decimal number.','Print a variable without quotes: cout << age;'],
+ code:T('    string name = "Aziz";\n    int age = 18;\n    double price = 9.99;\n    cout << name << endl;\n    cout << age << endl;\n    cout << price << endl;\n'),out:'Aziz\n18\n9.99',
+ tip:'Text needs quotes ("Aziz"). Numbers never have quotes.',
+ task:'Change the three values in the example.',
+ steps:['Change "Aziz" to your own first name (one word, keep the quotes).','Change 18 to 20.','Change 9.99 to 9.5.','Press Run, then Check answer.'],
+ exp:'YourName\n20\n9.5',
+ start:T('    string name = "Aziz";\n    int age = 18;\n    double price = 9.99;\n    cout << name << endl;\n    cout << age << endl;\n    cout << price << endl;\n'),
+ tests:[['',o=>{const l=Ls(o);return l.length>=3&&l[0]!==''&&!/^[0-9.]+$/.test(l[0])&&!/\s/.test(l[0])&&l[1]==='20'&&l[2]==='9.5';}]]},
+/* 3 */
+{t:'Input and operators',d:'cin and + - * %.',
+ intro:'cin reads a value that the user types. In this site you type the input in the small box under the editor. Then you can calculate with the numbers.',
+ pts:['cin >> a >> b; reads two numbers.','+ - * / are the math operators.','% gives the remainder of a division: 7 % 3 is 1.','Integer division cuts the decimals: 7 / 2 is 3.'],
+ code:T('    int a, b;\n    cin >> a >> b;\n    cout << a + b << endl;\n    cout << a - b << endl;\n'),inp:'7 3',out:'Input 7 3 prints:\n10\n4',
+ tip:'The input box is under the editor. Type the numbers there before you press Run.',
+ task:'Change the program so it prints the product and the remainder.',
+ steps:['Change a + b to a * b (multiplication).','Change a - b to a % b (remainder).','Keep 7 3 in the input box and press Run. You should see 21 and 1.','Press Check answer.'],
+ exp:'Input 7 3 prints:\n21\n1',
+ start:T('    int a, b;\n    cin >> a >> b;\n    cout << a + b << endl;\n    cout << a - b << endl;\n'),
+ tests:[['7 3',o=>{const l=Ls(o);return l[0]==='21'&&l[1]==='1';}],['10 4',o=>{const l=Ls(o);return l[0]==='40'&&l[1]==='2';}],['6 6',o=>{const l=Ls(o);return l[0]==='36'&&l[1]==='0';}]]},
+/* 4 */
+{t:'if / else if / else',d:'Make decisions.',
+ intro:'if runs code only when a condition is true. else runs when it is false. else if adds one more question in between.',
+ pts:['if (age >= 18) { ... } runs when the condition is true.','else { ... } runs in all other cases.','else if (condition) { ... } checks one more condition.','Compare with == (two equals signs). A single = assigns a value.'],
+ code:T('    int age;\n    cin >> age;\n    if (age >= 18) {\n        cout << "adult" << endl;\n    } else {\n        cout << "minor" << endl;\n    }\n'),inp:'20',out:'Input 20 prints:\nadult',
+ tip:'C++ checks the conditions from top to bottom and stops at the first one that is true.',
+ task:'Split "minor" into two groups: teen and child.',
+ steps:['Keep the first condition: age >= 18 prints adult.','Between the if block and the else block, add: else if (age >= 13) { cout << "teen" << endl; }','In the last else, print child instead of minor.','Test ages 8, 13, 17 and 18 in the input box, then Check answer.'],
+ exp:'8 → child\n13 → teen\n17 → teen\n18 → adult',
+ start:T('    int age;\n    cin >> age;\n    if (age >= 18) {\n        cout << "adult" << endl;\n    } else {\n        cout << "minor" << endl;\n    }\n'),tinp:'8',
+ must:/else\s+if/,mustMsg:'Add an else if block between if and else.',
+ tests:[['8',o=>Ls(o)[0].toLowerCase()==='child'],['12',o=>Ls(o)[0].toLowerCase()==='child'],['13',o=>Ls(o)[0].toLowerCase()==='teen'],['17',o=>Ls(o)[0].toLowerCase()==='teen'],['18',o=>Ls(o)[0].toLowerCase()==='adult'],['30',o=>Ls(o)[0].toLowerCase()==='adult']]},
+/* 5 */
+{t:'Loops: for and while',d:'Repeat code.',
+ intro:'A loop repeats code. A while loop repeats as long as its condition is true. Inside the loop, n++ adds 1 to n and n-- subtracts 1.',
+ pts:['while (n <= 5) { ... } repeats while n is 5 or less.','n++ adds 1 to n. n-- subtracts 1.','The loop stops when the condition becomes false.','A for loop does the same in one line: for (int i = 1; i <= 5; i++).'],
+ code:T('    int n = 1;\n    while (n <= 5) {\n        cout << n << endl;\n        n++;\n    }\n'),out:'1\n2\n3\n4\n5',
+ tip:'If the program never stops, the condition never becomes false. Check n++ and n--.',
+ task:'Change the loop so it counts down from 10 to 1.',
+ steps:['Change the start: int n = 10;','Change the condition to n >= 1 (keep going while n is at least 1).','Change n++ to n-- so the number gets smaller.','Run: you should see 10, 9, 8 … 1 (one number per line).'],
+ exp:'10\n9\n8\n7\n6\n5\n4\n3\n2\n1',
+ start:T('    int n = 1;\n    while (n <= 5) {\n        cout << n << endl;\n        n++;\n    }\n'),
+ must:/while/,mustMsg:'Use a while loop.',
+ tests:[['',o=>Ls(o).join(',')==='10,9,8,7,6,5,4,3,2,1']]},
+/* 6 */
+{t:'Arrays',d:'Store many values.',
+ intro:'An array stores several values of the same type under one name. You reach each value with its index, and counting starts at 0.',
+ pts:['int marks[3] = {90, 75, 60}; makes 3 numbers.','marks[0] is the first value, marks[1] the second.','The size (3) must match how many values you use.','A for loop can visit every item: for (int i = 0; i < 3; i++).'],
+ code:T('    int marks[3] = {90, 75, 60};\n    int sum = 0;\n    for (int i = 0; i < 3; i++) {\n        sum += marks[i];\n    }\n    cout << sum << endl;\n'),out:'225',
+ tip:'Three places must agree: the size, the number of values, and the loop limit.',
+ task:'Change the array to hold 5 numbers and print their sum.',
+ steps:['Change the size 3 to 5 in marks[3].','Change the values to {2, 4, 6, 8, 10}.','Change i < 3 to i < 5 in the for loop.','Run: the sum should be 30.'],
+ exp:'30',
+ start:T('    int marks[3] = {90, 75, 60};\n    int sum = 0;\n    for (int i = 0; i < 3; i++) {\n        sum += marks[i];\n    }\n    cout << sum << endl;\n'),
+ must:/\[/,mustMsg:'Use an array like int marks[5].',
+ tests:[['',o=>Ls(o)[0]==='30']]},
+/* 7 */
+{t:'Strings',d:'Work with text.',
+ intro:'A string stores text. It has helpful tools: s.length() counts the characters and s[0] gives the first character.',
+ pts:['string s = "hello"; stores a word.','s.length() is the number of characters.','s[0] is the first character (index 0).','cin >> s; reads one word typed by the user.'],
+ code:T('    string s = "hello";\n    cout << s.length() << endl;\n    cout << s[0] << endl;\n'),out:'5\nh',
+ tip:'cin >> s reads only one word (it stops at a space).',
+ task:'Read the word from the keyboard instead of writing it in the code.',
+ steps:['Replace the line string s = "hello"; with two lines: string s;  and  cin >> s;','Type C++ in the input box and press Run. You should see 3 and C.','Press Check answer.'],
+ exp:'Input C++ prints:\n3\nC',
+ inp:'hello',
+ start:T('    string s = "hello";\n    cout << s.length() << endl;\n    cout << s[0] << endl;\n'),tinp:'C++',
+ tests:[['hello',o=>{const l=Ls(o);return l[0]==='5'&&l[1]==='h';}],['C++',o=>{const l=Ls(o);return l[0]==='3'&&l[1]==='C';}],['abcdefg',o=>{const l=Ls(o);return l[0]==='7'&&l[1]==='a';}]]},
+/* 8 */
+{t:'Functions',d:'Reusable blocks of code.',
+ intro:'A function is a named block of code that you can use many times. It has a return type, a name, parameters in brackets, and it sends a result back with return.',
+ pts:['int add(int a, int b) { return a + b; } is a function.','The first word (int) is the type of the result.','Write the function above main().','Call it by name: add(a, b).'],
+ code:`#include <iostream>\nusing namespace std;\n\nint add(int a, int b) {\n    return a + b;\n}\n\nint main() {\n    int a, b;\n    cin >> a >> b;\n    cout << add(a, b) << endl;\n    return 0;\n}`,inp:'3 4',out:'Input 3 4 prints:\n7',
+ tip:'A function must be written before the place where you call it.',
+ task:'Add a second function called multiply, next to add.',
+ steps:['Replace the TODO 1 line with a function: copy add, rename it to multiply and change + to *.','Replace the TODO 2 line with: cout << multiply(a, b) << endl;','Input 3 4 should print 7 and then 12.','Press Check answer.'],
+ exp:'Input 3 4 prints:\n7\n12',
+ start:`#include <iostream>\nusing namespace std;\n\nint add(int a, int b) {\n    return a + b;\n}\n\n// TODO 1: write int multiply(int a, int b) here\n\nint main() {\n    int a, b;\n    cin >> a >> b;\n    cout << add(a, b) << endl;\n    // TODO 2: print multiply(a, b) here\n    return 0;\n}`,
+ must:/multiply\s*\(/,mustMsg:'Write a function named multiply.',
+ tests:[['3 4',o=>{const l=Ls(o);return l[0]==='7'&&l[1]==='12';}],['5 5',o=>{const l=Ls(o);return l[0]==='10'&&l[1]==='25';}],['7 1',o=>{const l=Ls(o);return l[0]==='8'&&l[1]==='7';}]]},
+/* 9 */
+{t:'Classes (OOP basics)',d:'Group data and functions.',
+ intro:'A class groups data (members) and functions (methods) into one new type. An object is one real thing made from the class.',
+ pts:['class Student { public: ... }; ends with a semicolon.','Members store data: string name; int age;','A method is a function inside the class: void hello() { ... }','Make an object and use it: Student s; s.hello();'],
+ code:`#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Student {\npublic:\n    string name;\n    int age;\n    void hello() {\n        cout << name << " " << age << endl;\n    }\n};\n\nint main() {\n    Student s;\n    s.name = "Aziz";\n    s.age = 18;\n    s.hello();\n    return 0;\n}`,out:'Aziz 18',
+ tip:'Without public: the members are private and main() cannot use them.',
+ task:'Finish the Car class: add a method that prints the car.',
+ steps:['Replace TODO 1 with a method: void info() { cout << brand << " " << year << endl; }  (like hello() in the example).','Replace TODO 2 with: c.info();','Run: you should see Audi 2020.','Press Check answer.'],
+ exp:'Audi 2020',
+ start:`#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Car {\npublic:\n    string brand;\n    int year;\n    // TODO 1: write the method info() here\n};\n\nint main() {\n    Car c;\n    c.brand = "Audi";\n    c.year = 2020;\n    // TODO 2: call c.info() here\n    return 0;\n}`,
+ must:/info\s*\(/,mustMsg:'Write a method named info().',
+ tests:[['',o=>/Audi\s+2020/.test(o)]]},
+/* 10 */
+{t:'Errors: try / catch',d:'Handle problems safely.',
+ intro:'Some actions are dangerous, for example dividing by zero. With throw you raise an error, and catch handles it, so the program shows a message instead of crashing.',
+ pts:['try { ... } contains the risky code.','throw 1; raises an error and jumps to catch.','catch (...) { ... } runs when an error happened.','Dividing an int by 0 crashes a program.'],
+ code:T('    int b;\n    cin >> b;\n    try {\n        if (b == 0) throw 1;\n        cout << 10 / b << endl;\n    } catch (...) {\n        cout << "error" << endl;\n    }\n'),inp:'0',out:'Input 0 prints:\nerror\n\nInput 5 prints:\n2',
+ tip:'Try the example with 0 and with 5 to see both paths.',
+ task:'Change the program so it divides 100 instead of 10.',
+ steps:['Change 10 / b to 100 / b.','Leave the try, throw and catch parts as they are.','Input 5 → 20, input 4 → 25, input 0 → the word error.','Press Check answer.'],
+ exp:'Input 5 prints: 20\nInput 4 prints: 25\nInput 0 prints: error',
+ start:T('    int b;\n    cin >> b;\n    try {\n        if (b == 0) throw 1;\n        cout << 10 / b << endl;\n    } catch (...) {\n        cout << "error" << endl;\n    }\n'),tinp:'5',
+ must:/try[\s\S]*catch/,mustMsg:'Keep the try and catch blocks.',
+ tests:[['5',o=>Ls(o)[0]==='20'],['4',o=>Ls(o)[0]==='25'],['0',o=>/error/i.test(o)]]}
+];
+
+/* ===================================================
+   SECTION D: TESTS [question, options, rightIndex, explanation]
+   Final test = all 10 questions of level 1 + level 2
+   =================================================== */
+const L1=[['Which function does every C++ program start in?',['start()','main()','run()'],1,'Execution starts in main().'],
+ ['Which type stores text?',['int','double','string'],2,'string stores text.'],
+ ['What does == do in an if?',['Assigns','Compares','Ends the line'],1,'== compares, = assigns.'],
+ ['What is the first array index?',['0','1','-1'],0,'Counting starts at 0.'],
+ ['What ends a C++ statement?',[';',':','.'],0,'A semicolon ends a statement.']];
+const L2=[['What does a function use to give back a result?',['return','cout','break'],0,'return sends a value back.'],
+ ['Which keyword makes class members usable from main()?',['public:','static:','const:'],0,'public: opens access.'],
+ ['What does s.length() return?',['The first letter','The number of characters','The last index'],1,'It is the number of characters.'],
+ ['Which block handles a thrown error?',['try','catch','while'],1,'catch handles errors.'],
+ ['What does 7 / 2 give with int values?',['3.5','4','3'],2,'Integer division cuts decimals.']];
+const TESTS={l1:{title:'Level 1 test',level:1,qs:L1},l2:{title:'Level 2 test',level:2,qs:L2},final:{title:'Final test',level:0,qs:L1.concat(L2)}};
+
+/* ===================================================
+   SECTION E: PROGRESS (localStorage wrapped in try/catch)
+   =================================================== */
+function load(k){try{const v=parseInt(localStorage.getItem(k),10);return isNaN(v)?0:v;}catch(e){return 0;}}
+function save(k,v){try{localStorage.setItem(k,String(v));}catch(e){}}
+let done=load('cpplab_done'), levels=load('cpplab_levels');
+const isOpen=i=>i<=done&&i<(levels+1)*5;                   // lesson i open only if i <= done AND its level is unlocked
+const state=i=>i<done?'done':(isOpen(i)?'open':'locked');
+const availableLesson=()=>Math.min(done,(levels+1)*5-1,9);
+
+/* ===================================================
+   SECTION F: SUBJECTS PAGE + TESTS
+   =================================================== */
+function renderSubjects(){
+  $('#progText').textContent=done+' / 10 lessons completed';
+  $('#progBar').style.width=done*10+'%';
+  $('#cards').innerHTML=LESSONS.map((L,i)=>{
+    const s=state(i),lab=s==='done'?'✓ COMPLETED':s==='open'?'START LESSON →':'🔒 LOCKED',tag=s==='locked'?'div':'a';
+    return `<${tag} class="card ${s==='locked'?'locked':''}" ${s==='locked'?'':`href="?lesson=${i}"`}><small>LESSON ${String(i+1).padStart(2,'0')}</small><h3>${esc(L.t)}</h3><p>${esc(L.d)}</p><b class="st-${s}">${lab}</b></${tag}>`;
+  }).join('');
+  // level 1 test after 5 lessons; level 2 after 10 lessons + level 1; final after everything
+  const can={l1:done>=5,l2:done>=10&&levels>=1,final:done>=10&&levels>=2};
+  $('#testCards').innerHTML=Object.keys(TESTS).map(k=>{
+    const q=TESTS[k],p=q.level&&levels>=q.level;
+    return `<button class="card" data-t="${k}" ${can[k]?'':'disabled'}><small>${can[k]?'AVAILABLE':'🔒 LOCKED'}</small><h3>${q.title}</h3><p>${q.qs.length} questions${q.level?' · need 4 to pass':''}</p><b class="st-${p?'done':'open'}">${p?'✓ PASSED':'START TEST →'}</b></button>`;
+  }).join('');
+  document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>openTest(b.dataset.t));
+}
+// Show a multiple-choice test inside #testBox, with right/wrong colors and explanations
+function openTest(key){
+  const Q=TESTS[key],box=$('#testBox');let answered=0,ok=0;
+  box.hidden=false;box.innerHTML=`<h3>${Q.title}</h3><div id="qs"></div><p id="res"></p>`;
+  Q.qs.forEach(([q,opts,right,why])=>{
+    const d=document.createElement('div');d.className='q';d.innerHTML=`<b>${esc(q)}</b>`;
+    opts.forEach((o,i)=>{
+      const b=document.createElement('button');b.className='opt';b.type='button';b.textContent=o;b.translate=false;
+      b.onclick=()=>{
+        const all=d.querySelectorAll('.opt');all.forEach(x=>x.disabled=true);
+        all[right].classList.add('right');
+        if(i===right)ok++;else b.classList.add('wrong');
+        d.insertAdjacentHTML('beforeend',`<div class="why">${esc(why)}</div>`);
+        if(++answered===Q.qs.length)finishTest(key,ok);
+      };
+      d.appendChild(b);
+    });
+    $('#qs').appendChild(d);
+  });
+  box.scrollIntoView({behavior:'smooth'});
+}
+function finishTest(key,ok){
+  const Q=TESTS[key],res=$('#res');
+  if(Q.level){                                              // level test: 4 of 5 to pass
+    if(ok>=4){levels=Math.max(levels,Q.level);save('cpplab_levels',levels);res.textContent=`✅ Passed: ${ok}/5. Next level unlocked!`;}
+    else res.textContent=`❌ ${ok}/5. You need 4 to pass. Try again.`;
+  } else res.textContent=`Final score: ${Math.round(ok/Q.qs.length*100)}% (${ok}/${Q.qs.length})`;
+  res.insertAdjacentHTML('afterend','<button class="btn" type="button" id="again">Try again</button>');
+  $('#again').onclick=()=>openTest(key);
+  renderSubjects();
+}
+$('#resetBtn').onclick=()=>{
+  if(confirm('Reset all progress?')){done=0;levels=0;save('cpplab_done',0);save('cpplab_levels',0);$('#testBox').hidden=true;renderSubjects();}
+};
+
+/* ===================================================
+   SECTION G: LESSON PAGE
+   =================================================== */
+let cur=0,taskActive=false;
+const editor=$('#editor'),stdin=$('#stdin'),out=$('#out'),msg=$('#msg');
+
+function renderPath(){                                      // left sidebar
+  $('#path').innerHTML=LESSONS.map((L,k)=>{
+    const s=state(k);
+    return `<a class="path-item ${s} ${k===cur?'active':''}" ${s==='locked'?'':`href="?lesson=${k}"`}><b>${s==='done'?'✓':s==='locked'?'🔒':k+1}</b><span>${esc(L.t)}</span></a>`;
+  }).join('');
+}
+function renderTop(){$('#lpText').textContent=done+' / 10 completed';$('#lpBar').style.width=done*10+'%';}
+
+function renderLesson(){
+  cur=parseInt(lp,10);const L=LESSONS[cur];renderPath();renderTop();
+  if(state(cur)==='locked'){                                // locked lesson
+    $('#editorPanel').hidden=true;
+    $('#lessonMain').innerHTML=`<div class="locked-box"><h2>🔒 Lesson locked</h2><p>Finish the earlier lessons (and the level test) first.</p><a class="btn" href="?lesson=${availableLesson()}">Go to available lesson</a></div>`;
+    return;
+  }
+  const prev=cur===0?'?lessons=1':`?lesson=${cur-1}`,next=cur===9?'?lessons=1':`?lesson=${cur+1}`;
+  $('#lessonMain').innerHTML=`
+   <div class="kicker">C++ course · Lesson ${cur+1} of 10</div><h1>${esc(L.t)}</h1>
+   <p class="howto">1. Read the lesson · 2. Press <b>Try it</b> to run the example · 3. Do the task below</p>
+   <p>${esc(L.intro)}</p>
+   <h3>Key points</h3><ul>${L.pts.map(p=>`<li translate="no">${esc(p)}</li>`).join('')}</ul>
+   <h3>Example</h3><div class="codebox" translate="no"><pre><code>${esc(L.code)}</code></pre><button class="try" type="button" id="tryBtn">Try it</button></div>
+   <h3>Example output</h3><pre translate="no">${esc(L.out)}</pre>
+   <div class="tip">💡 ${esc(L.tip)}</div>
+   <div class="task"><b>🎯 Your task</b><p>${esc(L.task)}</p>
+     <ol>${L.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>
+     <div class="exp"><b>Your program must print:</b><pre translate="no">${esc(L.exp)}</pre></div></div>
+   <button class="btn" type="button" id="startTask">Start task in editor ↓</button>
+   <div class="nav-btns"><a class="btn ghost" href="${prev}">← Back</a>
+     <a class="btn" id="nextBtn" href="${next}" ${cur<done?'':'disabled aria-disabled="true"'}>Next lesson →</a></div>`;
+  addCopyButtons();
+  $('#tryBtn').onclick=()=>{editor.value=L.code;stdin.value=L.inp||'';hideTask();runCode();};   // load example + its input and run it
+  $('#startTask').onclick=()=>{
+    editor.value=L.start;stdin.value=L.tinp!==undefined?L.tinp:(L.inp||'');                      // task starts from the example code
+    taskActive=true;$('#checkBtn').hidden=false;msg.textContent='';
+    editor.scrollIntoView({behavior:'smooth',block:'center'});editor.focus();};
+  $('#nextBtn').addEventListener('click',e=>{if(cur>=done)e.preventDefault();});               // Next is blocked until the task is solved
+  editor.value=L.code;stdin.value=L.inp||'';
+}
+function hideTask(){taskActive=false;$('#checkBtn').hidden=true;msg.textContent='';}
+
+/* Online compiler (Wandbox): sends code + stdin, gets output or errors back */
+const API='https://wandbox.org/api/compile.json';
+async function compile(code,input){
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({compiler:'gcc-head',code:code,stdin:input,options:'warning,gnu++17',save:false})});
+    const j=await r.json();
+    return {ok:String(j.status)==='0',out:j.program_output||'',err:(j.compiler_error||'')+(j.program_error||'')};
+  }catch(e){return {ok:false,out:'',err:'Cannot reach the online compiler. Check your internet connection.'};}
+}
+const last4=s=>s.trim().split('\n').slice(-4).join('\n');   // show only the last 4 error lines
+
+/* Run: compile and show the output (red on error) */
+async function runCode(){
+  $('#status').textContent='Compiling…';out.className='';out.textContent='';
+  const r=await compile(editor.value,stdin.value);
+  $('#status').textContent=r.ok?'Done ✔️':'Failed';
+  if(r.ok){out.textContent=r.out||'(no output)';}
+  else{out.className='err';out.textContent=(r.out?r.out+'\n':'')+last4(r.err||'Unknown error');}
+}
+/* Check answer: first the required part (must), then every test (input -> output); stop at the first failure */
+async function checkCode(){
+  const L=LESSONS[cur],code=editor.value;msg.className='';
+  if(L.must&&!L.must.test(code)){msg.className='bad';msg.textContent='❌ '+(L.mustMsg||'Your code is missing a required part.');return;}
+  for(let i=0;i<L.tests.length;i++){
+    msg.textContent=`Checking ${i+1}/${L.tests.length}…`;
+    const [inp,fn]=L.tests[i],r=await compile(code,inp);
+    if(!r.ok){msg.className='bad';msg.textContent='❌ '+last4(r.err||'Program failed');return;}
+    if(!fn(r.out)){msg.className='bad';msg.textContent=(inp?'❌ Input "'+inp+'" → ':'❌ ')+'your program printed: '+(r.out.trim()||'(nothing)')+'. Read the steps again.';return;}
+  }
+  msg.className='ok';msg.textContent='✅ Correct!';
+  if(cur>=done){done=cur+1;save('cpplab_done',done);}        // mark lesson done, unlock the next
+  renderPath();renderTop();
+  const n=$('#nextBtn');n.removeAttribute('disabled');n.removeAttribute('aria-disabled');
+}
+
+/* Editor buttons and keys */
+$('#runBtn').onclick=runCode;
+$('#checkBtn').onclick=checkCode;
+$('#clearBtn').onclick=()=>{out.textContent='';msg.textContent='';$('#status').textContent='Cleared';};
+$('#resetCode').onclick=()=>{editor.value=taskActive?LESSONS[cur].start:LESSONS[cur].code;};
+editor.addEventListener('keydown',e=>{
+  if(e.ctrlKey&&e.key==='Enter'){e.preventDefault();runCode();}                                         // Ctrl+Enter = run
+  if(e.key==='Tab'){e.preventDefault();editor.setRangeText('    ',editor.selectionStart,editor.selectionEnd,'end');} // Tab = 4 spaces
+});
+
+/* Copy button on every code block of the lesson */
+function addCopyButtons(){
+  document.querySelectorAll('.codebox').forEach(box=>{
+    const pre=box.querySelector('pre'),b=document.createElement('button');
+    b.className='copy';b.type='button';b.textContent='Copy';
+    b.onclick=async()=>{
+      try{await navigator.clipboard.writeText(pre.innerText);b.textContent='Copied';}
+      catch(e){b.textContent='Press Ctrl+C';}
+      setTimeout(()=>b.textContent='Copy',1500);
+    };
+    box.appendChild(b);
+  });
+}
+
+/* ===================================================
+   SECTION H: START
+   =================================================== */
+if(mode==='subjects')renderSubjects();
+if(mode==='lesson')renderLesson();
+
+/* ===================================================
+   SECTION I: LANGUAGE (Google Translate)
+   =================================================== */
+let pendingLang=null;
+function googleTranslateElementInit(){
+  new google.translate.TranslateElement({pageLanguage:'en',includedLanguages:'en,uz,ru,tr',autoDisplay:false},'google_translate_element');
+  if(pendingLang)setTimeout(()=>setLang(pendingLang),300);
+}
+// The hidden Google select appears a moment later, so retry up to 20 times
+function setLang(l,tries){
+  tries=tries||0;
+  const s=document.querySelector('.goog-te-combo');
+  if(!s){pendingLang=l;if(tries<20)setTimeout(()=>setLang(l,tries+1),250);return;}
+  s.value=l;s.dispatchEvent(new Event('change',{bubbles:true}));pendingLang=null;
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const sel=$('#languageSelector');
+  sel.addEventListener('change',()=>{setLang(sel.value);try{localStorage.setItem('cpplab_lang',sel.value);}catch(e){}});
+  let saved=null;try{saved=localStorage.getItem('cpplab_lang');}catch(e){}
+  if(['en','uz','ru','tr'].includes(saved)){sel.value=saved;pendingLang=saved;}
+});
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1020">
+  <title>CSSLab | Learn CSS by building</title>
+  <link rel="stylesheet" href="css.css">
+</head>
+<body class="landing-mode">
+  <canvas id="matrixCanvas" aria-hidden="true"></canvas>
+
+  <div class="language-control">
+    <label for="languageSelector">Language</label>
+    <select id="languageSelector" aria-label="Choose language">
+      <option value="en">🇬🇧 English</option>
+      <option value="uz">🇺🇿 O'zbek</option>
+      <option value="ru">🇷🇺 Русский</option>
+      <option value="tr">🇹🇷 Türkçe</option>
+    </select>
+  </div>
+  <div id="google_translate_element" hidden></div>
+
+  <!-- LANDING PAGE -->
+  <div id="landingPage" class="page landing-page">
+    <header class="topbar shell">
+      <a class="brand" href="css.html" aria-label="CSSLab home">CSS<span>LAB</span></a>
+      <span class="top-note">A practical path from beginner to confident builder</span>
+      <a class="top-link" href="css.html?lessons=1">Explore course <span>↗</span></a>
+    </header>
+
+    <main class="shell landing-main">
+      <section class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="pulse-dot"></span> YOUR FRONT-END JOURNEY STARTS HERE</p>
+          <h1>Style it.<br><span>Shape it.</span><br>Make it yours.</h1>
+          <p class="hero-description">Learn CSS step by step, experiment in a live browser preview, and turn plain pages into polished experiences.</p>
+          <a class="primary-button" href="css.html?lessons=1">Explore lessons <span>→</span></a>
+          <p class="hero-caption">10 guided lessons · Live CSS playground · Progress saved on this device</p>
+        </div>
+        <div class="hero-art" aria-label="Decorative CSS code illustration">
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+          <div class="floating-chip chip-top">✨ DESIGN SYSTEM</div>
+          <div class="floating-chip chip-bottom">RESPONSIVE · CREATIVE</div>
+          <div class="code-window">
+            <div class="window-bar"><span></span><span></span><span></span><b>style.css</b></div>
+            <pre translate="no"><code translate="no"><i>/* make it yours */</i>
+<span class="code-purple">.your-ideas</span> {
+  <span class="code-blue">display</span>: flex;
+  <span class="code-blue">gap</span>: <span class="code-green">1.5rem</span>;
+  <span class="code-blue">color</span>: <span class="code-orange">#b8ffd9</span>;
+  <span class="code-blue">transform</span>: 
+    <span class="code-green">translateY(-4px)</span>;
+  <span class="code-blue">transition</span>: 
+    <span class="code-green">.3s ease</span>;
+}</code></pre>
+            <div class="window-footer"><span class="tiny-live"></span> LIVE PREVIEW READY <span>CSS / 001</span></div>
+          </div>
+          <div class="art-glow"></div>
+        </div>
+      </section>
+      <section class="landing-bottom">
+        <span>LEARN THE LANGUAGE OF THE WEB</span>
+        <span class="bottom-line"></span>
+        <a href="index.html">← Return to First Page</a>
+      </section>
+    </main>
+  </div>
+
+  <!-- SUBJECTS PAGE -->
+  <div id="subjectsPage" class="page subjects-page">
+    <header class="course-topbar shell">
+      <a class="brand" href="css.html">CSS<span>LAB</span></a>
+      <div class="topbar-right"><span class="mini-label">YOUR CSS COURSE</span><a href="css.html">Exit course ↗</a></div>
+    </header>
+    <main class="shell subjects-main">
+      <div class="page-heading">
+        <p class="eyebrow">THE LEARNING PATH</p>
+        <h1>Choose your first <span>lesson.</span></h1>
+        <p>Build your skills one concept at a time. Complete each lesson to unlock the next one.</p>
+      </div>
+      <section class="progress-card">
+        <div class="progress-copy"><div><strong id="subjectsProgressText">0 / 10</strong><span> lessons completed</span></div><small id="subjectsLevelText">LEVEL 1 · CSS FOUNDATIONS</small></div>
+        <div class="progress-track"><span id="subjectsProgressBar"></span></div>
+      </section>
+      <div id="lessonGrid" class="lesson-grid"></div>
+      <section id="levelTestArea" class="level-test-card"></section>
+      <section class="final-test-card">
+        <div><p class="eyebrow">COURSE CHALLENGE</p><h2>Ready for the final test?</h2><p>Review all ten lessons and check how much CSS you can use.</p></div>
+        <button id="openFinalTest" class="secondary-button" type="button">Open final test →</button>
+      </section>
+      <p class="save-note"><span>●</span> Your progress is saved in this browser on this device.</p>
+      <div class="subjects-footer"><a href="index.html">← Return to First Page</a><button id="resetProgress" class="text-button" type="button">Reset progress</button></div>
+    </main>
+  </div>
+
+  <!-- LESSON PAGE -->
+  <div id="lessonPage" class="page lesson-page">
+    <header class="lesson-topbar">
+      <div class="lesson-top-inner shell">
+        <a class="brand" href="css.html?lessons=1">CSS<span>LAB</span></a>
+        <div class="lesson-top-progress"><div><span id="topProgressLabel">0 / 10 completed</span><span id="topProgressPercent">0%</span></div><div class="progress-track"><span id="topProgressBar"></span></div></div>
+        <a class="top-link" href="css.html?lessons=1">All lessons ↗</a>
+      </div>
+    </header>
+    <main class="shell lesson-layout">
+      <aside class="learning-sidebar">
+        <p class="sidebar-heading">YOUR LEARNING PATH</p>
+        <div id="sidebarLessons" class="sidebar-lessons"></div>
+        <div class="sidebar-level"><span>YOUR PROGRESS</span><strong id="sidebarDone">0 / 10</strong><div class="progress-track"><span id="sidebarProgress"></span></div></div>
+      </aside>
+      <article id="lessonContent" class="lesson-content"></article>
+      <aside class="editor-column">
+        <div class="editor-panel">
+          <div class="editor-heading"><div><span class="editor-dot"></span><strong>CSS PLAYGROUND</strong></div><span class="editor-file">style.css</span></div>
+          <p class="editor-hint">Edit the CSS and watch the preview update.</p>
+          <textarea id="cssEditor" spellcheck="false" autocapitalize="off" aria-label="CSS code editor"></textarea>
+          <div class="editor-actions">
+            <button id="runCss" class="run-button" type="button">▶ Run</button>
+            <button id="clearCss" class="small-button" type="button">Clear</button>
+            <button id="resetCss" class="small-button" type="button">↺ Reset</button>
+          </div>
+          <p id="editorStatus" class="editor-status">Ready to style ✨</p>
+          <div class="preview-heading"><span>LIVE PREVIEW</span><span class="preview-live">● LIVE</span></div>
+          <iframe id="cssPreview" title="Live CSS preview" sandbox="allow-same-origin"></iframe>
+          <!-- The check area holds the button AND the feedback message. Only the button is hidden after success -->
+          <div id="taskCheckArea" class="task-check-area" hidden><button id="checkTask" class="check-button" type="button">✔ Check answer</button><p id="taskFeedback" aria-live="polite"></p></div>
+        </div>
+        <div class="editor-footnote">Tip: press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to update the preview.</div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- TEST MODAL -->
+  <div id="testModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="testTitle">
+      <button class="modal-close" type="button" data-close-modal aria-label="Close">×</button>
+      <p class="eyebrow">CSSLAB KNOWLEDGE CHECK</p>
+      <h2 id="testTitle">Level test</h2>
+      <p id="testIntro" class="test-intro"></p>
+      <div id="testQuestions"></div>
+      <div class="test-footer"><span id="testProgress">Question 1</span><button id="nextTestQuestion" class="primary-button" type="button" disabled>Next question →</button></div>
+      <div id="testResult" class="test-result" hidden></div>
+    </section>
+  </div>
+
+  <script>
+  (() => {
+    "use strict";
+
+    /* ---------- COURSE DATA: ten CSS lessons ---------- */
+    const LESSONS = [
+      {
+        title:"CSS rules and selectors", description:"Connect a stylesheet to HTML and target elements with selectors.",
+        intro:"CSS (Cascading Style Sheets) controls how HTML elements look. A CSS rule contains a selector and a declaration block. The selector chooses elements; declarations describe the styles.",
+        points:["A selector targets one or more HTML elements.","A declaration is written as property: value;","Use a linked .css file to keep structure and design separate.","Class selectors begin with a dot; ID selectors begin with #."],
+        example:"/* Select every paragraph */\np {\n  color: #b7f7d2;\n}\n\n/* Select elements with class=\"card\" */\n.card {\n  border: 1px solid #39d98a;\n}",
+        output:"Paragraph text becomes mint green. Elements with the card class receive a green border.",
+        tip:"Class selectors are reusable. Prefer classes for styling groups of elements instead of giving every element a unique ID.",
+        task:"Style the preview card: give .card a 2px solid green border and make its paragraph text mint green.",
+        starter:"/* Style the card and its paragraph */\n.card {\n  \n}\n\n.card p {\n  \n}",
+        check:"selectors"
+      },
+      {
+        title:"Colors and backgrounds", description:"Use named colors, HEX, RGB, HSL and background properties.",
+        intro:"CSS offers several ways to describe color. HEX is common for exact brand colors, RGB mixes red, green and blue, and HSL describes hue, saturation and lightness. Background properties add color or images behind content.",
+        points:["HEX colors use six hexadecimal digits, such as #35d07f.","rgb() combines red, green and blue channels.","hsl() uses hue, saturation and lightness.","background-color fills an element's background."],
+        example:".card {\n  color: #ffffff;\n  background-color: hsl(150, 55%, 20%);\n  border: 1px solid rgb(53, 208, 127);\n}",
+        output:"The card has white text, a deep green background and a green border.",
+        tip:"Check text contrast: text should remain easy to read against its background.",
+        task:"Give .card a dark blue background (#172554) and white text.",
+        starter:".card {\n  \n}",
+        check:"colors"
+      },
+      {
+        title:"The box model", description:"Understand content, padding, border and margin.",
+        intro:"Every element is treated as a rectangular box. The box model describes the content area, the space inside the border (padding), the border itself, and the space outside it (margin).",
+        points:["Content is the text, image or other inner content.","Padding adds space between content and border.","Border surrounds the padding and content.","Margin creates space outside the border; box-sizing: border-box simplifies sizing."],
+        example:".card {\n  width: 220px;\n  padding: 20px;\n  border: 3px solid #39d98a;\n  margin: 12px;\n  box-sizing: border-box;\n}",
+        output:"The card has inner spacing, a visible border and outer spacing.",
+        tip:"A common reset is * { box-sizing: border-box; } so declared widths include padding and borders.",
+        task:"Add 24px padding, a 3px solid mint border and 12px border-radius to .card.",
+        starter:".card {\n  \n}",
+        check:"box"
+      },
+      {
+        title:"Typography and text", description:"Make text readable with font, size, weight and spacing.",
+        intro:"Typography is a major part of interface design. CSS controls font families, size, weight, line height, alignment, decoration and letter spacing.",
+        points:["font-family sets the preferred typeface and fallbacks.","font-size controls the size of text.","font-weight controls thickness, often 400 or 700.","line-height controls vertical spacing between lines."],
+        example:".card h3 {\n  font-family: Arial, sans-serif;\n  font-size: 24px;\n  font-weight: 700;\n  letter-spacing: 1px;\n}\n.card p { line-height: 1.6; }",
+        output:"The heading is larger and bold, while paragraph lines have comfortable spacing.",
+        tip:"Use relative units such as rem for scalable typography in larger projects.",
+        task:"Set .card h3 to 28px, font-weight 700, and .card p to line-height 1.6.",
+        starter:".card h3 {\n  \n}\n.card p {\n  \n}",
+        check:"type"
+      },
+      {
+        title:"Borders, shadows and gradients", description:"Add depth and visual detail to interface elements.",
+        intro:"Borders define edges, border-radius rounds corners, box-shadow adds depth, and gradients blend colors. These properties help create visual hierarchy without images.",
+        points:["border combines width, style and color.","border-radius rounds the corners of a box.","box-shadow adds a shadow around an element.","linear-gradient() blends two or more colors."],
+        example:".card {\n  border: 1px solid #3b82f6;\n  border-radius: 16px;\n  box-shadow: 0 12px 30px #0005;\n  background: linear-gradient(135deg, #172554, #164e63);\n}",
+        output:"The card has rounded corners, a soft shadow and a blue-to-teal gradient.",
+        tip:"Keep shadows subtle. A small number of consistent shadow styles makes a site feel more coherent.",
+        task:"Give .card a 16px radius and a shadow: 0 8px 20px #0006.",
+        starter:".card {\n  \n}",
+        check:"effects"
+      },
+      {
+        title:"Display and Flexbox", description:"Control layout and align items in a row or column.",
+        intro:"The display property changes how an element participates in layout. Flexbox is a one-dimensional layout system that makes it easier to arrange items in a row or column and control alignment and spacing.",
+        points:["display: flex turns an element into a flex container.","flex-direction chooses row or column.","justify-content aligns items on the main axis.","align-items aligns items on the cross axis; gap adds space."],
+        example:".items {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  gap: 12px;\n}",
+        output:"The three items sit in a centered row with even gaps.",
+        tip:"Use Flexbox when arranging items along one main axis. Use Grid when you need rows and columns together.",
+        task:"Make .items a flex container, center its items, and add a 16px gap.",
+        starter:".items {\n  \n}",
+        check:"flex"
+      },
+      {
+        title:"CSS Grid", description:"Build two-dimensional layouts with rows and columns.",
+        intro:"CSS Grid is designed for two-dimensional layouts. Define columns and rows on a grid container, then place child elements into the available cells.",
+        points:["display: grid creates a grid container.","grid-template-columns defines column sizes.","repeat() avoids repeating the same track definition.","gap controls spacing between grid cells."],
+        example:".grid {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  gap: 12px;\n}",
+        output:"The four sample tiles are arranged in two equal columns.",
+        tip:"minmax() can set a minimum and maximum track size, while auto-fit can make grids responsive.",
+        task:"Set .grid to display grid with two equal columns and a 12px gap.",
+        starter:".grid {\n  \n}",
+        check:"grid"
+      },
+      {
+        title:"Positioning", description:"Place elements with relative, absolute, fixed and sticky.",
+        intro:"The position property controls how an element is placed. Static is the normal flow. Relative keeps its place but allows offsets; absolute is positioned relative to a positioned ancestor; fixed is relative to the viewport; sticky switches behavior while scrolling.",
+        points:["static is the default positioning mode.","relative offsets an element from its normal position.","absolute uses the nearest positioned ancestor as its reference.","fixed stays attached to the viewport; sticky sticks within its scroll area."],
+        example:".card { position: relative; }\n.badge {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n}",
+        output:"The badge is placed at the top-right corner of the card.",
+        tip:"Give an ancestor position: relative when you want an absolutely positioned child to stay inside it.",
+        task:"Set .card to position: relative and .badge to position: absolute with top: 8px and right: 8px.",
+        starter:".card {\n  \n}\n.badge {\n  \n}",
+        check:"position"
+      },
+      {
+        title:"Responsive design", description:"Adapt layouts to phones, tablets and desktop screens.",
+        intro:"Responsive design lets a page adapt to different screen sizes. Flexible widths, fluid images, CSS Grid and media queries help content fit without horizontal scrolling.",
+        points:["Use flexible units such as %, rem, vw and fr where appropriate.","A media query applies styles only when its condition matches.","max-width: 100% prevents images from overflowing their container.","Design small-screen layouts deliberately, not as an afterthought."],
+        example:".cards {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n}\n@media (max-width: 700px) {\n  .cards { grid-template-columns: 1fr; }\n}",
+        output:"The cards use three columns on wider screens and one column on narrow screens.",
+        tip:"Test at several widths, not only one phone size. Browser developer tools can simulate device widths.",
+        task:"Add a media query for max-width: 700px that changes .grid to one column.",
+        starter:"@media (max-width: 700px) {\n  .grid {\n    \n  }\n}",
+        check:"responsive"
+      },
+      {
+        title:"CSS functions and transitions", description:"Use var(), calc(), clamp() and smooth transitions.",
+        intro:"CSS functions return values that can be used inside declarations. Custom properties store reusable values, calc() performs calculations, clamp() creates fluid values within limits, and transition animates property changes smoothly.",
+        points:["var(--name) reads a custom property.","calc() performs calculations, including mixed units.","clamp(min, preferred, max) limits a responsive value.","transition controls how property changes animate."],
+        example:":root { --accent: #39d98a; }\n.card {\n  border-color: var(--accent);\n  width: calc(100% - 24px);\n  padding: clamp(12px, 3vw, 28px);\n  transition: transform .2s ease;\n}\n.card:hover { transform: translateY(-4px); }",
+        output:"The card uses a reusable accent, fluid padding and a smooth hover lift.",
+        tip:"Only animate properties that improve feedback. Avoid excessive motion and respect reduced-motion preferences.",
+        task:"Create --accent: #39d98a on :root, use it as .card border-color, and add transition: transform .2s ease.",
+        starter:":root {\n  \n}\n.card {\n  \n}",
+        check:"functions"
+      }
+    ];
+
+    /* ---------- LEVEL AND FINAL TEST QUESTION BANKS ---------- */
+    const LEVEL_TESTS = {
+      1: [
+        {q:"What does a CSS selector do?",o:["Chooses HTML elements to style","Runs JavaScript","Creates a database"],a:0,e:"A selector targets the HTML elements that receive a CSS rule."},
+        {q:"Which selector targets class=\"panel\"?",o:["#panel",".panel","panel()"],a:1,e:"A class selector starts with a dot."},
+        {q:"Which property adds space inside the border?",o:["margin","padding","outline"],a:1,e:"Padding is inside the border; margin is outside it."},
+        {q:"Which property controls line spacing?",o:["line-height","font-style","text-decoration"],a:0,e:"line-height controls the height of text lines."},
+        {q:"Which value rounds corners?",o:["box-shadow","border-radius","opacity"],a:1,e:"border-radius rounds the corners of an element."}
+      ],
+      2: [
+        {q:"Which display value creates a flex container?",o:["block","grid","flex"],a:2,e:"display: flex enables Flexbox layout."},
+        {q:"Which property defines Grid columns?",o:["grid-template-columns","align-items","flex-wrap"],a:0,e:"grid-template-columns defines the grid's column tracks."},
+        {q:"An absolutely positioned element is placed relative to…",o:["Always the browser window","Its nearest positioned ancestor","The mouse pointer"],a:1,e:"It uses the nearest ancestor whose position is not static."},
+        {q:"What does a media query do?",o:["Applies styles when a condition matches","Compresses images","Adds HTML elements"],a:0,e:"Media queries apply CSS based on viewport or device conditions."},
+        {q:"What does clamp() accept?",o:["Only a color","Minimum, preferred and maximum values","A selector and an ID"],a:1,e:"clamp() keeps a value between a minimum and maximum."}
+      ]
+    };
+    /* FIX 6: two extra questions kept, and the final test is now exactly 10 questions (was 12) */
+    const FINAL_EXTRA = [
+      {q:"Which property sets an element's background color?",o:["background-color","font-color","text-bg"],a:0,e:"background-color sets the background fill."},
+      {q:"What does box-sizing: border-box do?",o:["Hides the border","Includes padding and border in the declared size","Adds a shadow"],a:1,e:"With border-box, the declared width and height include padding and border."}
+    ];
+    const FINAL_TEST = [
+      ...LEVEL_TESTS[1].slice(0, 4), ...LEVEL_TESTS[2].slice(0, 4), ...FINAL_EXTRA
+    ];
+
+    /* ---------- SAFE LOCAL STORAGE ---------- */
+    function storageGet(key, fallback) {
+      try { const value = localStorage.getItem(key); return value === null ? fallback : value; }
+      catch (error) { return fallback; }
+    }
+    function storageSet(key, value) {
+      try { localStorage.setItem(key, value); } catch (error) { /* Storage may be blocked. */ }
+    }
+    function readProgress() {
+      let done = [];
+      let levels = [1];
+      try { done = JSON.parse(storageGet("csslab_done", "[]")); } catch (error) { done = []; }
+      try { levels = JSON.parse(storageGet("csslab_levels", "[1]")); } catch (error) { levels = [1]; }
+      if (!Array.isArray(done)) done = [];
+      if (!Array.isArray(levels)) levels = [1];
+      return { done: done.filter(n => Number.isInteger(n) && n >= 0 && n < 10), levels };
+    }
+    let progress = readProgress();
+    const completed = index => progress.done.includes(index);
+    const currentAvailable = () => (progress.done.length >= 5 && !levelUnlocked(2)) ? 4 : Math.min(9, progress.done.length);
+    const levelUnlocked = level => progress.levels.includes(level);
+
+    function saveProgress() {
+      progress.done = [...new Set(progress.done)].sort((a,b) => a-b);
+      storageSet("csslab_done", JSON.stringify(progress.done));
+      storageSet("csslab_levels", JSON.stringify(progress.levels));
+      renderProgress();
+    }
+    function markComplete(index) {
+      if (!completed(index)) progress.done.push(index);
+      saveProgress();
+    }
+
+    /* ---------- URL MODE ROUTING ---------- */
+    const params = new URLSearchParams(location.search);
+    const lessonParam = params.get("lesson");
+    /* FIX 9: only digits are accepted (before, "" became 0 and opened lesson 1) */
+    const lessonIndex = /^\d+$/.test(lessonParam || "") ? Number(lessonParam) : -1;
+    const mode = params.has("lesson") ? "lesson" : params.get("lessons") === "1" ? "subjects" : "landing";
+    document.body.classList.remove("landing-mode", "subjects-mode", "lesson-mode");
+    document.body.classList.add(mode + "-mode");
+
+    function showPage(page) {
+      document.getElementById("landingPage").hidden = page !== "landing";
+      document.getElementById("subjectsPage").hidden = page !== "subjects";
+      document.getElementById("lessonPage").hidden = page !== "lesson";
+    }
+    showPage(mode);
+
+    /* ---------- SUBJECTS AND PROGRESS RENDERING ---------- */
+    function renderProgress() {
+      const count = progress.done.length;
+      const percent = count * 10;
+      const subjectText = document.getElementById("subjectsProgressText");
+      if (subjectText) subjectText.textContent = count + " / 10";
+      const subjectBar = document.getElementById("subjectsProgressBar");
+      if (subjectBar) subjectBar.style.width = percent + "%";
+      const subjectLevel = document.getElementById("subjectsLevelText");
+      if (subjectLevel) subjectLevel.textContent = count >= 5 ? "LEVEL 2 · LAYOUT & RESPONSIVE CSS" : "LEVEL 1 · CSS FOUNDATIONS";
+      const topLabel = document.getElementById("topProgressLabel");
+      if (topLabel) topLabel.textContent = count + " / 10 completed";
+      const topPercent = document.getElementById("topProgressPercent");
+      if (topPercent) topPercent.textContent = percent + "%";
+      const topBar = document.getElementById("topProgressBar");
+      if (topBar) topBar.style.width = percent + "%";
+      const sideDone = document.getElementById("sidebarDone");
+      if (sideDone) sideDone.textContent = count + " / 10";
+      const sideBar = document.getElementById("sidebarProgress");
+      if (sideBar) sideBar.style.width = percent + "%";
+    }
+
+    function renderSubjects() {
+      const grid = document.getElementById("lessonGrid");
+      grid.innerHTML = "";
+      LESSONS.forEach((lesson, index) => {
+        const open = index <= currentAvailable();
+        const done = completed(index);
+        const card = document.createElement("a");
+        card.className = "lesson-card" + (open ? "" : " locked") + (done ? " completed" : "");
+        card.href = open ? "css.html?lesson=" + index : "#";
+        if (!open) card.addEventListener("click", event => event.preventDefault());
+        const number = document.createElement("span"); number.className = "lesson-number"; number.textContent = "LESSON " + String(index + 1).padStart(2, "0");
+        const title = document.createElement("h3"); title.textContent = lesson.title;
+        const desc = document.createElement("p"); desc.textContent = lesson.description;
+        const status = document.createElement("span"); status.className = "lesson-status";
+        status.textContent = done ? "✓ COMPLETED" : open ? "START LESSON →" : "🔒 LOCKED";
+        card.append(number, title, desc, status);
+        grid.appendChild(card);
+      });
+      renderProgress();
+      renderLevelTestArea();
+    }
+
+    /* ---------- LEVEL TEST ENTRY CARDS ---------- */
+    function renderLevelTestArea() {
+      const area = document.getElementById("levelTestArea");
+      const level1Done = progress.done.filter(n => n <= 4).length === 5;
+      const level2Done = progress.done.filter(n => n >= 5).length === 5;
+      area.innerHTML = "";
+      const info = document.createElement("div");
+      info.className = "level-test-copy";
+      const heading = document.createElement("h2");
+      const paragraph = document.createElement("p");
+      const button = document.createElement("button");
+      button.type = "button"; button.className = "secondary-button";
+      if (!level1Done) {
+        heading.textContent = "Level 1 test";
+        paragraph.textContent = "Complete lessons 1–5 to unlock the five-question foundations test.";
+        button.textContent = "🔒 Complete Level 1 first"; button.disabled = true;
+      } else if (!levelUnlocked(2)) {
+        heading.textContent = "Level 1 test unlocked";
+        paragraph.textContent = "Pass with at least 4 correct answers to unlock Level 2.";
+        button.textContent = "Start Level 1 test →";
+        button.addEventListener("click", () => openTest("level1"));
+      } else if (!level2Done) {
+        heading.textContent = "Level 2 is open";
+        paragraph.textContent = "Great work. Continue with lessons 6–10, then take the next level test.";
+        button.textContent = "Level 2 unlocked ✓"; button.disabled = true;
+      } else {
+        heading.textContent = "Level 2 test unlocked";
+        paragraph.textContent = "Take the final level test to complete your learning path.";
+        button.textContent = "Start Level 2 test →";
+        button.addEventListener("click", () => openTest("level2"));
+      }
+      info.append(heading, paragraph); area.append(info, button);
+    }
+
+    /* ---------- LESSON PAGE RENDERING ---------- */
+    const editor = document.getElementById("cssEditor");
+    const preview = document.getElementById("cssPreview");
+    let activeLesson = -1;
+    let starterCode = "";
+
+    function buildPreview(css) {
+      const markup = `<!doctype html><html><head><meta charset="utf-8"><style>
+        *{box-sizing:border-box}body{margin:0;padding:20px;background:#f1f5f9;font-family:Arial,sans-serif;color:#172033}
+        .demo-wrap{max-width:440px;margin:auto}.card{position:relative;background:#fff;padding:18px;border:1px solid #dbe4ee;border-radius:10px;box-shadow:0 5px 18px #1e293b12}
+        .card h3{margin:0 0 10px;font-size:20px}.card p{margin:0 0 12px;line-height:1.45;color:#475569}
+        .badge{display:inline-block;background:#dbeafe;color:#1d4ed8;padding:5px 8px;border-radius:5px;font-size:11px}
+        .items{display:flex;gap:8px;margin-top:14px}.items span,.grid span{background:#dbeafe;border:1px solid #93c5fd;border-radius:6px;padding:12px;text-align:center;flex:1}
+        .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:14px}
+        .swatch{height:30px;border-radius:6px;background:#e2e8f0;margin-top:10px}
+        ${css}
+      </style></head><body><div class="demo-wrap"><div class="card"><span class="badge">CSSLAB DEMO</span><h3>Build something beautiful</h3><p class="sample-text">Change the CSS in the editor and see your styles appear here.</p><div class="items"><span>HTML</span><span>CSS</span><span>WEB</span></div><div class="grid"><span>Grid 1</span><span>Grid 2</span><span>Grid 3</span><span>Grid 4</span></div><div class="swatch"></div></div></div></body></html>`;
+      preview.srcdoc = markup;
+    }
+
+    function setEditorStatus(message, isError) {
+      const status = document.getElementById("editorStatus");
+      status.textContent = message;
+      status.classList.toggle("error", Boolean(isError));
+    }
+    function runCss() {
+      buildPreview(editor.value);
+      setEditorStatus("Preview updated ✓", false);
+    }
+    function renderSidebar() {
+      const list = document.getElementById("sidebarLessons");
+      list.innerHTML = "";
+      LESSONS.forEach((lesson, index) => {
+        const open = index <= currentAvailable();
+        const link = document.createElement("a");
+        link.className = "sidebar-lesson" + (index === activeLesson ? " active" : "") + (completed(index) ? " done" : "") + (!open ? " locked" : "");
+        link.href = open ? "css.html?lesson=" + index : "#";
+        if (!open) link.addEventListener("click", e => e.preventDefault());
+        const num = document.createElement("span"); num.className = "side-num"; num.textContent = String(index + 1).padStart(2, "0");
+        const name = document.createElement("span"); name.className = "side-name"; name.textContent = lesson.title;
+        const state = document.createElement("span"); state.className = "side-state"; state.textContent = completed(index) ? "✓" : open ? "›" : "🔒";
+        link.append(num, name, state); list.appendChild(link);
+      });
+      renderProgress();
+    }
+
+    /* FIX 2, 3, 4: the Back / Next buttons are built by a separate function,
+       so they can be rebuilt right after the task is solved. */
+    function nextButtonHTML() {
+      if (activeLesson === 9) {
+        return completed(9)
+          ? '<button class="primary-button" id="finishCourse" type="button">Finish course →</button>'
+          : '<button class="primary-button" type="button" disabled title="Complete the task first">Finish course 🔒</button>';
+      }
+      if (!completed(activeLesson)) {
+        return '<button class="primary-button" type="button" disabled title="Complete the task to unlock the next lesson">Next lesson 🔒</button>';
+      }
+      if (activeLesson === 4 && !levelUnlocked(2)) {
+        // Lesson 6 stays locked until the Level 1 test is passed, so go to the test
+        return '<a class="primary-button" href="css.html?lessons=1">Take Level 1 test →</a>';
+      }
+      return '<a class="primary-button" href="css.html?lesson=' + (activeLesson + 1) + '">Next lesson →</a>';
+    }
+    function renderNavigation() {
+      const nav = document.getElementById("lessonNavigation");
+      if (!nav) return;
+      const previous = activeLesson > 0
+        ? '<a class="secondary-button" href="css.html?lesson=' + (activeLesson - 1) + '">← Previous lesson</a>'
+        : '<a class="secondary-button" href="css.html?lessons=1">← All lessons</a>';
+      nav.innerHTML = previous + nextButtonHTML();
+      const finish = document.getElementById("finishCourse");
+      if (finish) finish.addEventListener("click", () => { location.href = "css.html?lessons=1"; });
+    }
+
+    function renderLesson() {
+      const content = document.getElementById("lessonContent");
+      const valid = Number.isInteger(lessonIndex) && lessonIndex >= 0 && lessonIndex < LESSONS.length;
+      if (!valid) {
+        content.innerHTML = '<div class="locked-message"><p class="eyebrow">COURSE ACCESS</p><h1>Lesson not found</h1><p>Choose a lesson from the learning path.</p><a class="primary-button" href="css.html?lessons=1">View lessons →</a></div>';
+        document.querySelector(".editor-column").hidden = true;
+        return;
+      }
+      activeLesson = lessonIndex;
+      const lesson = LESSONS[activeLesson];
+      if (activeLesson > currentAvailable()) {
+        content.innerHTML = '<div class="locked-message"><p class="eyebrow">NOT UNLOCKED YET</p><h1>Lesson locked 🔒</h1><p>Complete the available lesson first to unlock this one.</p><a class="primary-button" href="css.html?lesson=' + currentAvailable() + '">Go to available lesson →</a></div>';
+        document.querySelector(".editor-column").hidden = true;
+        renderSidebar();
+        return;
+      }
+      document.querySelector(".editor-column").hidden = false;
+      content.innerHTML = `
+        <p class="eyebrow">CSS COURSE · LESSON ${activeLesson + 1} OF 10</p>
+        <h1>${escapeHTML(lesson.title)}</h1>
+        <p class="lesson-intro">${escapeHTML(lesson.intro)}</p>
+        <section class="content-block"><h2>Key points</h2><ul>${lesson.points.map(point => '<li>' + escapeHTML(point) + '</li>').join("")}</ul></section>
+        <section class="content-block"><div class="block-title"><h2>Example</h2><button class="copy-button" id="copyExample" type="button">Copy</button></div><pre class="lesson-code" translate="no"><code translate="no">${escapeHTML(lesson.example)}</code></pre><button class="try-button" id="tryExample" type="button">Try it in editor ↗</button></section>
+        <section class="content-block"><h2>Expected result</h2><p>${escapeHTML(lesson.output)}</p></section>
+        <div class="tip-box"><strong>💡 QUICK TIP</strong><p>${escapeHTML(lesson.tip)}</p></div>
+        <div class="task-box"><strong>YOUR TASK</strong><p>${escapeHTML(lesson.task)}</p><button id="startTask" class="task-start" type="button">Start task in editor ↓</button></div>
+        <div class="lesson-navigation" id="lessonNavigation"></div>`;
+      renderNavigation();
+      starterCode = lesson.starter;
+      editor.value = starterCode;
+      runCss();
+
+      /* FIX 1 + 8: the check area is hidden until the task is started.
+         If the lesson is already complete, the area shows only the message (no button). */
+      const area = document.getElementById("taskCheckArea");
+      const checkButton = document.getElementById("checkTask");
+      const feedback = document.getElementById("taskFeedback");
+      const isDone = completed(activeLesson);
+      area.hidden = !isDone;
+      checkButton.hidden = isDone;
+      feedback.className = isDone ? "feedback success" : "";
+      feedback.textContent = isDone ? "✓ This lesson is already complete." : "";
+
+      document.getElementById("tryExample").addEventListener("click", () => { editor.value = lesson.example; runCss(); editor.focus(); });
+      document.getElementById("startTask").addEventListener("click", () => {
+        editor.value = lesson.starter; runCss();
+        if (!completed(activeLesson)) {      // show "Check answer" only for an unsolved task
+          area.hidden = false; checkButton.hidden = false;
+          feedback.className = ""; feedback.textContent = "";
+        }
+        editor.focus();
+      });
+      document.getElementById("copyExample").addEventListener("click", () => copyText(lesson.example, "copyExample"));
+      checkButton.onclick = checkTask;
+      renderSidebar();
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+    }
+    async function copyText(text, buttonId) {
+      const button = document.getElementById(buttonId);
+      const old = button ? button.textContent : "";
+      try {
+        await navigator.clipboard.writeText(text);
+        if (button) { button.textContent = "Copied ✓"; setTimeout(() => button.textContent = old, 1300); }
+      } catch (error) {
+        if (button) { button.textContent = "Select and copy"; setTimeout(() => button.textContent = old, 1800); }
+      }
+    }
+
+    /* ---------- AUTOMATIC CSS TASK CHECKS ---------- */
+    function checkTask() {
+      runCss();
+      const feedback = document.getElementById("taskFeedback");
+      const css = editor.value.toLowerCase();
+      const has = (pattern) => pattern.test(css);
+      const checks = {
+        selectors: has(/\.card\s*\{[^}]*border\s*:\s*2px\s+solid\s+(#?39d98a|green)/s) && has(/\.card\s+p\s*\{[^}]*color\s*:\s*(#?b7f7d2|mintcream)/s),
+        colors: has(/\.card\s*\{[^}]*background(?:-color)?\s*:\s*#172554/s) && has(/\.card\s*\{[^}]*color\s*:\s*(white|#fff(?:fff)?)/s),
+        box: has(/\.card\s*\{[^}]*padding\s*:\s*24px/s) && has(/\.card\s*\{[^}]*border\s*:\s*3px\s+solid\s+(#?b7f7d2|#?39d98a|green)/s) && has(/\.card\s*\{[^}]*border-radius\s*:\s*12px/s),
+        type: has(/\.card\s+h3\s*\{[^}]*font-size\s*:\s*28px/s) && has(/\.card\s+h3\s*\{[^}]*font-weight\s*:\s*700/s) && has(/\.card\s+p\s*\{[^}]*line-height\s*:\s*1\.6/s),
+        effects: has(/\.card\s*\{[^}]*border-radius\s*:\s*16px/s) && has(/\.card\s*\{[^}]*box-shadow\s*:\s*0\s+8px\s+20px\s+#0006/s),
+        flex: has(/\.items\s*\{[^}]*display\s*:\s*flex/s) && has(/\.items\s*\{[^}]*justify-content\s*:\s*center/s) && has(/\.items\s*\{[^}]*gap\s*:\s*16px/s),
+        grid: has(/\.grid\s*\{[^}]*display\s*:\s*grid/s) && has(/\.grid\s*\{[^}]*grid-template-columns\s*:\s*repeat\(\s*2\s*,\s*1fr\s*\)/s) && has(/\.grid\s*\{[^}]*gap\s*:\s*12px/s),
+        position: has(/\.card\s*\{[^}]*position\s*:\s*relative/s) && has(/\.badge\s*\{[^}]*position\s*:\s*absolute/s) && has(/\.badge\s*\{[^}]*top\s*:\s*8px/s) && has(/\.badge\s*\{[^}]*right\s*:\s*8px/s),
+        /* FIX 10: "1fr" must be followed by ; or } so "1fr 1fr" is not accepted */
+        responsive: has(/@media\s*\(max-width\s*:\s*700px\)\s*\{[\s\S]*?\.grid\s*\{[^}]*grid-template-columns\s*:\s*1fr\s*[;}]/s),
+        functions: has(/:root\s*\{[^}]*--accent\s*:\s*#39d98a/s) && has(/\.card\s*\{[^}]*border-color\s*:\s*var\(\s*--accent\s*\)/s) && has(/\.card\s*\{[^}]*transition\s*:\s*transform\s+\.2s\s+ease/s)
+      };
+      const passed = Boolean(checks[LESSONS[activeLesson].check]);
+      if (passed) {
+        feedback.className = "feedback success";
+        markComplete(activeLesson);
+        // Message depends on what really unlocks next
+        if (activeLesson === 4 && !levelUnlocked(2)) feedback.textContent = "✅ Correct! Level 1 is complete. Take the Level 1 test to unlock Level 2.";
+        else if (activeLesson === 9) feedback.textContent = "✅ Correct! You finished all ten lessons. Try the final test!";
+        else feedback.textContent = "✅ Correct! Your CSS task is complete. The next lesson is now unlocked.";
+        document.getElementById("checkTask").hidden = true;   // FIX 1: hide only the button, keep the message
+        renderSidebar();
+        renderNavigation();                                   // FIX 2: enable the Next button now
+      } else {
+        feedback.className = "feedback failure";
+        feedback.textContent = "Not quite yet. Check the required selector, property and value in the task, then run Check answer again.";
+      }
+    }
+
+    /* ---------- MULTIPLE-CHOICE TEST ENGINE ---------- */
+    const modal = document.getElementById("testModal");
+    let testQuestions = [], testIndex = 0, testScore = 0, selectedAnswer = null, testKind = "";
+    function openTest(kind) {
+      if (kind === "level1" && progress.done.filter(n => n <= 4).length !== 5) return;
+      if (kind === "level2" && progress.done.filter(n => n >= 5).length !== 5) return;
+      if (kind === "final" && progress.done.length !== 10) {
+        document.getElementById("testIntro").textContent = "Complete all ten lessons before taking the final test.";
+        document.getElementById("testTitle").textContent = "Final test locked";
+        document.getElementById("testQuestions").innerHTML = "";
+        document.getElementById("testProgress").textContent = "10 lessons required";
+        document.getElementById("nextTestQuestion").hidden = true;
+        document.getElementById("testResult").hidden = true;
+        modal.hidden = false; return;
+      }
+      testKind = kind;
+      testQuestions = kind === "level1" ? LEVEL_TESTS[1] : kind === "level2" ? LEVEL_TESTS[2] : FINAL_TEST;
+      testIndex = 0; testScore = 0;
+      document.getElementById("testTitle").textContent = kind === "final" ? "Final CSS test" : kind === "level1" ? "Level 1 test" : "Level 2 test";
+      document.getElementById("testIntro").textContent = kind === "final" ? "Answer " + testQuestions.length + " questions. Your result is shown as a percentage." : "Choose the best answer. You need at least 4 out of 5 to pass.";
+      document.getElementById("nextTestQuestion").hidden = false;
+      document.getElementById("testResult").hidden = true;
+      modal.hidden = false;
+      renderTestQuestion();
+    }
+    function renderTestQuestion() {
+      selectedAnswer = null;
+      const item = testQuestions[testIndex];
+      const host = document.getElementById("testQuestions");
+      host.innerHTML = "";
+      const q = document.createElement("h3"); q.className = "question-title"; q.textContent = (testIndex + 1) + ". " + item.q; host.appendChild(q);
+      item.o.forEach((option, index) => {
+        const button = document.createElement("button"); button.type = "button"; button.className = "answer-option"; button.textContent = option;
+        button.addEventListener("click", () => {
+          if (selectedAnswer !== null) return;
+          selectedAnswer = index;
+          const correct = index === item.a;
+          if (correct) testScore++;
+          button.classList.add(correct ? "right" : "wrong");
+          [...host.querySelectorAll(".answer-option")].forEach((el, i) => {
+            el.disabled = true;
+            if (i === item.a) el.classList.add("right");
+          });
+          const explain = document.createElement("p"); explain.className = "answer-explanation"; explain.textContent = (correct ? "Correct! " : "Not quite. ") + item.e; host.appendChild(explain);
+          document.getElementById("nextTestQuestion").disabled = false;
+        });
+        host.appendChild(button);
+      });
+      document.getElementById("testProgress").textContent = "Question " + (testIndex + 1) + " of " + testQuestions.length;
+      document.getElementById("nextTestQuestion").textContent = testIndex === testQuestions.length - 1 ? "See results →" : "Next question →";
+      document.getElementById("nextTestQuestion").disabled = true;
+    }
+    document.getElementById("nextTestQuestion").addEventListener("click", () => {
+      if (selectedAnswer === null) return;
+      if (testIndex < testQuestions.length - 1) { testIndex++; renderTestQuestion(); return; }
+      const percent = Math.round(testScore / testQuestions.length * 100);
+      const passed = testKind === "final" ? percent >= 70 : testScore >= 4;
+      const result = document.getElementById("testResult");
+      result.hidden = false;
+      result.className = "test-result " + (passed ? "success" : "failure");
+      result.textContent = (passed ? "🎉 " : "Keep practising. ") + "Your score: " + testScore + " / " + testQuestions.length + " (" + percent + "%)." + (passed ? " Test passed!" : " You need " + (testKind === "final" ? "70%" : "4 out of 5") + " to pass.");
+      document.getElementById("testQuestions").innerHTML = "";
+      document.getElementById("nextTestQuestion").hidden = true;
+      document.getElementById("testProgress").textContent = "Test complete";
+      if (passed && testKind === "level1" && !levelUnlocked(2)) {
+        progress.levels.push(2); saveProgress();
+        renderSubjects();                 // FIX 5: refresh cards right away (lessons 6-10 open)
+        result.textContent += " Level 2 is now unlocked!";
+      }
+      if (passed && testKind === "level2") result.textContent += " You completed both levels!";
+      if (testKind === "final") storageSet("csslab_final_score", String(percent));
+    });
+    document.querySelectorAll("[data-close-modal]").forEach(el => el.addEventListener("click", () => { modal.hidden = true; }));
+    document.addEventListener("keydown", event => { if (event.key === "Escape") modal.hidden = true; });  // Esc closes the test window
+    document.getElementById("openFinalTest").addEventListener("click", () => openTest("final"));
+
+    /* ---------- RESET COURSE PROGRESS ---------- */
+    document.getElementById("resetProgress").addEventListener("click", () => {
+      if (!confirm("Reset all CSSLab lesson progress and level unlocks?")) return;
+      progress = { done: [], levels: [1] };
+      try { localStorage.removeItem("csslab_final_score"); } catch (error) {}
+      saveProgress(); renderSubjects();
+    });
+
+    /* ---------- EDITOR CONTROLS AND KEYBOARD SHORTCUTS ---------- */
+    document.getElementById("runCss").addEventListener("click", runCss);
+    document.getElementById("clearCss").addEventListener("click", () => { editor.value = ""; runCss(); });
+    document.getElementById("resetCss").addEventListener("click", () => { editor.value = starterCode; runCss(); });
+    editor.addEventListener("input", runCss);
+    editor.addEventListener("keydown", event => {
+      if (event.key === "Tab") {
+        event.preventDefault();
+        const start = editor.selectionStart, end = editor.selectionEnd;
+        editor.setRangeText("  ", start, end, "end");
+      }
+      if (event.key === "Enter" && event.ctrlKey) { event.preventDefault(); runCss(); }
+    });
+
+    /* ---------- GOOGLE TRANSLATE LANGUAGE SELECTOR ---------- */
+    let pendingLanguage = "";
+    window.googleTranslateElementInit = function () {
+      if (!window.google || !google.translate) return;
+      new google.translate.TranslateElement({pageLanguage:"en", includedLanguages:"en,uz,ru,tr", autoDisplay:false}, "google_translate_element");
+      if (pendingLanguage) changeLanguage(pendingLanguage);
+    };
+    /* FIX 7: the hidden Google select appears a moment AFTER init, so retry up to 20 times (every 250 ms) */
+    function changeLanguage(language, tries) {
+      tries = tries || 0;
+      const translateSelect = document.querySelector(".goog-te-combo");
+      if (!translateSelect) {
+        pendingLanguage = language;
+        if (tries < 20) setTimeout(() => changeLanguage(language, tries + 1), 250);
+        return;
+      }
+      translateSelect.value = language;
+      translateSelect.dispatchEvent(new Event("change", {bubbles:true}));
+      pendingLanguage = "";
+    }
+    const languageSelector = document.getElementById("languageSelector");
+    languageSelector.addEventListener("change", () => {
+      const language = languageSelector.value;
+      try { localStorage.setItem("csslab_language", language); } catch (error) {}
+      if (language === "en") {
+        try { document.cookie = "googtrans=/en/en;path=/"; } catch (error) {}
+        location.reload();
+      } else changeLanguage(language);
+    });
+    try {
+      const savedLanguage = localStorage.getItem("csslab_language");
+      if (savedLanguage && ["en","uz","ru","tr"].includes(savedLanguage)) {
+        languageSelector.value = savedLanguage;
+        if (savedLanguage !== "en") pendingLanguage = savedLanguage;
+      }
+    } catch (error) {}
+
+    /* ---------- MATRIX BACKGROUND: DISABLED FOR REDUCED MOTION ---------- */
+    const canvas = document.getElementById("matrixCanvas");
+    const context = canvas.getContext("2d");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let drops = [], matrixFrame = 0;
+    const glyphs = "アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789{}[]<>/+-=*";
+    function resizeMatrix() {
+      canvas.width = window.innerWidth * Math.min(window.devicePixelRatio || 1, 2);
+      canvas.height = window.innerHeight * Math.min(window.devicePixelRatio || 1, 2);
+      context.setTransform(Math.min(window.devicePixelRatio || 1, 2), 0, 0, Math.min(window.devicePixelRatio || 1, 2), 0, 0);
+      drops = Array.from({length:Math.ceil(window.innerWidth / 19)}, () => Math.random() * window.innerHeight / 18);
+    }
+    function drawMatrix() {
+      context.fillStyle = "rgba(11,16,32,.12)";
+      context.fillRect(0,0,window.innerWidth,window.innerHeight);
+      context.fillStyle = "rgba(61,245,176,.42)";
+      context.font = "14px monospace";
+      drops.forEach((y,i) => {
+        context.fillText(glyphs[Math.floor(Math.random()*glyphs.length)], i*19, y*18);
+        if (y*18 > window.innerHeight && Math.random() > .975) drops[i] = 0;
+        drops[i] += .55;
+      });
+      matrixFrame = requestAnimationFrame(drawMatrix);
+    }
+    resizeMatrix();
+    window.addEventListener("resize", resizeMatrix);
+    if (!reducedMotion) drawMatrix();
+    else {
+      context.fillStyle = "rgba(11,16,32,.96)";
+      context.fillRect(0,0,window.innerWidth,window.innerHeight);
+    }
+
+    /* ---------- INITIALISE THE CURRENT URL MODE ---------- */
+    if (mode === "subjects") renderSubjects();
+    if (mode === "lesson") renderLesson();
+    renderProgress();
+  })();
+  </script>
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>
